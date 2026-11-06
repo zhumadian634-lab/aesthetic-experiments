@@ -87,6 +87,7 @@
 
   function showHint() {
     if (sessionStorage.getItem('mnav-hint')) return;
+    if (innerHeight <= innerWidth) return; // already landscape: nothing to warn about
     sessionStorage.setItem('mnav-hint', '1');
     hint = document.createElement('div');
     hint.id = 'mhint';
