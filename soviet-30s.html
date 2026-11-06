@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>七十年，一条斜线 · 30 秒</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --u:1vmin;
+  --red:#D22B1F; --paper:#F1E9D8; --ink:#0A0A0A; --gray:#6E6A62;
+}
+html,body{height:100%;background:var(--ink);overflow:hidden}
+body{font-family:"Arial Narrow","Noto Sans SC",Arial,sans-serif;color:var(--paper);
+  -webkit-font-smoothing:antialiased;cursor:default}
+::selection{background:var(--red)}
+
+#stage{position:fixed;inset:0;background:var(--ink);overflow:hidden}
+#stage::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:60;
+  background:radial-gradient(120% 110% at 50% 50%,transparent 55%,rgba(0,0,0,.55) 100%)}
+
+/* 卡片 */
+.card{position:absolute;inset:0;opacity:0;transition:opacity .35s ease;pointer-events:none}
+.card.in{opacity:1}
+.card.out{opacity:0}
+
+/* 版位元素 */
+.year{position:absolute;z-index:20;font-weight:700;line-height:.8;letter-spacing:-.06em;
+  color:var(--red);opacity:0;transform:translateY(calc(var(--u)*1.2));
+  transition:opacity .5s ease,transform .6s cubic-bezier(.22,.61,.36,1)}
+.card.in .year{opacity:1;transform:none}
+
+.slogan{position:absolute;z-index:20;font-weight:700;line-height:1;
+  font-size:calc(var(--u)*8.6);letter-spacing:-.01em}
+.sub{position:absolute;z-index:20;font-family:"Noto Sans SC",sans-serif;font-weight:400;
+  font-size:calc(var(--u)*1.9);line-height:1.9;color:rgba(241,233,216,.74)}
+
+/* 红楔 */
+.plate{position:absolute;z-index:5;background:var(--red);clip-path:var(--shape);
+  transform:var(--from,translate(-110%,0));
+  transition:transform .85s cubic-bezier(.72,0,.28,1)}
+.card.in .plate{transform:none}
+
+/* 细线 */
+.hair{position:absolute;z-index:15;height:1px;background:var(--red);
+  transform:scaleX(0);transform-origin:left;transition:transform .8s cubic-bezier(.7,0,.3,1) .15s}
+.card.in .hair{transform:scaleX(1)}
+
+/* 逐字 */
+.ch{display:inline-block;white-space:pre;opacity:0;
+  transform:translateY(.35em);
+  transition:opacity .28s ease,transform .3s cubic-bezier(.22,.61,.36,1)}
+.ch.on{opacity:1;transform:none}
+
+/* 卡片内布局 */
+.c-cover .slogan{left:calc(var(--u)*7);top:calc(var(--u)*30);font-size:calc(var(--u)*11.5)}
+.c-cover .sub{left:calc(var(--u)*7.3);top:calc(var(--u)*60);max-width:26em}
+.c-cover .year{right:calc(var(--u)*7);top:calc(var(--u)*22);font-size:calc(var(--u)*9)}
+.c-cover .hair{left:calc(var(--u)*7.3);top:calc(var(--u)*56);width:calc(var(--u)*22)}
+
+.c-left .slogan{left:calc(var(--u)*7);top:calc(var(--u)*34);text-align:left}
+.c-left .sub{left:calc(var(--u)*7.3);top:calc(var(--u)*60);max-width:24em}
+.c-left .year{left:calc(var(--u)*7);right:auto;bottom:calc(var(--u)*9);font-size:calc(var(--u)*13)}
+.c-left .hair{left:calc(var(--u)*7.3);top:calc(var(--u)*56);width:calc(var(--u)*20)}
+.c-left .plate{--shape:polygon(100% 0,100% 100%,36% 100%,84% 0);
+  right:0;left:auto;top:0;width:21%;height:100%;--from:translate(115%,0);opacity:.92}
+
+.c-right .slogan{right:calc(var(--u)*7);top:calc(var(--u)*30);text-align:right}
+.c-right .sub{right:calc(var(--u)*7.3);top:calc(var(--u)*60);max-width:24em;text-align:right}
+.c-right .year{right:calc(var(--u)*7);left:auto;bottom:calc(var(--u)*9);font-size:calc(var(--u)*13)}
+.c-right .hair{right:calc(var(--u)*7.3);top:calc(var(--u)*54);width:calc(var(--u)*20);transform-origin:right}
+.c-right .plate{--shape:polygon(0 0,64% 0,16% 100%,0 100%);
+  left:0;right:auto;top:0;width:21%;height:100%;--from:translate(-115%,0);opacity:.92}
+
+/* 收尾 */
+.c-end .slogan{left:0;right:0;top:calc(var(--u)*42);text-align:center;font-size:calc(var(--u)*5.2);
+  color:rgba(241,233,216,.9)}
+.c-end .sub{left:0;right:0;top:calc(var(--u)*56);text-align:center;font-size:calc(var(--u)*1.5)}
+.frag{position:absolute;z-index:8;background:var(--red);height:calc(var(--u)*1.2);opacity:0;
+  transform:translateY(calc(var(--u)*-8)) rotate(0) skewX(-18deg);
+  transition:opacity .3s ease,transform 1.4s cubic-bezier(.55,0,.35,1)}
+.card.in .frag{opacity:.85;transform:translateY(0) rotate(var(--r)) skewX(-18deg)}
+.f1{width:calc(var(--u)*9);left:16%;top:18%;--r:-24deg;transition-delay:.1s}
+.f2{width:calc(var(--u)*6);left:72%;top:26%;--r:16deg;transition-delay:.22s}
+.f3{width:calc(var(--u)*4);left:38%;top:12%;--r:-9deg;transition-delay:.34s}
+.f4{width:calc(var(--u)*2.6);left:60%;top:76%;--r:28deg;transition-delay:.46s}
+.f5{width:calc(var(--u)*1.8);left:26%;top:80%;--r:-34deg;transition-delay:.58s}
+
+/* 进度条 */
+#prog{position:fixed;left:0;bottom:0;height:calc(var(--u)*.28);background:var(--red);
+  width:0;z-index:80;opacity:.85}
+
+/* 开场门 */
+#gate{position:fixed;inset:0;z-index:99;background:var(--ink);display:flex;
+  flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u)*3);
+  transition:opacity .5s ease}
+#gate.gone{opacity:0;pointer-events:none}
+#gate .t{font-size:calc(var(--u)*3.4);font-weight:700;letter-spacing:.08em}
+#gate .s{font-size:calc(var(--u)*1.3);letter-spacing:.3em;color:var(--gray);text-transform:uppercase}
+#gate button{margin-top:calc(var(--u)*2);padding:calc(var(--u)*1.4) calc(var(--u)*4);background:none;
+  border:1px solid var(--red);color:var(--paper);font:inherit;font-size:calc(var(--u)*1.5);
+  letter-spacing:.3em;cursor:pointer;transition:.3s}
+#gate button:hover{background:var(--red);color:var(--ink)}
+#gate .hint{font-size:calc(var(--u)*1.1);color:var(--gray);letter-spacing:.14em}
+
+#replay{position:fixed;right:calc(var(--u)*3);bottom:calc(var(--u)*3);z-index:95;opacity:0;
+  pointer-events:none;background:none;border:1px solid rgba(241,233,216,.35);color:var(--paper);
+  font:inherit;font-size:calc(var(--u)*1.15);letter-spacing:.24em;padding:calc(var(--u)*1)
+  calc(var(--u)*2.2);cursor:pointer;transition:.4s}
+#replay.on{opacity:.75;pointer-events:auto}
+#replay:hover{opacity:1;border-color:var(--red)}
+
+@media (max-aspect-ratio:1/1){
+  .c-left .slogan,.c-right .slogan,.c-cover .slogan{font-size:calc(var(--u)*7.4)}
+  .c-left .sub,.c-right .sub{font-size:calc(var(--u)*2.6);max-width:18em}
+}
+</style>
+</head>
+<body>
+
+<div id="stage"></div>
+<div id="prog"></div>
+
+<div id="gate">
+  <div class="t">七十年，一条斜线</div>
+  <div class="s">1917 — 1991 · 30 秒</div>
+  <button id="start">开 始</button>
+  <div class="hint">建议戴耳机 · 全屏观看</div>
+</div>
+
+<button id="replay">重 播</button>
+
+<script>
+const stage = document.getElementById('stage');
+const gate  = document.getElementById('gate');
+const prog  = document.getElementById('prog');
+const replayBtn = document.getElementById('replay');
+const $ = (s, r = document) => r.querySelector(s);
+
+/* ============ 内容 ============ */
+const CARDS = [
+  { cls: 'c-cover', year: '', slogan: '七十年，一条斜线',
+    sub: '苏联意识形态的七个切面。每翻一页，斜线的角度都在变。' },
+  { cls: 'c-left', year: '1917', slogan: '全部政权归苏维埃',
+    sub: '十月革命之后，意识形态第一次接管国家。' },
+  { cls: 'c-right', year: '1925', slogan: '一国建成社会主义',
+    sub: '革命的目标从「世界」收缩到「一国」。' },
+  { cls: 'c-left', year: '1934', slogan: '社会主义现实主义',
+    sub: '第一次全苏作家代表大会，把它定为唯一的创作方法。' },
+  { cls: 'c-right', year: '1956', slogan: '秘密报告',
+    sub: '赫鲁晓夫用四个小时否定斯大林。' },
+  { cls: 'c-left', year: '1961', slogan: '1980 年建成共产主义',
+    sub: '时间表写进党纲，指向一个从未到达的年份。' },
+  { cls: 'c-right', year: '1991', slogan: '新思维',
+    sub: '公开性松开螺丝，两年后苏联解体。', frags: true },
+  { cls: 'c-end', year: '', slogan: '斜线不再指向任何地方',
+    sub: '1917 — 1991' }
+];
+
+/* ============ 建卡 ============ */
+const nodes = CARDS.map((d) => {
+  const c = document.createElement('div');
+  c.className = 'card ' + d.cls;
+  if (d.frags) c.innerHTML = '<i class="frag f1"></i><i class="frag f2"></i><i class="frag f3"></i><i class="frag f4"></i><i class="frag f5"></i>';
+  if (d.cls !== 'c-end') c.insertAdjacentHTML('beforeend', '<i class="plate"></i>');
+  c.insertAdjacentHTML('beforeend', '<i class="hair"></i>');
+  if (d.year) c.insertAdjacentHTML('beforeend', '<div class="year">' + d.year + '</div>');
+  c.insertAdjacentHTML('beforeend', '<h1 class="slogan"></h1><p class="sub"></p>');
+  stage.appendChild(c);
+  const slogan = c.querySelector('.slogan');
+  const sub = c.querySelector('.sub');
+  slogan.dataset.text = d.slogan;
+  sub.dataset.text = d.sub;
+  return { el: c, slogan, sub, data: d };
+});
+
+/* 拆字 */
+function splitChars(el) {
+  const txt = el.dataset.text || '';
+  el.textContent = '';
+  const out = [];
+  for (const ch of txt) {
+    const s = document.createElement('span');
+    s.className = 'ch';
+    s.textContent = ch === ' ' ? '\u00A0' : ch;
+    el.appendChild(s);
+    out.push(s);
+  }
+  return out;
+}
+nodes.forEach(n => {
+  n.sloganChars = splitChars(n.slogan);
+  n.subChars = splitChars(n.sub);
+});
+
+/* ============ 打字声 ============ */
+let ctx = null, clickBuf = null, master = null;
+
+function initAudio() {
+  if (ctx) return;
+  const AC = window.AudioContext || window.webkitAudioContext;
+  ctx = new AC();
+  master = ctx.createGain();
+  master.gain.value = 0.5;
+  master.connect(ctx.destination);
+  // 预生成一段噪声，做打字机的「嗒」
+  const dur = 0.035, sr = ctx.sampleRate, n = Math.floor(sr * dur);
+  clickBuf = ctx.createBuffer(1, n, sr);
+  const d = clickBuf.getChannelData(0);
+  for (let i = 0; i < n; i++) {
+    const env = Math.pow(1 - i / n, 4.5);
+    d[i] = (Math.random() * 2 - 1) * env;
+  }
+}
+
+let nClicks = 0;
+window.__dbg = () => ({ clicks: nClicks, state: ctx ? ctx.state : 'none' });
+
+function click(strong) {
+  if (!ctx) return;
+  nClicks++;
+  const src = ctx.createBufferSource();
+  src.buffer = clickBuf;
+  src.playbackRate.value = 0.82 + Math.random() * 0.5;
+
+  const bp = ctx.createBiquadFilter();
+  bp.type = 'bandpass';
+  bp.frequency.value = (strong ? 1500 : 2300) + Math.random() * 900;
+  bp.Q.value = 1.1;
+
+  const g = ctx.createGain();
+  const v = (strong ? 0.20 : 0.13) * (0.75 + Math.random() * 0.5);
+  g.gain.setValueAtTime(v, ctx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.05);
+
+  src.connect(bp).connect(g).connect(master);
+  src.start();
+  src.stop(ctx.currentTime + 0.06);
+}
+
+/* ============ 时间线 ============ */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+let gen = 0;
+
+async function typeChars(chars, ms, my, strongEvery) {
+  for (let i = 0; i < chars.length; i++) {
+    if (my !== gen) return false;
+    const ch = chars[i];
+    ch.classList.add('on');
+    if (ch.textContent.trim() !== '') click(strongEvery && i % strongEvery === 0);
+    await sleep(ms + Math.random() * ms * 0.35);
+  }
+  return true;
+}
+
+async function playCard(n, my) {
+  const { el } = n;
+  el.classList.remove('out');
+  el.classList.add('in');
+  await sleep(560);                         // 色板落位
+  if (my !== gen) return false;
+  await typeChars(n.sloganChars, n.data.cls === 'c-end' ? 95 : 105, my, 3);
+  await sleep(200);
+  if (my !== gen) return false;
+  await typeChars(n.subChars, 38, my, 0);
+  await sleep(n.data.cls === 'c-end' ? 700 : 820);
+  if (my !== gen) return false;
+  el.classList.add('out');
+  await sleep(360);
+  el.classList.remove('in', 'out');
+  return true;
+}
+
+async function run() {
+  gen++;
+  const my = gen;
+  nodes.forEach(n => n.el.classList.remove('in', 'out'));
+  nodes.forEach(n => {
+    [...n.sloganChars, ...n.subChars].forEach(c => c.classList.remove('on'));
+  });
+  prog.style.width = '0';
+  replayBtn.classList.remove('on');
+
+  await sleep(500);                          // 开场留白
+  for (const n of nodes) {
+    const ok = await playCard(n, my);
+    if (!ok) return;
+    await sleep(420);                        // 卡间空镜（纯黑）
+  }
+  if (my !== gen) return;
+  await sleep(400);
+  replayBtn.classList.add('on');
+}
+
+/* ============ 进度条 ============ */
+let t0 = 0, raf = 0;
+const TOTAL = 30000;
+function tick(now) {
+  if (!t0) t0 = now;
+  const p = Math.min(1, (now - t0) / TOTAL);
+  prog.style.width = (p * 100).toFixed(2) + '%';
+  if (p < 1) raf = requestAnimationFrame(tick);
+}
+
+/* ============ 启动 ============ */
+$('#start').addEventListener('click', async () => {
+  initAudio();
+  if (ctx.state === 'suspended') await ctx.resume();
+  gate.classList.add('gone');
+  t0 = 0;
+  cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(tick);
+  run();
+});
+
+replayBtn.addEventListener('click', () => {
+  if (!ctx) initAudio();
+  if (ctx && ctx.state === 'suspended') ctx.resume();
+  replayBtn.classList.remove('on');
+  t0 = 0;
+  cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(tick);
+  run();
+});
+
+/* 空格/回车也能重播 */
+addEventListener('keydown', e => {
+  if (gate.classList.contains('gone') && (e.key === ' ' || e.key === 'Enter')) {
+    e.preventDefault();
+    if (replayBtn.classList.contains('on')) replayBtn.click();
+  }
+});
+</script>
+
+<style id="rendercss">
+.render *{transition:none!important;animation:none!important}
+.render #gate,.render #prog,.render #replay{display:none!important}
+</style>
+
+<script>
+/* ===== RENDER MODE =====  ?render=1 时按秒数逐帧绘制，供导出视频 */
+(function () {
+  if (!/render=1/.test(location.search)) return;
+  document.documentElement.classList.add('render');
+
+  const SP = { slogan: 0.095, sub: 0.032, plate: 0.50, pause: 0.15, hold: 0.55, fade: 0.30, gap: 0.30 };
+
+  /* ---- 三次贝塞尔缓动 ---- */
+  function easeTable(p1x, p1y, p2x, p2y, N) {
+    const X = u => 3 * (1 - u) * (1 - u) * u * p1x + 3 * (1 - u) * u * u * p2x + u * u * u;
+    const Y = u => 3 * (1 - u) * (1 - u) * u * p1y + 3 * (1 - u) * u * u * p2y + u * u * u;
+    const t = new Float32Array(N + 1);
+    for (let i = 0; i <= N; i++) {
+      const x = i / N;
+      let lo = 0, hi = 1, u = x;
+      for (let k = 0; k < 26; k++) {
+        u = (lo + hi) / 2;
+        if (X(u) < x) lo = u; else hi = u;
+      }
+      t[i] = Y(u);
+    }
+    return x => {
+      if (x <= 0) return 0;
+      if (x >= 1) return 1;
+      const f = x * N, i = Math.floor(f), a = t[i], b = t[Math.min(N, i + 1)];
+      return a + (b - a) * (f - i);
+    };
+  }
+  const ePlate = easeTable(.72, 0, .28, 1, 256);
+  const eHair = easeTable(.7, 0, .3, 1, 128);
+  const eChar = easeTable(.22, .61, .36, 1, 128);
+
+  /* ---- 时间表 ---- */
+  function build(gap) {
+    let t = 0.5;
+    const out = [];
+    nodes.forEach((n, i) => {
+      const sc = n.sloganChars.length, bc = n.subChars.length;
+      const sloganStart = t + SP.plate;
+      const subStart = sloganStart + sc * SP.slogan + SP.pause;
+      const dur = SP.plate + sc * SP.slogan + SP.pause + bc * SP.sub + SP.hold;
+      out.push({ i, start: t, sloganStart, subStart, dur, end: t + dur, fadeEnd: t + dur + SP.fade, sc, bc });
+      t += dur + SP.fade + gap;
+    });
+    return out;
+  }
+  let SCHED = build(SP.gap);
+  const nCard = SCHED.length;
+  const over = 30 - SCHED[nCard - 1].fadeEnd;
+  if (over > 0) SCHED = build(SP.gap + over * 0.55 / (nCard - 1));
+  const TAIL = 30 - SCHED[nCard - 1].fadeEnd;
+  window.__sched = SCHED;
+  window.__tail = TAIL;
+  window.__total = 30;
+
+  const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+  const vmin = () => Math.min(innerWidth, innerHeight) / 100;
+
+  function seek(t) {
+    const u = vmin();
+    nodes.forEach((n, i) => {
+      const sch = SCHED[i];
+      const el = n.el;
+      if (t < sch.start || t > sch.fadeEnd) {
+        el.style.opacity = 0;
+        return;
+      }
+      const local = t - sch.start;
+      const fadeOut = t > sch.end ? 1 - (t - sch.end) / SP.fade : 1;
+      el.style.opacity = clamp(fadeOut, 0, 1);
+
+      // 色板
+      const plate = el.querySelector('.plate');
+      if (plate) {
+        const p = ePlate(clamp(local / SP.plate, 0, 1));
+        const dir = n.data.cls === 'c-right' ? -1 : 1;
+        plate.style.transform = 'translate(' + (dir * 115 * (1 - p)).toFixed(3) + '%,0)';
+      }
+      // 细线
+      const hair = el.querySelector('.hair');
+      if (hair) hair.style.transform = 'scaleX(' + eHair(clamp((local - 0.15) / 0.8, 0, 1)).toFixed(3) + ')';
+      // 年份
+      const year = el.querySelector('.year');
+      if (year) {
+        const p = clamp((local - 0.20) / 0.50, 0, 1);
+        const e = eChar(p);
+        year.style.opacity = e;
+        year.style.transform = 'translateY(' + ((1 - e) * 1.2 * u).toFixed(2) + 'px)';
+      }
+      // 文字
+      const paint = (chars, t0, step) => {
+        chars.forEach((c, k) => {
+          const p = clamp((t - (t0 + k * step)) / 0.28, 0, 1);
+          const e = eChar(p);
+          c.style.opacity = e;
+          c.style.transform = 'translateY(' + ((1 - e) * 0.35 * 0.32 * u * 10 / 10).toFixed(2) + 'em)';
+          c.style.transform = 'translateY(' + ((1 - e) * 0.35).toFixed(3) + 'em)';
+        });
+      };
+      paint(n.sloganChars, sch.sloganStart, SP.slogan);
+      paint(n.subChars, sch.subStart, SP.sub);
+
+      // 碎片（1991 卡）
+      if (n.data.frags) {
+        [...el.querySelectorAll('.frag')].forEach((f, k) => {
+          const p = eChar(clamp((local - (0.10 + k * 0.12)) / 1.4, 0, 1));
+          f.style.opacity = (p * 0.85).toFixed(3);
+          const deg = [ -24, 16, -9, 28, -34 ][k] || 0;
+          f.style.transform = 'translateY(' + ((1 - p) * -8 * u).toFixed(2) + 'px) rotate(' + (deg * p).toFixed(1) + 'deg) skewX(-18deg)';
+        });
+      }
+    });
+  }
+
+  window.__seek = seek;
+  window.__ready = true;
+})();
+</script>
+
+<!-- mobile layer (GitHub Pages copy only) -->
+<link rel="stylesheet" href="assets/mobile.css">
+<script src="assets/mobile.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>机器学会说话 · AI 七十年</title>
+<style>
+/* ============================================================
+   0. TOKENS — everything scales with vmin (design at 16:9)
+   ============================================================ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --u:1vmin;
+  --ink:#111111; --paper:#F4F0E8; --rule:#C9C2B4; --gray:#8A8378; --red:#DA291C;
+  --crt-bg:#0B0F0C; --crt-panel:#1A1E18; --crt-screen:#070A08;
+  --green:#74FF9A; --amber:#FFB23E; --warn:#D9483B;
+  --ds-paper:#F4F1EA; --ds-red:#D0302A; --ds-yellow:#EBC226; --ds-blue:#1D3F8C;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+body{
+  font-family:"Noto Sans SC","Microsoft YaHei UI",system-ui,sans-serif;
+  background:#0B0F0C; color:var(--ink); overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--ds-yellow);color:#111}
+
+/* ============================================================
+   1. SHELL
+   ============================================================ */
+.stage{position:relative;width:100%;height:100svh;display:flex;flex-direction:column;overflow:hidden}
+.progress{position:fixed;top:0;left:0;height:calc(var(--u)*.22);width:0;background:var(--red);z-index:90;transition:width .18s linear,background .6s ease}
+.hud{
+  position:fixed;left:calc(var(--u)*2.2);bottom:calc(var(--u)*1.6);z-index:80;
+  font:400 calc(var(--u)*1.05)/1 "Consolas","Courier New",monospace;
+  letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.45);
+  mix-blend-mode:difference;pointer-events:none;
+}
+.hud b{font-weight:400;color:rgba(255,255,255,.9)}
+.rail{position:fixed;right:calc(var(--u)*1.7);top:50%;transform:translateY(-50%);z-index:80;display:flex;flex-direction:column;gap:calc(var(--u)*.85);mix-blend-mode:difference}
+.rail i{width:calc(var(--u)*.62);height:calc(var(--u)*.62);background:rgba(255,255,255,.24);display:block;cursor:pointer;transition:background .35s,transform .35s}
+.rail i.on{background:#fff;transform:scale(1.5)}
+
+/* ============================================================
+   2. CRT
+   ============================================================ */
+.crt{
+  background:radial-gradient(120% 90% at 50% 38%, #131914 0%, #080B09 58%, #050706 100%);
+  color:var(--green);font-family:"Consolas","Courier New","Noto Sans SC",monospace;
+  padding:calc(var(--u)*1.5);
+}
+.crt::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:5;
+  background:repeating-linear-gradient(180deg,rgba(0,0,0,.34) 0 1px,rgba(0,0,0,0) 1px 3px);
+  opacity:.6;
+}
+.crt::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:6;
+  background:radial-gradient(120% 110% at 50% 46%,transparent 52%,rgba(0,0,0,.62) 100%)}
+.frame{
+  position:relative;flex:1;z-index:2;min-height:0;
+  border:1px solid #2A2F27;background:linear-gradient(180deg,#12160F,#0D110C);
+  display:grid;grid-template-rows:auto minmax(0,1fr) auto;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04),0 0 0 calc(var(--u)*.55) #0A0D09,0 0 calc(var(--u)*5) rgba(0,0,0,.65);
+}
+.statusbar{
+  display:flex;justify-content:space-between;gap:2vmin;padding:calc(var(--u)*.9) calc(var(--u)*1.6);
+  border-bottom:1px solid #262B23;font-size:calc(var(--u)*.92);letter-spacing:.26em;
+  text-transform:uppercase;color:rgba(116,255,154,.55)
+}
+.statusbar .right{display:flex;gap:2.2vmin;align-items:center}
+.led{width:calc(var(--u)*.6);height:calc(var(--u)*.6);border-radius:50%;background:var(--green);
+  box-shadow:0 0 calc(var(--u)*.8) var(--green);display:inline-block;margin-right:.8vmin;
+  animation:blink 2.4s steps(1,end) infinite}
+.led.red{background:var(--warn);box-shadow:0 0 calc(var(--u)*.8) var(--warn);animation-duration:3.1s}
+.led.amber{background:var(--amber);box-shadow:0 0 calc(var(--u)*.8) var(--amber);animation-duration:1.7s}
+@keyframes blink{0%,62%{opacity:1}63%,100%{opacity:.16}}
+
+.bays{display:grid;grid-template-columns:1fr calc(var(--u)*16);gap:calc(var(--u)*1);padding:calc(var(--u)*1);min-height:0}
+.screen{
+  position:relative;background:var(--crt-screen);border:1px solid #23281F;
+  box-shadow:inset 0 0 calc(var(--u)*6) rgba(116,255,154,.04),inset 0 0 calc(var(--u)*1.2) rgba(0,0,0,.9),
+             0 0 0 calc(var(--u)*.4) #0E120D,0 0 calc(var(--u)*2.2) rgba(116,255,154,.05);
+  padding:calc(var(--u)*4.6) calc(var(--u)*4.2);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.screen .scan{position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(180deg,rgba(116,255,154,.04) 0 1px,transparent 1px 4px);mix-blend-mode:screen}
+.scr-mid{flex:1;display:flex;flex-direction:column;justify-content:flex-start;padding-top:calc(var(--u)*2);width:100%;max-width:none}
+.kicker{font-size:calc(var(--u)*1);letter-spacing:.34em;text-transform:uppercase;color:rgba(116,255,154,.5)}
+.scr-title{
+  font-size:calc(var(--u)*8.6);line-height:1.08;letter-spacing:.005em;color:var(--green);
+  text-shadow:0 0 calc(var(--u)*1.8) rgba(116,255,154,.22);margin-top:calc(var(--u)*2.4);max-width:11em
+}
+.scr-body{margin-top:calc(var(--u)*2.4);font-size:calc(var(--u)*1.78);line-height:1.95;color:rgba(116,255,154,.7);max-width:34em}
+.bootlog{
+  margin-top:auto;padding-top:calc(var(--u)*4);font-size:calc(var(--u)*1.18);line-height:2.15;
+  color:rgba(116,255,154,.34);letter-spacing:.06em;white-space:pre
+}
+.bootlog b{color:rgba(116,255,154,.6);font-weight:400}
+.scr-foot{
+  display:flex;justify-content:space-between;align-items:flex-end;gap:2vmin;
+  font-size:calc(var(--u)*.95);letter-spacing:.24em;text-transform:uppercase;
+  color:rgba(116,255,154,.4);margin-top:calc(var(--u)*2.4)
+}
+.cursor::after{content:"▌";animation:blink 1s steps(1,end) infinite;color:var(--green)}
+.gauges{display:grid;grid-template-rows:repeat(3,1fr);gap:calc(var(--u)*.9)}
+.gauge{
+  border:1px solid #242A21;background:linear-gradient(180deg,#141812,#0F130E);
+  padding:calc(var(--u)*1.2) calc(var(--u)*1.1);
+  display:flex;flex-direction:column;justify-content:space-between;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03)
+}
+.gauge .lbl{font-size:calc(var(--u)*.88);letter-spacing:.28em;text-transform:uppercase;color:rgba(216,205,180,.5)}
+.gauge .val{font-size:calc(var(--u)*3.4);color:var(--amber);text-shadow:0 0 calc(var(--u)*1.4) rgba(255,178,62,.3);font-variant-numeric:tabular-nums;line-height:1}
+.gauge .unit{font-size:calc(var(--u)*.82);letter-spacing:.2em;text-transform:uppercase;color:rgba(216,205,180,.42)}
+.timecode{
+  display:flex;justify-content:space-between;gap:2vmin;padding:calc(var(--u)*.8) calc(var(--u)*1.6);
+  border-top:1px solid #262B23;font-size:calc(var(--u)*.82);letter-spacing:.28em;
+  text-transform:uppercase;color:rgba(116,255,154,.42)
+}
+.bootbar{height:calc(var(--u)*.28);background:rgba(116,255,154,.12);margin-top:calc(var(--u)*2.6);overflow:hidden}
+.bootbar span{display:block;height:100%;width:0;background:var(--green);box-shadow:0 0 calc(var(--u)*1) var(--green);transition:width .3s linear}
+
+/* ============================================================
+   3. SWISS
+   ============================================================ */
+.swiss{
+  background:var(--paper);color:var(--ink);
+  padding:calc(var(--u)*3.4) calc(var(--u)*4.6) calc(var(--u)*5.2);
+  display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:0
+}
+.swiss .meta{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:2vmin;
+  font-size:calc(var(--u)*1.02);letter-spacing:.2em;text-transform:uppercase;color:var(--gray);
+  padding-bottom:calc(var(--u)*1);border-bottom:calc(var(--u)*.1) solid var(--ink)
+}
+.swiss .meta b{font-weight:700;color:var(--ink)}
+.swiss-mid{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,3fr);gap:calc(var(--u)*5);align-items:start;padding-top:calc(var(--u)*7);padding-bottom:calc(var(--u)*2)}
+.swiss-h{
+  font-size:calc(var(--u)*9.4);line-height:.98;letter-spacing:-.018em;font-weight:700;max-width:15ch
+}
+.swiss-h em{font-style:normal;color:var(--red)}
+.swiss-p{
+  margin-top:calc(var(--u)*3.2);max-width:27em;font-size:calc(var(--u)*1.8);line-height:1.92;color:#3A3730
+}
+.swiss-note{
+  border-top:1px solid var(--ink);padding-top:calc(var(--u)*1.2);
+  font-size:calc(var(--u)*1.14);line-height:1.85;color:var(--gray);max-width:19em
+}
+.swiss-note b{display:block;color:var(--ink);letter-spacing:.16em;text-transform:uppercase;font-size:calc(var(--u)*.85);margin-bottom:calc(var(--u)*.7)}
+.swiss-index{
+  position:absolute;right:calc(var(--u)*4.6);top:calc(var(--u)*11.5);
+  font-size:calc(var(--u)*15);font-weight:700;line-height:.7;
+  color:transparent;-webkit-text-stroke:1px rgba(17,17,17,.12);letter-spacing:-.05em;pointer-events:none
+}
+.swiss-figure{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*3.2);
+  padding-top:calc(var(--u)*1.8);border-top:1px solid var(--rule);margin-top:calc(var(--u)*4)
+}
+.fig .k{font-size:calc(var(--u)*.92);letter-spacing:.22em;text-transform:uppercase;color:var(--gray);margin-bottom:calc(var(--u)*.8)}
+.fig .v{font-size:calc(var(--u)*3.6);font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.01em;line-height:1}
+.fig .v small{font-size:.4em;font-weight:400;letter-spacing:0;color:var(--gray);margin-left:.4em}
+.fig .n{font-size:calc(var(--u)*1.1);color:var(--gray);margin-top:calc(var(--u)*.8);line-height:1.7;max-width:22em}
+.timeline{display:flex;align-items:center;gap:0;margin-top:calc(var(--u)*2.4)}
+.timeline .tick{width:1px;height:calc(var(--u)*2.6);background:var(--ink)}
+.timeline .bar{flex:1;height:1px;background:var(--ink);transform-origin:left;transform:scaleX(0);transition:transform 1.65s var(--ease)}
+.in .timeline .bar{transform:scaleX(1)}
+.timeline .lbl{font-size:calc(var(--u)*.88);letter-spacing:.18em;color:var(--gray);padding:0 1.2vmin}
+
+/* ============================================================
+   4. DE STIJL — pixel → flood → rules from edges → text
+   ============================================================ */
+.destijl{
+  background:var(--ds-paper);color:#111;padding:0;position:relative;
+  --bd:calc(var(--u)*.62);
+  --mh:calc(var(--u)*4.4);
+  --fh:calc(var(--u)*4.2);
+  --split:56%
+}
+.ds-frame{position:absolute;inset:0;overflow:hidden;background:var(--ds-paper)}
+
+/* meta */
+.ds-meta{
+  position:absolute;left:0;right:0;top:0;height:var(--mh);z-index:4;
+  display:grid;grid-template-columns:repeat(4,1fr)
+}
+.ds-meta span{
+  display:flex;align-items:center;padding:0 calc(var(--u)*1.8);
+  font:700 calc(var(--u)*1.02)/1 "Arial","Noto Sans SC",sans-serif;
+  letter-spacing:.18em;text-transform:uppercase;
+  opacity:0;transform:translateY(calc(var(--u)*-.6));
+  transition:opacity .6s var(--ease) 1.15s,transform .6s var(--ease) 1.15s
+}
+.in .ds-meta span{opacity:1;transform:none}
+
+/* left column */
+.ds-left{
+  position:absolute;left:0;top:var(--mh);bottom:var(--fh);right:calc(100% - var(--split));
+  padding:calc(var(--u)*4.4) calc(var(--u)*4.2);
+  display:flex;flex-direction:column;justify-content:space-between;z-index:2
+}
+.ds-title{
+  font:800 calc(var(--u)*8.2)/1.02 "Arial","Noto Sans SC",sans-serif;letter-spacing:-.025em;max-width:13ch;
+  opacity:0;transform:translateY(calc(var(--u)*1.6));
+  transition:opacity .85s var(--ease) .95s,transform .85s var(--ease) .95s
+}
+.ds-copy{
+  max-width:24em;font:400 calc(var(--u)*1.7)/1.9 "Noto Sans SC",sans-serif;color:#2A2A2A;
+  opacity:0;transform:translateY(calc(var(--u)*1.2));
+  transition:opacity .8s var(--ease) 1.15s,transform .8s var(--ease) 1.15s
+}
+.ds-bar{height:calc(var(--u)*1.4);width:0;background:#111;margin-top:calc(var(--u)*3);
+  transition:width 1.2s steps(8,end) 1.35s}
+.in .ds-bar{width:var(--w,60%)}
+.in .ds-title,.in .ds-copy{opacity:1;transform:none}
+
+/* right column — colour fields */
+.ds-right{
+  position:absolute;left:var(--split);right:0;top:var(--mh);bottom:var(--fh);
+  display:grid;grid-template-rows:1fr 1fr;z-index:1
+}
+.ds-panel{position:relative;overflow:hidden;display:flex;align-items:flex-end;
+  padding:calc(var(--u)*2.2) calc(var(--u)*2.4)}
+.p-red{--c:var(--ds-red)}
+.p-blue{--c:var(--ds-blue)}
+.p-yellow{--c:var(--ds-yellow)}
+.p-white{--c:var(--ds-paper)}
+.ds-panel .flood{
+  position:absolute;background:var(--c);z-index:1;
+  width:calc(var(--u)*1.5);height:calc(var(--u)*1.5);
+  transition:width .5s cubic-bezier(.72,0,.28,1) .22s,
+             height .64s cubic-bezier(.72,0,.28,1) .74s
+}
+.ds-panel[data-seed="bl"] .flood{bottom:0;left:0}
+.ds-panel[data-seed="tl"] .flood{top:0;left:0}
+.ds-panel[data-seed="tr"] .flood{top:0;right:0}
+.in .ds-panel .flood{width:100%;height:100%}
+.in .ds-panel .num{
+  position:relative;z-index:2;font:800 calc(var(--u)*8.6)/1 "Arial",sans-serif;letter-spacing:-.03em;
+  opacity:0;transform:translateY(calc(var(--u)*1.4));
+  transition:opacity .8s var(--ease) 1.45s,transform .8s var(--ease) 1.45s
+}
+.in .ds-panel .num{opacity:1;transform:none}
+.p-red .num,.p-blue .num{color:var(--ds-paper)}
+.p-yellow .num,.p-white .num{color:#111}
+
+/* rules that grow in from the edges */
+.rule{
+  position:absolute;background:#111;z-index:3;
+  transition:transform .62s cubic-bezier(.72,0,.28,1) .95s
+}
+.rule.h{transform:scaleX(0)}
+.rule.v{transform:scaleY(0)}
+.in .rule{transform:scale(1)}
+.r-top{top:0;left:0;right:0;height:var(--bd);transform-origin:left;transition-delay:1.30s}
+.r-left{top:0;left:0;bottom:0;width:var(--bd);transform-origin:top;transition-delay:1.36s}
+.r-right{top:0;right:0;bottom:0;width:var(--bd);transform-origin:bottom;transition-delay:1.42s}
+.r-meta{top:var(--mh);left:0;right:0;height:var(--bd);transform-origin:right;transition-delay:1.48s}
+.r-split{left:var(--split);top:0;bottom:0;width:var(--bd);transform-origin:top;transition-delay:1.54s}
+.r-half{left:var(--split);right:0;top:calc(var(--mh) + (100% - var(--mh) - var(--fh)) / 2);
+  height:var(--bd);transform-origin:left;transition-delay:1.60s}
+.r-foot{bottom:var(--fh);left:0;right:0;height:var(--bd);transform-origin:right;transition-delay:1.66s}
+.r-bottom{bottom:0;left:0;right:0;height:var(--bd);transform-origin:left;transition-delay:1.72s}
+
+/* footer */
+.ds-foot{
+  position:absolute;left:0;right:0;bottom:0;height:var(--fh);z-index:4;
+  display:flex;align-items:center;justify-content:space-between;gap:2vmin;
+  padding:0 calc(var(--u)*1.8);
+  font:700 calc(var(--u)*.9)/1 "Arial",sans-serif;letter-spacing:.2em;text-transform:uppercase;
+  opacity:0;transition:opacity .6s var(--ease) 1.95s
+}
+.in .ds-foot{opacity:1}
+
+@media (max-aspect-ratio: 1/1){
+  .destijl{--split:100%}
+  .ds-right{display:none}
+}
+
+/* ============================================================
+   5. TRANSITIONS
+   ============================================================ */
+.divider.light{background:var(--paper)}
+.divider.light .big{color:#111;text-shadow:none;font-family:"Arial","Noto Sans SC",sans-serif;font-weight:800;letter-spacing:-.01em}
+.divider.light .sub{color:var(--gray)}
+.divider.light .gridmorph{opacity:0}
+.divider.light.in .gridmorph{opacity:.3}
+.divider{background:#050706;color:var(--green);align-items:center;justify-content:center;font-family:"Consolas","Courier New","Noto Sans SC",monospace;position:relative}
+.divider .big{position:relative;z-index:2;font-size:calc(var(--u)*8.4);letter-spacing:.02em;line-height:1.12;text-align:center;
+  color:var(--green);text-shadow:0 0 calc(var(--u)*2.6) rgba(116,255,154,.26)}
+.divider .sub{position:relative;z-index:2;margin-top:calc(var(--u)*2);font-size:calc(var(--u)*1.1);letter-spacing:.36em;text-transform:uppercase;text-align:center;color:rgba(116,255,154,.45)}
+.divider .scan{position:absolute;inset:0;background:repeating-linear-gradient(180deg,rgba(116,255,154,.05) 0 1px,transparent 1px 4px);pointer-events:none}
+.collapse{text-align:center}
+.bootwrap{text-align:center}
+.in .collapse{animation:collapse 1.45s cubic-bezier(.7,0,.3,1) both}
+@keyframes collapse{
+  0%{transform:scaleY(1);filter:brightness(1);opacity:1}
+  40%{transform:scaleY(.02) scaleX(1.03);filter:brightness(2.4);opacity:1}
+  72%{transform:scaleY(.02) scaleX(.9);filter:brightness(1.6);opacity:.95}
+  100%{transform:scaleY(.02) scaleX(.55);filter:brightness(.8);opacity:.6}
+}
+.gridmorph{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity 1.2s ease;
+  background-image:
+    repeating-linear-gradient(90deg,#111 0 1px,transparent 1px calc(var(--u)*7.2)),
+    repeating-linear-gradient(0deg,#111 0 1px,transparent 1px calc(var(--u)*7.2))}
+.in .gridmorph{opacity:1}
+.dsblock{position:absolute;background:var(--ds-red);width:calc(var(--u)*15);height:calc(var(--u)*15);
+  transform:scale(0);transform-origin:top left}
+.in .dsblock{animation:snap 1.05s steps(6,end) .5s both}
+@keyframes snap{to{transform:scale(1)}}
+
+/* ============================================================
+   6. MOTION UTILITIES
+   ============================================================ */
+.rv{opacity:0;transform:translateY(1.6vmin);transition:opacity 1.2s var(--ease),transform 1.2s var(--ease)}
+.in .rv{opacity:1;transform:none}
+.rv.d1{transition-delay:.16s}.rv.d2{transition-delay:.32s}.rv.d3{transition-delay:.48s}
+.hair{transform:scaleX(0);transform-origin:left;transition:transform 1.35s var(--ease)}
+.in .hair{transform:scaleX(1)}
+@media (prefers-reduced-motion: reduce){
+  .rv,.hair,.timeline .bar,.ds-bar{transition:none!important;opacity:1!important;transform:none!important}
+  .in .collapse,.in .dsblock{animation:none!important}
+  .led,.cursor::after{animation:none!important}
+}
+
+/* ============================================================
+   7. NARROW
+   ============================================================ */
+@media (max-aspect-ratio: 1/1){
+  .bays{grid-template-columns:1fr;grid-template-rows:1fr auto}
+  .gauges{grid-template-rows:none;grid-template-columns:repeat(3,1fr);height:14vmin}
+  .gauges .gauge:nth-child(3){display:none}
+  .swiss-mid{grid-template-columns:1fr}
+  .swiss-note{display:none}
+  .swiss-index{display:none}
+  .ds-body{grid-template-columns:1fr;grid-template-rows:1fr auto}
+  .ds-text{border-right:0;border-bottom:calc(var(--u)*.6) solid #111}
+  .ds-panels{grid-template-rows:none;grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress" style="width: 29.41%; background: rgb(17, 17, 17);"></div>
+<div class="hud" id="hud"><b>06</b> / 18 &nbsp;·&nbsp; POWER OFF</div>
+<div class="rail" id="rail"><i class=""></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i class=""></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+<!-- ══════════════ ACT I · CRT 1943–1969 ══════════════ -->
+<section class="stage crt" data-act="crt" data-label="POWER ON">
+  <div class="frame">
+    <div class="statusbar">
+      <span><i class="led"></i>SYS / AI-HISTORY / BOOT</span>
+      <span class="right"><span>MEM 64K</span><span>CH 01</span><span>1943—2026</span></span>
+    </div>
+    <div class="bays">
+      <div class="screen">
+        <div class="scan"></div>
+        <div class="scr-mid">
+          <div class="kicker">ARCHIVE LOADED · 3 ERAS · 2 WINTERS</div>
+          <h1 class="scr-title" data-type="机器学会说话">机器学会说话</h1>
+          <p class="scr-body" data-type="七十年，三次醒来，两次熄火。每次它都以为在解决问题，其实是在换一种方式提问。">七十年，三次醒来，两次熄火。每次它都以为在解决问题，其实是在换一种方式提问。</p>
+          <div class="bootlog" id="bootlog">
+<b>&gt; MOUNT</b>  /ARCHIVE/AI-1943-2026 ........ <b>OK</b>
+<b>&gt; SCAN</b>   ERAS ........................ 3
+<b>&gt; SCAN</b>   WINTERS ..................... 2
+<b>&gt; RENDER</b> ............................. READY</div>
+          <div class="bootbar"><span id="boot" style="width: 100%;"></span></div>
+        </div>
+        <div class="scr-foot"><span>SCROLL / ↓ →</span><span id="clock">00:01:24</span></div>
+      </div>
+      <aside class="gauges">
+        <div class="gauge"><span class="lbl">ERA</span><span class="val">03</span><span class="unit">chapters</span></div>
+        <div class="gauge"><span class="lbl">WINTERS</span><span class="val">02</span><span class="unit">recorded</span></div>
+        <div class="gauge"><span class="lbl">QUESTION</span><span class="val">01</span><span class="unit">unresolved</span></div>
+      </aside>
+    </div>
+    <div class="timecode"><span>DATASET / AI-HISTORY-1943-2026</span><span>REV 1.0</span><span>EOF LATER</span></div>
+  </div>
+</section>
+
+<section class="stage crt" data-act="crt" data-label="1943 · NEURON">
+  <div class="frame">
+    <div class="statusbar"><span><i class="led"></i>NODE 01 / McCULLOCH—PITTS</span><span class="right"><span>1943</span><span>CH 02</span></span></div>
+    <div class="bays">
+      <div class="screen">
+        <div class="scan"></div>
+        <div class="scr-mid">
+          <div class="kicker">01 / LOGIC</div>
+          <h2 class="scr-title" data-type="第一个神经元，是一道逻辑门"></h2>
+          <p class="scr-body" data-type="麦卡洛克和皮茨用 0 和 1 描述神经元的放电。它不会学习，只会计算——但从此「思考」可以画成电路图。"></p>
+          <div class="bootlog"><b>&gt; UNIT</b>   THRESHOLD LOGIC ..... <b>ONLINE</b>
+<b>&gt; NOTE</b>   NO TRAINING / NO DATA / ONLY WIRES</div>
+        </div>
+        <div class="scr-foot"><span>NO TRAINING · NO DATA · ONLY WIRES</span><span>1943</span></div>
+      </div>
+      <aside class="gauges">
+        <div class="gauge"><span class="lbl">PARAMS</span><span class="val">0</span><span class="unit">learnable</span></div>
+        <div class="gauge"><span class="lbl">LAYERS</span><span class="val">1</span><span class="unit">unit</span></div>
+        <div class="gauge"><span class="lbl">STATUS</span><span class="val">ON</span><span class="unit"><i class="led amber"></i>theory</span></div>
+      </aside>
+    </div>
+    <div class="timecode"><span>SECTOR / PRECURSOR</span><span>REF 01</span><span>1943</span></div>
+  </div>
+</section>
+
+<section class="stage crt" data-act="crt" data-label="1950 · TURING">
+  <div class="frame">
+    <div class="statusbar"><span><i class="led"></i>NODE 02 / TURING</span><span class="right"><span>1950</span><span>CH 03</span></span></div>
+    <div class="bays">
+      <div class="screen">
+        <div class="scan"></div>
+        <div class="scr-mid">
+          <div class="kicker">02 / THE QUESTION</div>
+          <h2 class="scr-title" data-type="机器能思考吗？"></h2>
+          <p class="scr-body" data-type="图灵把问题换成一场对话：隔着墙打字，如果你分不出对面是人还是机器，就别说它不会思考。他预计五十年后，裁判被骗过的概率约 70%。"></p>
+          <div class="bootlog"><b>&gt; TEST</b>   IMITATION GAME ...... <b>DEFINED</b>
+<b>&gt; PREDICT</b> 70% FOOLED AFTER 50 YEARS</div>
+        </div>
+        <div class="scr-foot"><span>IMITATION GAME · MIND, 1950</span><span>1950</span></div>
+      </div>
+      <aside class="gauges">
+        <div class="gauge"><span class="lbl">TEST</span><span class="val">1</span><span class="unit">conversation</span></div>
+        <div class="gauge"><span class="lbl">PREDICT</span><span class="val">70</span><span class="unit">% fooled</span></div>
+        <div class="gauge"><span class="lbl">STATUS</span><span class="val">OPEN</span><span class="unit"><i class="led"></i>unanswered</span></div>
+      </aside>
+    </div>
+    <div class="timecode"><span>SECTOR / PHILOSOPHY</span><span>REF 02</span><span>1950</span></div>
+  </div>
+</section>
+
+<section class="stage crt" data-act="crt" data-label="1956 · DARTMOUTH">
+  <div class="frame">
+    <div class="statusbar"><span><i class="led"></i>NODE 03 / DARTMOUTH</span><span class="right"><span>1956</span><span>CH 04</span></span></div>
+    <div class="bays">
+      <div class="screen">
+        <div class="scan"></div>
+        <div class="scr-mid">
+          <div class="kicker">03 / THE NAME</div>
+          <h2 class="scr-title" data-type="一个夏天，发明了一个词"></h2>
+          <p class="scr-body" data-type="十位学者在达特茅斯开了一场八周的会。麦卡锡提议叫它「人工智能」，并相信：智能的每一个方面，都能被精确描述。"></p>
+          <div class="bootlog"><b>&gt; SUMMER</b> 1956 / 8 WEEKS ...... <b>COINED</b>
+<b>&gt; CLAIM</b>  EVERY ASPECT OF INTELLIGENCE CAN BE DESCRIBED</div>
+        </div>
+        <div class="scr-foot"><span>DARTMOUTH SUMMER PROJECT · 1956</span><span>1956</span></div>
+      </div>
+      <aside class="gauges">
+        <div class="gauge"><span class="lbl">ATTENDEES</span><span class="val">10</span><span class="unit">approx.</span></div>
+        <div class="gauge"><span class="lbl">WEEKS</span><span class="val">8</span><span class="unit">summer</span></div>
+        <div class="gauge"><span class="lbl">STATUS</span><span class="val">BORN</span><span class="unit"><i class="led"></i>term coined</span></div>
+      </aside>
+    </div>
+    <div class="timecode"><span>SECTOR / ORIGIN</span><span>REF 03</span><span>1956</span></div>
+  </div>
+</section>
+
+<section class="stage crt" data-act="crt" data-label="1969 · PERCEPTRON">
+  <div class="frame">
+    <div class="statusbar"><span><i class="led red"></i>NODE 04 / WARNING</span><span class="right"><span>1969</span><span>CH 05</span></span></div>
+    <div class="bays">
+      <div class="screen">
+        <div class="scan"></div>
+        <div class="scr-mid">
+          <div class="kicker">04 / FIRST WINTER</div>
+          <h2 class="scr-title" data-type="单层感知机，连异或都学不会"></h2>
+          <p class="scr-body" data-type="明斯基和帕珀特证明：一层线性分类器做不了异或。资金转向符号推理，神经网络沉默了将近二十年。"></p>
+          <div class="bootlog"><b>&gt; XOR</b>    FAIL / 1 LAYER
+<b>&gt; WINTER</b> 01 / 1969—1980s ......... <b>FUNDING HALTED</b></div>
+        </div>
+        <div class="scr-foot"><span>PERCEPTRONS · 1969</span><span>1969</span></div>
+      </div>
+      <aside class="gauges">
+        <div class="gauge"><span class="lbl">XOR</span><span class="val">FAIL</span><span class="unit">1 layer</span></div>
+        <div class="gauge"><span class="lbl">WINTER</span><span class="val">01</span><span class="unit">1969—1980s</span></div>
+        <div class="gauge"><span class="lbl">STATUS</span><span class="val">OFF</span><span class="unit"><i class="led red"></i>hibernating</span></div>
+      </aside>
+    </div>
+    <div class="timecode"><span>SECTOR / SETBACK</span><span>REF 04</span><span>1969</span></div>
+  </div>
+</section>
+
+<!-- ══════════════ TRANSITION ══════════════ -->
+<section class="stage divider" data-act="crt" data-label="POWER OFF">
+  <div class="scan"></div>
+  <div class="big collapse">绿屏灭了</div>
+  <div class="sub">1974 — 1987 · 符号主义的时代</div>
+</section>
+
+<!-- ══════════════ ACT II · SWISS ══════════════ -->
+<section class="stage swiss" data-act="swiss" data-label="RULE">
+  <header class="meta"><span><b>01</b> / 规则</span><span>1974—1987</span><span>SYMBOLIC AI</span><span>07 / 18</span></header>
+  <div class="swiss-index">01</div>
+  <div class="swiss-mid">
+    <div>
+      <h2 class="swiss-h rv">把专家的经验，<br>写成 <em>if–then</em></h2>
+      <p class="swiss-p rv d1">知识工程师坐在专家旁边，一句一句问出判断依据，再把它们拆成上千条规则。规则能解释、能追溯、能被审阅——这是它最大的优点，也是后来最大的负担。</p>
+    </div>
+    <aside class="swiss-note rv d2"><b>Note</b>同一时期，坚信「让机器自己学」的人只剩下少数几间实验室。</aside>
+  </div>
+  <div class="swiss-figure rv d2">
+    <div class="fig"><div class="k">Rule base</div><div class="v">2 500<small>条</small></div><div class="n">DEC XCON 配置专家系统，约 2500–3000 条规则</div></div>
+    <div class="fig"><div class="k">Claimed saving</div><div class="v">25<small>M USD / yr</small></div><div class="n">据 DEC 当时对外称，年节省约 2500 万美元</div></div>
+    <div class="fig"><div class="k">Update cost</div><div class="v">Weekly<small>patch</small></div><div class="n">每改一条规则，要重新验证与之关联的所有分支</div></div>
+  </div>
+</section>
+
+<section class="stage swiss" data-act="swiss" data-label="WINTER II">
+  <header class="meta"><span><b>02</b> / 冬天</span><span>1987—1993</span><span>EXPERT SYSTEM</span><span>08 / 18</span></header>
+  <div class="swiss-index">02</div>
+  <div class="swiss-mid">
+    <div>
+      <h2 class="swiss-h rv">规则越多，<br>越没人敢动它</h2>
+      <p class="swiss-p rv d1">一条新规则会牵出十处冲突；系统上线五年后，原作者走了，代码没人敢碰。1987 年，LISP 机器市场崩塌，第二次寒冬开始。</p>
+      <div class="timeline rv d2"><span class="lbl">1969</span><span class="tick"></span><span class="bar"></span><span class="lbl">1987</span><span class="tick"></span><span class="bar"></span><span class="lbl">1993</span></div>
+    </div>
+    <aside class="swiss-note rv d2"><b>Note</b>两次寒冬都不是技术不行，是承诺跑得比交付快。</aside>
+  </div>
+  <div class="swiss-figure rv d3">
+    <div class="fig"><div class="k">Winter I</div><div class="v">1969<small>—1980s</small></div><div class="n">感知机局限被证明，神经网络断粮</div></div>
+    <div class="fig"><div class="k">Winter II</div><div class="v">1987<small>—1993</small></div><div class="n">专家系统维护失控，硬件市场崩盘</div></div>
+    <div class="fig"><div class="k">Pattern</div><div class="v">承诺<small>＞交付</small></div><div class="n">热度退去后，留下的都是能解释的系统</div></div>
+  </div>
+</section>
+
+<section class="stage swiss" data-act="swiss" data-label="DEEP BLUE">
+  <header class="meta"><span><b>03</b> / 暴力</span><span>1997</span><span>SEARCH</span><span>09 / 18</span></header>
+  <div class="swiss-index">03</div>
+  <div class="swiss-mid">
+    <div>
+      <h2 class="swiss-h rv">深蓝赢了，<br>但它不理解棋</h2>
+      <p class="swiss-p rv d1">每秒评估约两亿个局面，靠搜索深度和人工调优的评估函数，在六局比赛里以 3.5 比 2.5 击败卡斯帕罗夫。它只会下棋——这既是胜利，也是边界。</p>
+    </div>
+    <aside class="swiss-note rv d2"><b>Note</b>评估函数由人类大师参与调参；机器负责算，人负责判断什么算好。</aside>
+  </div>
+  <div class="swiss-figure rv d2">
+    <div class="fig"><div class="k">Positions / s</div><div class="v">200<small>M</small></div><div class="n">1997 年的专用硬件，约 480 颗专用芯片</div></div>
+    <div class="fig"><div class="k">Result</div><div class="v">3.5<small>: 2.5</small></div><div class="n">六局，纽约，1997 年 5 月</div></div>
+    <div class="fig"><div class="k">Scope</div><div class="v">1<small>task</small></div><div class="n">换一种棋，全部重写</div></div>
+  </div>
+</section>
+
+<section class="stage swiss" data-act="swiss" data-label="FEATURES">
+  <header class="meta"><span><b>04</b> / 转向</span><span>2006</span><span>DEEP LEARNING</span><span>10 / 18</span></header>
+  <div class="swiss-index">04</div>
+  <div class="swiss-mid">
+    <div>
+      <h2 class="swiss-h rv">别再教它规则，<br>让它自己找特征</h2>
+      <p class="swiss-p rv d1">辛顿用逐层预训练解决了深层网络训不动的问题；GPU 把算力变成可以买的商品。规则退场，数据上场——这一次，方向换了一边。</p>
+    </div>
+    <aside class="swiss-note rv d2"><b>Note</b>那篇让深度学习重新被看见的论文，只有三页。</aside>
+  </div>
+  <div class="swiss-figure rv d2">
+    <div class="fig"><div class="k">Turning point</div><div class="v">2006<small>DBN</small></div><div class="n">深层网络第一次可以被稳定训练</div></div>
+    <div class="fig"><div class="k">Compute</div><div class="v">GPU<small>→ commodity</small></div><div class="n">游戏显卡成为 AI 的发动机</div></div>
+    <div class="fig"><div class="k">Data</div><div class="v">1.2<small>M images</small></div><div class="n">ImageNet 2009：标注好的百万张图</div></div>
+  </div>
+</section>
+
+<!-- ══════════════ TRANSITION ══════════════ -->
+<section class="stage divider light" data-act="swiss" data-label="GRID">
+  <div class="gridmorph"></div>
+  <div class="dsblock" style="left:56%;top:18%"></div>
+  <div class="dsblock" style="left:76%;top:56%;background:var(--ds-blue);animation-delay:.85s"></div>
+  <div class="big" style="color:#111;text-shadow:none">规则退场之后</div>
+  <div class="sub" style="color:#6E6A63">2012 — 2017 · 结构从数据里长出来</div>
+</section>
+
+<!-- ══════════════ ACT III · DE STIJL ══════════════ -->
+<section class="stage destijl" data-act="destijl" data-label="ALEXNET">
+  <div class="ds-frame">
+    <div class="ds-meta"><span>01 / 2012</span><span>ALEXNET</span><span>IMAGENET</span><span>12 / 18</span></div>
+    <div class="ds-left">
+      <h2 class="ds-title">错误率，<br>一夜掉了一半</h2>
+      <div>
+        <p class="ds-copy">AlexNet 把 ImageNet 的 top-5 错误率从 26.2% 拉到 15.3%。两块游戏显卡，六千万参数，八层网络——它没有更聪明，只是第一次让深网络真的跑起来。</p>
+        <div class="ds-bar" style="--w:46%"></div>
+      </div>
+    </div>
+    <div class="ds-right">
+      <div class="ds-panel p-red" data-seed="bl"><div class="flood"></div><span class="num">26.2%</span></div>
+      <div class="ds-panel p-blue" data-seed="tr"><div class="flood"></div><span class="num">15.3%</span></div>
+    </div>
+    <i class="rule h r-top"></i><i class="rule v r-left"></i><i class="rule v r-right"></i>
+    <i class="rule h r-meta"></i><i class="rule v r-split"></i><i class="rule h r-half"></i>
+    <i class="rule h r-foot"></i><i class="rule h r-bottom"></i>
+    <div class="ds-foot"><span>TOP-5 ERROR · BEFORE / AFTER</span><span>2 × GTX 580</span></div>
+  </div>
+</section>
+
+<section class="stage destijl" data-act="destijl" data-label="ALPHAGO">
+  <div class="ds-frame">
+    <div class="ds-meta"><span>02 / 2016</span><span>ALPHAGO</span><span>SEOUL</span><span>13 / 18</span></div>
+    <div class="ds-left">
+      <h2 class="ds-title">4 : 1</h2>
+      <div>
+        <p class="ds-copy">首尔，五番棋。第四局李世石下出那手「神之一手」，赢下人类唯一一盘。赛后他说：我再也不想和它下了。</p>
+        <div class="ds-bar" style="--w:80%"></div>
+      </div>
+    </div>
+    <div class="ds-right">
+      <div class="ds-panel p-white" data-seed="tl"><div class="flood"></div><span class="num">4</span></div>
+      <div class="ds-panel p-yellow" data-seed="tr"><div class="flood"></div><span class="num">1</span></div>
+    </div>
+    <i class="rule h r-top"></i><i class="rule v r-left"></i><i class="rule v r-right"></i>
+    <i class="rule h r-meta"></i><i class="rule v r-split"></i><i class="rule h r-half"></i>
+    <i class="rule h r-foot"></i><i class="rule h r-bottom"></i>
+    <div class="ds-foot"><span>FIVE GAMES · MARCH 2016</span><span>MOVE 78</span></div>
+  </div>
+</section>
+
+<section class="stage destijl" data-act="destijl" data-label="TRANSFORMER">
+  <div class="ds-frame">
+    <div class="ds-meta"><span>03 / 2017</span><span>TRANSFORMER</span><span>ATTENTION</span><span>14 / 18</span></div>
+    <div class="ds-left">
+      <h2 class="ds-title">注意力，<br>就够了</h2>
+      <div>
+        <p class="ds-copy">一篇论文删掉了循环结构，只留注意力。它让训练可以并行，也让「上下文」第一次变成可以堆算力买来的东西——后面所有的模型，都站在这张纸上。</p>
+        <div class="ds-bar" style="--w:33%"></div>
+      </div>
+    </div>
+    <div class="ds-right">
+      <div class="ds-panel p-yellow" data-seed="tl"><div class="flood"></div><span class="num">8</span></div>
+      <div class="ds-panel p-red" data-seed="tr"><div class="flood"></div><span class="num">6</span></div>
+    </div>
+    <i class="rule h r-top"></i><i class="rule v r-left"></i><i class="rule v r-right"></i>
+    <i class="rule h r-meta"></i><i class="rule v r-split"></i><i class="rule h r-half"></i>
+    <i class="rule h r-foot"></i><i class="rule h r-bottom"></i>
+    <div class="ds-foot"><span>ATTENTION IS ALL YOU NEED · 2017</span><span>LAYERS / HEADS</span></div>
+  </div>
+</section>
+
+<!-- ══════════════ TRANSITION ══════════════ -->
+<section class="stage divider" data-act="destijl" data-label="REBOOT">
+  <div class="scan"></div>
+  <div class="bootwrap">
+    <div class="big" id="rebootline"></div>
+    <div class="sub">2018 — 2026 · 终端又亮起来了</div>
+  </div>
+</section>
+
+<!-- ══════════════ ACT IV · CRT AGAIN ══════════════ -->
+<section class="stage crt" data-act="crt" data-label="CHATGPT">
+  <div class="frame">
+    <div class="statusbar"><span><i class="led"></i>NODE 05 / CHAT</span><span class="right"><span>2022.11.30</span><span>CH 16</span></span></div>
+    <div class="bays">
+      <div class="screen">
+        <div class="scan"></div>
+        <div class="scr-mid">
+          <div class="kicker">05 / THE INTERFACE</div>
+          <h2 class="scr-title" data-type="两个月，一亿人"></h2>
+          <p class="scr-body" data-type="2022 年 11 月 30 日发布。据 UBS 估算，两个月月活破亿——史上最快到达这个数字的消费级应用。它没有新算法，只是把模型放进了一个输入框。"></p>
+          <div class="bootlog"><b>&gt; LAUNCH</b> 2022-11-30
+<b>&gt; MAU</b>    100M IN ~60 DAYS (UBS EST.)
+<b>&gt; NOTE</b>   NO NEW ALGORITHM / JUST AN INPUT BOX</div>
+        </div>
+        <div class="scr-foot"><span>CHATGPT · 100M MAU IN ~60 DAYS</span><span>2022</span></div>
+      </div>
+      <aside class="gauges">
+        <div class="gauge"><span class="lbl">MAU</span><span class="val">100M</span><span class="unit">estimated</span></div>
+        <div class="gauge"><span class="lbl">DAYS</span><span class="val">60</span><span class="unit">to 1e8</span></div>
+        <div class="gauge"><span class="lbl">STATUS</span><span class="val">ON</span><span class="unit"><i class="led"></i>public</span></div>
+      </aside>
+    </div>
+    <div class="timecode"><span>SECTOR / INTERFACE</span><span>REF 05</span><span>2022</span></div>
+  </div>
+</section>
+
+<section class="stage crt" data-act="crt" data-label="NOW">
+  <div class="frame">
+    <div class="statusbar"><span><i class="led amber"></i>NODE 06 / PRESENT</span><span class="right"><span>2026</span><span>CH 17</span></span></div>
+    <div class="bays">
+      <div class="screen">
+        <div class="scan"></div>
+        <div class="scr-mid">
+          <div class="kicker">06 / FROM TALKING TO DOING</div>
+          <h2 class="scr-title" data-type="它开始动手了"></h2>
+          <p class="scr-body" data-type="从回答问题，到调用工具、写代码、操作浏览器。模型不再只是「说」，开始在真实系统里「做」——风险也从答错一句，变成做错一步。"></p>
+          <div class="bootlog"><b>&gt; MODE</b>    TOOL USE / AGENTS
+<b>&gt; RISK</b>    FROM WRONG SENTENCE TO WRONG ACTION</div>
+        </div>
+        <div class="scr-foot"><span>TOOL USE · AGENTS · LONG HORIZON</span><span>NOW</span></div>
+      </div>
+      <aside class="gauges">
+        <div class="gauge"><span class="lbl">MODE</span><span class="val">DO</span><span class="unit">not just say</span></div>
+        <div class="gauge"><span class="lbl">RISK</span><span class="val">UP</span><span class="unit">one action</span></div>
+        <div class="gauge"><span class="lbl">STATUS</span><span class="val">LIVE</span><span class="unit"><i class="led amber"></i>in production</span></div>
+      </aside>
+    </div>
+    <div class="timecode"><span>SECTOR / PRESENT</span><span>REF 06</span><span>2026</span></div>
+  </div>
+</section>
+
+<section class="stage crt" data-act="crt" data-label="END OF LINE">
+  <div class="frame">
+    <div class="statusbar"><span><i class="led"></i>SYS / END OF ARCHIVE</span><span class="right"><span>2026</span><span>CH 18</span></span></div>
+    <div class="bays">
+      <div class="screen">
+        <div class="scan"></div>
+        <div class="scr-mid">
+          <div class="kicker">AWAITING INPUT</div>
+          <h2 class="scr-title" data-type="七十年前那个问题，还没有答案"></h2>
+          <p class="scr-body" data-type="图灵问的是：机器能思考吗。七十年里我们学会了让它计算、让它学习、让它说话、让它动手——但「思考」这两个字，仍然没有被定义。"></p>
+          <div class="bootlog"><b>&gt; ERAS</b>    3 PASSED
+<b>&gt; WINTERS</b> 2 SURVIVED
+<b>&gt; INPUT</b>   <span class="cursor"> </span></div>
+        </div>
+        <div class="scr-foot"><span>END OF LINE · 1943—2026</span><span id="clock2">00:01:24</span></div>
+      </div>
+      <aside class="gauges">
+        <div class="gauge"><span class="lbl">ERAS</span><span class="val">03</span><span class="unit">passed</span></div>
+        <div class="gauge"><span class="lbl">WINTERS</span><span class="val">02</span><span class="unit">survived</span></div>
+        <div class="gauge"><span class="lbl">QUESTION</span><span class="val">01</span><span class="unit">still open</span></div>
+      </aside>
+    </div>
+    <div class="timecode"><span>SECTOR / END</span><span>AWAITING INPUT</span><span>EOF</span></div>
+  </div>
+</section>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* rail + hud */
+const sections=$$('.stage'), rail=$('#rail'), hud=$('#hud'), progress=$('#progress');
+sections.forEach(s=>{
+  const d=document.createElement('i');
+  d.addEventListener('click',()=>s.scrollIntoView({behavior:RM?'auto':'smooth'}));
+  rail.appendChild(d);
+});
+const dots=$$('.rail i');
+
+function onScroll(){
+  const h=document.documentElement.scrollHeight-innerHeight;
+  const p=h>0?scrollY/h:0;
+  progress.style.width=(p*100).toFixed(2)+'%';
+  const k=p<.25?'#74FF9A':p<.5?'#111':p<.72?'#D0302A':'#74FF9A';
+  progress.style.background=k;
+  let cur=0;
+  sections.forEach((s,i)=>{ if(s.getBoundingClientRect().top<innerHeight*.5) cur=i; });
+  dots.forEach((d,i)=>d.classList.toggle('on',i===cur));
+  hud.innerHTML='<b>'+String(cur+1).padStart(2,'0')+'</b> / '+sections.length+
+    ' &nbsp;·&nbsp; '+(sections[cur].dataset.label||'').toUpperCase();
+}
+addEventListener('scroll',onScroll,{passive:true});
+addEventListener('resize',onScroll);
+onScroll();
+
+/* reveal */
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(!e.isIntersecting) return;
+    e.target.classList.add('in');
+    typeIn(e.target);
+    io.unobserve(e.target);
+  });
+},{threshold:.3});
+sections.forEach(s=>io.observe(s));
+
+/* typewriter */
+const typed=new WeakSet();
+function typeIn(root){
+  if(RM) { $$('[data-type]',root).forEach(el=>el.textContent=el.dataset.type); return; }
+  $$('[data-type]',root).forEach((el,i)=>{
+    if(typed.has(el)) return; typed.add(el);
+    const full=el.dataset.type; el.textContent=''; el.classList.add('cursor');
+    let n=0; const speed=el.matches('.scr-title')?63:20;
+    setTimeout(function tick(){
+      el.textContent=full.slice(0,++n);
+      if(n<full.length) setTimeout(tick,speed+Math.random()*38);
+      else el.classList.remove('cursor');
+    },i*380);
+  });
+}
+
+/* boot bar */
+const bi=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(!e.isIntersecting) return;
+    const bar=$('#boot'); if(!bar) return;
+    let w=0; const t=setInterval(()=>{
+      w+=Math.random()*10+4; bar.style.width=Math.min(w,100)+'%';
+      if(w>=100) clearInterval(t);
+    },145);
+    bi.disconnect();
+  });
+},{threshold:.4});
+if($('#boot')) bi.observe($('#boot'));
+
+/* clock */
+const t0=Date.now();
+setInterval(()=>{
+  const s=Math.floor((Date.now()-t0)/1000);
+  const txt=[Math.floor(s/3600),Math.floor(s/60)%60,s%60].map(v=>String(v).padStart(2,'0')).join(':');
+  ['#clock','#clock2'].forEach(sel=>{const el=$(sel); if(el) el.textContent=txt;});
+},1000);
+
+/* reboot line */
+const rb=$('#rebootline');
+if(rb){
+  new IntersectionObserver(es=>{
+    es.forEach(e=>{
+      if(!e.isIntersecting||rb.dataset.done) return;
+      rb.dataset.done='1';
+      const txt='> REBOOTING 2018—2026'; let n=0;
+      const t=setInterval(()=>{
+        rb.textContent=txt.slice(0,++n);
+        if(n>=txt.length) clearInterval(t);
+      },90);
+    });
+  },{threshold:.4}).observe(rb);
+}
+
+/* keyboard */
+addEventListener('keydown',e=>{
+  if(!['ArrowDown','ArrowRight','PageDown',' ','ArrowUp','ArrowLeft','PageUp','Home','End'].includes(e.key)) return;
+  e.preventDefault();
+  let cur=0; sections.forEach((s,i)=>{ if(s.getBoundingClientRect().top<innerHeight*.5) cur=i; });
+  let n=cur;
+  if(['ArrowDown','ArrowRight','PageDown',' '].includes(e.key)) n=Math.min(cur+1,sections.length-1);
+  if(['ArrowUp','ArrowLeft','PageUp'].includes(e.key)) n=Math.max(cur-1,0);
+  if(e.key==='Home') n=0;
+  if(e.key==='End') n=sections.length-1;
+  sections[n].scrollIntoView({behavior:RM?'auto':'smooth'});
+});
+</script>
+
+
+<!-- mobile layer (GitHub Pages copy only) -->
+<link rel="stylesheet" href="assets/mobile.css">
+<script src="assets/mobile.js" defer></script>
+</body></html>

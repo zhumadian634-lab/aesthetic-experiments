@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>表情包简史 · 新粗野主义</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --u:1vmin;
+  --cream:#FFF9F0; --ink:#111111;
+  --yellow:#FFD84D; --pink:#FF90E8; --purple:#B28DFF; --green:#7BE495; --blue:#6EC6FF; --orange:#FF9F45;
+  --bd:calc(var(--u)*.55);
+  --sh:calc(var(--u)*1.1);
+  --r:calc(var(--u)*2.2);
+  --ease:cubic-bezier(.34,1.56,.64,1);
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--cream); color:var(--ink);
+  font-family:"Noto Sans SC","Microsoft YaHei UI","Arial Black",system-ui,sans-serif;
+  overflow-x:hidden; -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--pink);color:var(--ink)}
+
+.page{position:relative;width:100%;height:100svh;overflow:hidden;padding:calc(var(--u)*4);
+  display:flex;align-items:center;justify-content:center}
+
+/* ---------- 通用卡片 ---------- */
+.card{
+  background:#fff;border:var(--bd) solid var(--ink);border-radius:var(--r);
+  box-shadow:var(--sh) var(--sh) 0 var(--ink);
+  transition:transform .18s var(--ease), box-shadow .18s var(--ease);
+}
+.card.lift:hover{transform:translate(-2px,-2px);box-shadow:calc(var(--sh)*1.35) calc(var(--sh)*1.35) 0 var(--ink)}
+.card.press:active{transform:translate(calc(var(--sh)*.55),calc(var(--sh)*.55));box-shadow:calc(var(--sh)*.45) calc(var(--sh)*.45) 0 var(--ink)}
+
+/* ---------- 入场：卡片弹入（图形，可快） ---------- */
+.card{opacity:0;transform:translateY(calc(var(--u)*3)) scale(.94)}
+.page.in .card{opacity:1;transform:none;transition:opacity .28s ease, transform .38s var(--ease)}
+.page.in .d1{transition-delay:.05s}
+.page.in .d2{transition-delay:.12s}
+.page.in .d3{transition-delay:.19s}
+
+/* ---------- 文字：按用户基线半速 ---------- */
+.tx{opacity:0;transform:translateY(calc(var(--u)*1.2));
+  transition:opacity .7s ease, transform .7s cubic-bezier(.22,.61,.36,1)}
+.page.in .tx{opacity:1;transform:none}
+.page.in .t1{transition-delay:.15s}
+.page.in .t2{transition-delay:.32s}
+.page.in .t3{transition-delay:.5s}
+.page.in .t4{transition-delay:.66s}
+
+/* ---------- 排版 ---------- */
+.kicker{display:inline-block;background:var(--ink);color:var(--cream);
+  font-size:calc(var(--u)*1.5);letter-spacing:.24em;padding:calc(var(--u)*.7) calc(var(--u)*1.6);
+  border-radius:999px;font-weight:600}
+h1{font-size:calc(var(--u)*13);line-height:.94;font-weight:900;letter-spacing:-.03em}
+h2{font-size:calc(var(--u)*7.2);line-height:.98;font-weight:900;letter-spacing:-.02em}
+p{font-size:calc(var(--u)*2.3);line-height:1.75;font-weight:400;max-width:24em}
+.tag{font-family:"Consolas","Courier New",monospace;font-size:calc(var(--u)*1.4);letter-spacing:.18em;
+  text-transform:uppercase;font-weight:700}
+.hl{background:var(--yellow);padding:0 .18em;border-radius:calc(var(--u)*.6)}
+
+/* ---------- 封面 ---------- */
+.cover{display:grid;grid-template-columns:1.15fr .85fr;gap:calc(var(--u)*4);align-items:center;
+  width:min(100%,calc(var(--u)*118));margin:0 auto}
+.cover .big{
+  display:flex;align-items:center;justify-content:center;
+  font-size:calc(var(--u)*26);font-weight:900;letter-spacing:-.05em;
+  background:var(--yellow);border:var(--bd) solid var(--ink);border-radius:var(--r);
+  box-shadow:var(--sh) var(--sh) 0 var(--ink);height:calc(var(--u)*52)
+}
+.cover .meta{display:flex;gap:calc(var(--u)*1.4);margin-top:calc(var(--u)*3);flex-wrap:wrap}
+
+/* ---------- 年代页 ---------- */
+.era{display:grid;grid-template-columns:calc(var(--u)*46) minmax(0,1fr);gap:calc(var(--u)*4.2);align-items:center;
+  width:min(100%,calc(var(--u)*118));margin:0 auto}
+.hero{
+  display:flex;align-items:center;justify-content:center;height:calc(var(--u)*58);
+  font-size:calc(var(--u)*20);font-weight:900;letter-spacing:-.04em;line-height:1;
+}
+.hero.small{font-size:calc(var(--u)*9)}
+.bg-y{background:var(--yellow)} .bg-p{background:var(--pink)} .bg-v{background:var(--purple)}
+.bg-g{background:var(--green)} .bg-b{background:var(--blue)} .bg-o{background:var(--orange)}
+.era .year{font-size:calc(var(--u)*9);font-weight:900;letter-spacing:-.04em;opacity:.9}
+.era .sub{margin-top:calc(var(--u)*2.4)}
+.era .row{display:flex;gap:calc(var(--u)*1.2);margin-top:calc(var(--u)*3);flex-wrap:wrap}
+.chip{border:calc(var(--bd)*.7) solid var(--ink);border-radius:999px;padding:calc(var(--u)*.7) calc(var(--u)*1.8);
+  font-size:calc(var(--u)*1.5);font-weight:700;background:#fff}
+.chip.fill{background:var(--ink);color:var(--cream)}
+
+/* ---------- 结尾 ---------- */
+.end{display:grid;grid-template-columns:1fr calc(var(--u)*44);gap:calc(var(--u)*4);align-items:center;
+  width:min(100%,calc(var(--u)*118));margin:0 auto}
+.gen{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u)*1.6);
+  height:calc(var(--u)*52);padding:calc(var(--u)*2)}
+.gen .emo{font-size:calc(var(--u)*14);line-height:1}
+.gen .line{font-size:calc(var(--u)*2.6);font-weight:800;text-align:center;min-height:2.6em}
+.btn{
+  border:var(--bd) solid var(--ink);border-radius:999px;background:var(--green);
+  font-family:inherit;font-weight:900;font-size:calc(var(--u)*2);
+  padding:calc(var(--u)*1.6) calc(var(--u)*3.4);cursor:pointer;color:var(--ink);
+  box-shadow:var(--sh) var(--sh) 0 var(--ink);
+  transition:transform .16s var(--ease), box-shadow .16s var(--ease), background .16s ease;
+}
+.btn:hover{transform:translate(-2px,-2px);box-shadow:calc(var(--sh)*1.3) calc(var(--sh)*1.3) 0 var(--ink);background:var(--yellow)}
+.btn:active{transform:translate(calc(var(--sh)*.5),calc(var(--sh)*.5));box-shadow:calc(var(--sh)*.4) calc(var(--sh)*.4) 0 var(--ink)}
+
+/* 角落装饰 */
+.dot{position:absolute;border:var(--bd) solid var(--ink);border-radius:50%}
+.d-a{width:calc(var(--u)*7);height:calc(var(--u)*7);background:var(--pink);right:calc(var(--u)*7);top:calc(var(--u)*8)}
+.d-b{width:calc(var(--u)*4);height:calc(var(--u)*4);background:var(--blue);left:calc(var(--u)*9);bottom:calc(var(--u)*7)}
+
+/* 导航 */
+.rail{position:fixed;right:calc(var(--u)*1.6);top:50%;transform:translateY(-50%);z-index:50;
+  display:flex;flex-direction:column;gap:calc(var(--u)*1.2)}
+.rail i{width:calc(var(--u)*1.5);height:calc(var(--u)*1.5);border:calc(var(--bd)*.7) solid var(--ink);
+  border-radius:50%;background:#fff;cursor:pointer;transition:.18s var(--ease)}
+.rail i.on{background:var(--ink);transform:scale(1.25)}
+.foot{position:fixed;left:calc(var(--u)*4);bottom:calc(var(--u)*2.2);z-index:50;
+  font-family:"Consolas",monospace;font-size:calc(var(--u)*1.25);letter-spacing:.2em;font-weight:700;opacity:.6}
+
+@media (max-aspect-ratio:1/1){
+  .cover,.era,.end{grid-template-columns:1fr;gap:calc(var(--u)*3);width:100%}
+  .cover .big{height:calc(var(--u)*40)}
+  .hero{height:calc(var(--u)*34)}
+  h1{font-size:calc(var(--u)*9)} h2{font-size:calc(var(--u)*6)}
+  p{font-size:calc(var(--u)*3)}
+}
+</style>
+</head>
+<body>
+
+<nav class="rail" id="rail"></nav>
+<div class="foot" id="foot">01 / 07</div>
+
+<!-- 1 封面 -->
+<section class="page cover" data-label="封面">
+  <div>
+    <span class="kicker tx t1">NEUBRUTALISM · 表情包简史</span>
+    <h1 class="tx t2" style="margin-top:calc(var(--u)*2.4)">表情包<br>四十年</h1>
+    <p class="tx t3 sub" style="margin-top:calc(var(--u)*2.6)">从一行 ASCII 符号，到今天一句话生成的图。<br>变的只是工具，没变的是同一件事：<span class="hl">换个脸，说同一句话。</span></p>
+    <div class="meta tx t4">
+      <span class="chip">1982 — 2026</span>
+      <span class="chip">7 屏</span>
+      <span class="chip fill">↓ 翻页</span>
+    </div>
+  </div>
+  <div class="card big d1">:-)</div>
+</section>
+
+<!-- 2 1982 -->
+<section class="page era" data-label="1982">
+  <div class="card hero bg-y d1">:-)</div>
+  <div>
+    <div class="year tx t1">1982</div>
+    <h2 class="tx t2">用标点<br>拼一张脸</h2>
+    <p class="tx t3 sub">卡内基梅隆的论坛上，有人提议：<b>用 :-) 标记“这句是玩笑”</b>。因为纯文字分不清谁在阴阳怪气。表情第一次变成“可复制的符号”。</p>
+    <div class="row tx t4"><span class="chip fill">ASCII</span><span class="chip">纯符号</span><span class="chip">零成本</span></div>
+  </div>
+</section>
+
+<!-- 3 1986 -->
+<section class="page era" data-label="1986">
+  <div class="card hero bg-p d1" style="font-size:calc(var(--u)*13)">(^^;)</div>
+  <div>
+    <div class="year tx t1">1986</div>
+    <h2 class="tx t2">亚洲人<br>把它做出神态</h2>
+    <p class="tx t3 sub">日式颜文字不靠“转向 90 度看”，而是正面摆五官：<b>眼睛、嘴、汗</b>。括号当脸框，符号当情绪——比 :-) 更能表达“尴尬”和“累”。</p>
+    <div class="row tx t4"><span class="chip fill">颜文字</span><span class="chip">MSN / QQ</span><span class="chip">有神态</span></div>
+  </div>
+</section>
+
+<!-- 4 2011 -->
+<section class="page era" data-label="2011">
+  <div class="card hero bg-b d1" style="font-size:calc(var(--u)*12)">🍎</div>
+  <div>
+    <div class="year tx t1">2011</div>
+    <h2 class="tx t2">被收编<br>成标准字符</h2>
+    <p class="tx t3 sub">Emoji 进 Unicode 编码表，苹果把它做进键盘。<b>从此表情是字体，不是图片</b>——换个系统长得不一样，但每台设备都打得出来。</p>
+    <div class="row tx t4"><span class="chip fill">Unicode</span><span class="chip">系统集成</span><span class="chip">跨平台</span></div>
+  </div>
+</section>
+
+<!-- 5 2015 -->
+<section class="page era" data-label="2015">
+  <div class="card hero bg-g d1" style="font-size:calc(var(--u)*13)">🐼</div>
+  <div>
+    <div class="year tx t1">2015</div>
+    <h2 class="tx t2">模板诞生：<br>熊猫头</h2>
+    <p class="tx t3 sub">一张粗糙的熊猫轮廓，脸的部分留空。<b>谁都能把自己的脸贴进去</b>——于是同一套版式生产了无数张图。这是“模板化”最直白的样子。</p>
+    <div class="row tx t4"><span class="chip fill">套模板</span><span class="chip">换脸</span><span class="chip">批量复制</span></div>
+  </div>
+</section>
+
+<!-- 6 2020+ -->
+<section class="page era" data-label="2020">
+  <div class="card hero bg-v d1" style="font-size:calc(var(--u)*22)">∞</div>
+  <div>
+    <div class="year tx t1">2020 — 2026</div>
+    <h2 class="tx t2">会动的，<br>和生成的</h2>
+    <p class="tx t3 sub">先是可以循环的 GIF，然后是 AI：<b>一句话，直接出图</b>。工具从“找素材”变成“造素材”，但传播逻辑没变——好用的、便宜复制的，赢。</p>
+    <div class="row tx t4"><span class="chip fill">GIF 循环</span><span class="chip">AI 生成</span><span class="chip">人人可做</span></div>
+  </div>
+</section>
+
+<!-- 7 结尾 -->
+<section class="page end" data-label="结尾">
+  <div>
+    <span class="kicker tx t1">一点结论</span>
+    <h2 class="tx t2" style="margin-top:calc(var(--u)*2)">换脸这件事<br>从来没变</h2>
+    <p class="tx t3 sub">四十年，工具换了四代，套路还是那一个：<span class="hl">留一个空位，让别人填</span>。填得越省事，传得越快。</p>
+    <div class="row tx t4" style="margin-top:calc(var(--u)*3);display:flex;gap:calc(var(--u)*1.4);align-items:center">
+      <button class="btn" id="gen">给我来一个</button>
+      <span class="tag" style="opacity:.55">点一下换一张</span>
+    </div>
+  </div>
+  <div class="card gen d2" style="background:var(--purple)">
+    <div class="emo" id="emo">🐼</div>
+    <div class="line" id="line">留一个空位，让别人填</div>
+  </div>
+</section>
+
+<div class="dot d-a"></div>
+<div class="dot d-b"></div>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const pages = $$('.page');
+const rail = $('#rail');
+pages.forEach((p, i) => {
+  const d = document.createElement('i');
+  d.onclick = () => p.scrollIntoView({behavior: 'smooth'});
+  rail.appendChild(d);
+});
+const dots = $$('.rail i');
+let cur = -1;
+
+function setCur(i) {
+  if (i === cur) return;
+  cur = i;
+  dots.forEach((d, k) => d.classList.toggle('on', k === i));
+  pages[i].classList.add('in');
+  $('#foot').textContent = String(i + 1).padStart(2, '0') + ' / ' + String(pages.length).padStart(2, '0')
+    + ' · ' + (pages[i].dataset.label || '');
+}
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) setCur(pages.indexOf(e.target));
+}), {threshold: .45});
+pages.forEach(p => io.observe(p));
+
+/* 结尾生成器 */
+const EMO = ['🐼','😭','🫠','🤡','🥲','😵‍💫','🫥','🫡','🐸','🍉'];
+const LINE = ['留一个空位，让别人填','这个需求很简单','再改最后一次','已读不回',
+  '明天一定','在做了在做了','先这样吧','我裂开了','收到，马上改','不是我不回，是我不敢'];
+let lastE = -1, lastL = -1;
+$('#gen').addEventListener('click', () => {
+  let e, l;
+  do { e = Math.floor(Math.random() * EMO.length); } while (e === lastE);
+  do { l = Math.floor(Math.random() * LINE.length); } while (l === lastL);
+  lastE = e; lastL = l;
+  const card = $('.gen');
+  card.style.transform = 'scale(.96)';
+  setTimeout(() => card.style.transform = '', 90);
+  $('#emo').textContent = EMO[e];
+  $('#line').textContent = LINE[l];
+});
+
+/* 键盘 */
+addEventListener('keydown', e => {
+  if (!['ArrowDown','ArrowRight','PageDown',' ','ArrowUp','ArrowLeft','PageUp'].includes(e.key)) return;
+  e.preventDefault();
+  const fwd = ['ArrowDown','ArrowRight','PageDown',' '].includes(e.key);
+  const n = fwd ? Math.min(cur + 1, pages.length - 1) : Math.max(cur - 1, 0);
+  pages[n].scrollIntoView({behavior: 'smooth'});
+});
+</script>
+
+<!-- ============ FX LAYER v1（可整块删除/开关） ============ -->
+<style id="fx-style">
+/* ① 飞入：逐字从屏幕边缘汇聚 + 过冲 + 摇摆 */
+.fx-ch{display:inline-block;white-space:pre}
+.fx-fly .fx-ch{will-change:transform}
+.fx-body .fx-ch{transform-origin:center}
+.fx-fly .fx-ch{opacity:0}
+.page.in .fx-fly .fx-ch{
+  animation:fxFly var(--fd,1.05s) cubic-bezier(.2,.85,.3,1.02) var(--fdl,0s) forwards;
+}
+@keyframes fxFly{
+  0%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--fr)) scale(1.06)}
+  20%{opacity:1}
+  70%{transform:translate(calc(var(--dx) * -.055),calc(var(--dy) * -.055)) rotate(calc(var(--fr) * -.34)) scale(.985)}
+  84%{transform:translate(calc(var(--dx) * .022),calc(var(--dy) * .022)) rotate(calc(var(--fr) * .15)) scale(1.008)}
+  93%{transform:translate(calc(var(--dx) * -.007),calc(var(--dy) * -.007)) rotate(calc(var(--fr) * -.05))}
+  100%{opacity:1;transform:none}
+}
+
+/* ② 描边绕行 → 闭合后落硬投影 */
+.fx-trace{position:relative;border-color:transparent;box-shadow:none}
+.fx-trace>svg.fx-svg{
+  position:absolute;inset:calc(var(--bd) * -.5);width:calc(100% + var(--bd));height:calc(100% + var(--bd));
+  overflow:visible;pointer-events:none;
+}
+.fx-trace>svg.fx-svg rect{
+  fill:none;stroke:var(--ink);stroke-width:var(--bd);
+  stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:1;stroke-dashoffset:1;
+}
+.page.in .fx-trace>svg.fx-svg rect{
+  animation:fxTrace 1s cubic-bezier(.5,.05,.35,1) var(--td,0s) forwards;
+}
+.page.in .fx-trace{
+  animation:fxBorder .01s calc(var(--td,0s) + .99s) forwards,
+            fxShadow .5s calc(var(--td,0s) + .99s) cubic-bezier(.34,1.56,.64,1) forwards;
+}
+@keyframes fxTrace{to{stroke-dashoffset:0}}
+@keyframes fxBorder{to{border-color:var(--ink)}}
+@keyframes fxShadow{from{box-shadow:0 0 0 var(--ink)}to{box-shadow:var(--sh) var(--sh) 0 var(--ink)}}
+
+/* ③ 随机字母调皮摇动 */
+/* 摇动改用 Web Animations API（见 fx-js），避免被 .page.in .fx-fly .fx-ch 的权重压制 */
+@media (prefers-reduced-motion: reduce){
+  .fx-fly .fx-ch{opacity:1!important;animation:none!important;transform:none!important}
+  .fx-trace{border-color:var(--ink)!important;box-shadow:var(--sh) var(--sh) 0 var(--ink)!important}
+  .fx-trace>svg.fx-svg{display:none!important}
+  .fx-wob{animation:none!important;transform:none!important}
+}
+</style>
+
+<script id="fx-js">
+(function(){
+  var REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (REDUCE) return;
+
+  /* ---------- 拆字，保留 b/span 结构 ---------- */
+  function splitChars(root){
+    var walk = function(node){
+      [].slice.call(node.childNodes).forEach(function(n){
+        if (n.nodeType === 3){
+          var t = n.textContent;
+          if (!t.trim()) return;
+          var frag = document.createDocumentFragment();
+          for (var i = 0; i < t.length; i++){
+            var sp = document.createElement('span');
+            sp.className = 'fx-ch';
+            sp.textContent = t[i] === ' ' ? '\u00A0' : t[i];
+            frag.appendChild(sp);
+          }
+          n.parentNode.replaceChild(frag, n);
+        } else if (n.nodeType === 1){ walk(n); }
+      });
+    };
+    walk(root);
+    return [].slice.call(root.querySelectorAll('.fx-ch'));
+  }
+
+  /* ---------- ① 飞入：起点落在屏幕边缘 ---------- */
+  var CAP = 0.33;                    // 最远飞行距离（屏宽/高的比例）
+  function setupFly(el){
+    el.classList.remove('tx');       // 去掉整块淡入，避免双重动画
+    el.classList.add('fx-fly');
+    var chars = splitChars(el);
+    var pageEl = el.closest('.page');
+    var pr = pageEl.getBoundingClientRect();
+    var cx = pr.left + pr.width / 2, cy = pr.top + pr.height / 2;
+
+    chars.forEach(function(ch, i){
+      if (!ch.textContent.trim()) return;
+      var r = ch.getBoundingClientRect();
+      var px = r.left + r.width / 2, py = r.top + r.height / 2;
+      var vx = px - cx, vy = py - cy;
+      var len = Math.hypot(vx, vy) || 1;
+      vx /= len; vy /= len;
+      if (Math.random() < 0.25){       // 25% 给随机方向，避免过于规整
+        var a = Math.random() * Math.PI * 2;
+        vx = Math.cos(a); vy = Math.sin(a);
+      }
+      // 方向偏置：标题在上半页时禁止从下方来（会横穿正文），反之亦然
+      var relY = (py - 0) / innerHeight;
+      if (relY < 0.45 && vy > 0.15){ vy = -Math.abs(vy) - 0.25; }
+      else if (relY > 0.55 && vy < -0.15){ vy = Math.abs(vy) + 0.25; }
+      var nlen = Math.hypot(vx, vy) || 1; vx /= nlen; vy /= nlen;
+      // 沿方向到屏幕边缘的距离
+      var distX = vx > 0.001 ? (innerWidth - px) / vx : (vx < -0.001 ? px / -vx : Infinity);
+      var distY = vy > 0.001 ? (innerHeight - py) / vy : (vy < -0.001 ? py / -vy : Infinity);
+      var d = Math.min(distX, distY);
+      if (!isFinite(d)) d = 300;
+      d = Math.min(d, Math.min(innerWidth, innerHeight) * CAP);
+      d = Math.max(d, 120);
+
+      ch.style.setProperty('--dx', (vx * d).toFixed(1) + 'px');
+      ch.style.setProperty('--dy', (vy * d).toFixed(1) + 'px');
+      ch.style.setProperty('--fr', (Math.random() * 24 - 12).toFixed(1) + 'deg');
+      ch.style.setProperty('--fdl', (i * 0.055).toFixed(3) + 's');
+      ch.style.setProperty('--fd', (0.98 + Math.random() * 0.22).toFixed(2) + 's');
+    });
+  }
+
+  /* ---------- ② 描边：注入 SVG ---------- */
+  var SVGNS = 'http://www.w3.org/2000/svg';
+  function setupTrace(card, delay){
+    var rad = parseFloat(getComputedStyle(card).borderTopLeftRadius) || 20;
+    var svg = document.createElementNS(SVGNS, 'svg');
+    svg.setAttribute('class', 'fx-svg');
+    svg.setAttribute('xmlns', SVGNS);
+    var rect = document.createElementNS(SVGNS, 'rect');
+    rect.setAttribute('x', '0'); rect.setAttribute('y', '0');
+    rect.setAttribute('width', '100%'); rect.setAttribute('height', '100%');
+    rect.setAttribute('rx', rad); rect.setAttribute('ry', rad);
+    rect.setAttribute('pathLength', '1');
+    svg.appendChild(rect);
+    card.insertBefore(svg, card.firstChild);
+    card.classList.add('fx-trace');
+    card.style.setProperty('--td', delay + 's');
+  }
+
+  /* ---------- ③ 随机摇动（只在本页可见时） ---------- */
+  var wigglers = new Map();
+  function startWiggle(page){
+    if (wigglers.has(page)) return;
+    var pool = [].slice.call(page.querySelectorAll('.fx-body .fx-ch')).filter(function(c){
+      return c.textContent.trim() && !/^[\s、，。：；！？—…·]+$/.test(c.textContent);
+    });
+    if (pool.length < 3) return;
+    var timer = null;
+    // 甩毛：以字心为原点，先蓬起来（放大），在放大的同时左右轻抖，再收回
+    var WOB = [
+      {transform:'scale(1) rotate(0deg)'},
+      {transform:'scale(1.44) rotate(-5deg)', offset:.18},
+      {transform:'scale(1.12) rotate(3.8deg)', offset:.36},
+      {transform:'scale(1.26) rotate(-2.4deg)', offset:.54},
+      {transform:'scale(1.06) rotate(1.2deg)', offset:.74},
+      {transform:'scale(1) rotate(0deg)'}
+    ];
+    function tick(){
+      var n = 3 + Math.floor(Math.random() * 4);
+      for (var i = 0; i < n; i++){
+        var el = pool[Math.floor(Math.random() * pool.length)];
+        if (!el || el.classList.contains('fx-wob')) continue;
+        el.classList.add('fx-wob');
+        // WAAPI：优先级高于 CSS 动画，不会被 .page.in .fx-fly .fx-ch 的飞入动画压住
+        // 错峰 55ms，读起来像一串涟漪，不是一起抽动
+        try {
+          el.animate(WOB, {duration:760, easing:'ease-out', delay:i * 55});
+        } catch(e){}
+        (function(node){ setTimeout(function(){ node.classList.remove('fx-wob'); }, 830); })(el);
+      }
+      timer = setTimeout(tick, 1100 + Math.random() * 800);
+    }
+    timer = setTimeout(tick, 900);
+    wigglers.set(page, function(){ clearTimeout(timer); });
+  }
+  function stopWiggle(page){
+    var f = wigglers.get(page);
+    if (f){ f(); wigglers.delete(page); }
+    [].slice.call(page.querySelectorAll('.fx-wob')).forEach(function(c){ c.classList.remove('fx-wob'); });
+  }
+
+  /* ---------- 装配 ---------- */
+  var pages = [].slice.call(document.querySelectorAll('.page'));
+
+  pages.forEach(function(page, pi){
+    // ① 标题 / 年份
+    [].slice.call(page.querySelectorAll('h1, h2, .year')).forEach(setupFly);
+    // 正文拆字：只用于摇动，不做飞入
+    [].slice.call(page.querySelectorAll('p')).forEach(function(p){
+      p.classList.add('fx-body');
+      splitChars(p);
+    });
+    // ② 承接框：每页最多 2 张
+    var cards = [].slice.call(page.querySelectorAll('.card')).slice(0, 2);
+    cards.forEach(function(card, ci){ setupTrace(card, pi * 0.1 + ci * 0.35); });
+  });
+
+  // ③ 可见才摇
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if (e.isIntersecting) startWiggle(e.target);
+      else stopWiggle(e.target);
+    });
+  }, { threshold: 0.5 });
+  pages.forEach(function(p){ io.observe(p); });
+
+  // 标签页隐藏时停摇，回来再开
+  document.addEventListener('visibilitychange', function(){
+    pages.forEach(function(p){
+      if (document.hidden) stopWiggle(p);
+      else if (p.getBoundingClientRect().top > -innerHeight * 0.5 && p.getBoundingClientRect().bottom < innerHeight * 1.5) startWiggle(p);
+    });
+  });
+})();
+</script>
+
+<!-- mobile layer (GitHub Pages copy only) -->
+<link rel="stylesheet" href="assets/mobile.css">
+<script src="assets/mobile.js" defer></script>
+</body>
+</html>

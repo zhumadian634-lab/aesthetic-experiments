@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天津 · 三页实验</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --u:1vmin;
+  --ds-paper:#F4F1EA; --ds-red:#D0302A; --ds-blue:#1D3F8C; --ds-yellow:#EBC226; --ds-ink:#111;
+  --crt-bg:#0B0F0C; --crt-panel:#12160F; --crt-line:#262B23; --green:#74FF9A; --amber:#FFB23E; --dim:#4E7A5C;
+  --bh-cream:#F1ECE1; --bh-ink:#111; --bh-red:#E2412C; --bh-yellow:#F2C230; --bh-blue:#2F57B0;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+html{scroll-behavior:smooth}
+body{font-family:"Noto Sans SC","Microsoft YaHei UI",system-ui,sans-serif;background:#0B0F0C;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:var(--ds-yellow);color:#111}
+
+.page{position:relative;width:100%;height:100svh;overflow:hidden}
+.hud{position:fixed;left:calc(var(--u)*2.4);top:calc(var(--u)*2.2);z-index:90;
+  font:700 calc(var(--u)*1.05)/1 "Consolas","Courier New",monospace;letter-spacing:.22em;
+  text-transform:uppercase;color:#fff;mix-blend-mode:difference;pointer-events:none}
+.dots{position:fixed;right:calc(var(--u)*1.8);top:50%;transform:translateY(-50%);z-index:90;
+  display:flex;flex-direction:column;gap:calc(var(--u)*1);mix-blend-mode:difference}
+.dots i{width:calc(var(--u)*.7);height:calc(var(--u)*.7);background:rgba(255,255,255,.25);cursor:pointer;transition:.35s}
+.dots i.on{background:#fff;transform:scale(1.5)}
+
+/* ============ 01 DE STIJL ============ */
+.ds{background:var(--ds-paper);color:var(--ds-ink);--bd:calc(var(--u)*.62)}
+.ds-frame{position:absolute;inset:0}
+.ds-head{position:absolute;left:calc(var(--u)*2.4);right:calc(var(--u)*2.4);top:calc(var(--u)*4.2);
+  display:flex;justify-content:space-between;font:700 calc(var(--u)*1.05)/1 Arial,sans-serif;letter-spacing:.2em}
+.ds-left{position:absolute;left:0;top:0;bottom:0;width:52%;padding:calc(var(--u)*9) calc(var(--u)*3.4) calc(var(--u)*6);
+  display:flex;flex-direction:column;justify-content:space-between}
+.ds-kicker{font:700 calc(var(--u)*1.1)/1 Arial,sans-serif;letter-spacing:.28em;text-transform:uppercase}
+.ds-title{font:800 calc(var(--u)*8.4)/1.02 Arial,"Noto Sans SC",sans-serif;letter-spacing:-.03em;margin-top:calc(var(--u)*3)}
+.ds-copy{font:400 calc(var(--u)*1.62)/1.9 "Noto Sans SC",sans-serif;color:#2A2A2A;max-width:22em}
+.ds-nums{display:flex;gap:calc(var(--u)*3.4);margin-top:calc(var(--u)*2)}
+.ds-nums div{font:800 calc(var(--u)*2.6)/1 Arial,sans-serif}
+.ds-nums span{display:block;font:400 calc(var(--u)*1)/1 "Noto Sans SC";letter-spacing:.16em;color:#6A6963;margin-top:calc(var(--u)*.8)}
+.ds-right{position:absolute;left:52%;right:0;top:0;bottom:0;display:grid;grid-template-rows:1.35fr 1fr}
+.ds-cell{position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:calc(var(--u)*2.6)}
+.ds-cell .flood{position:absolute;width:calc(var(--u)*1.5);height:calc(var(--u)*1.5);z-index:1;
+  transition:width .55s cubic-bezier(.72,0,.28,1) .22s,height .66s cubic-bezier(.72,0,.28,1) .74s}
+.ds-cell[data-seed="bl"] .flood{bottom:0;left:0}
+.ds-cell[data-seed="tr"] .flood{top:0;right:0}
+.ds-cell.big .flood{background:var(--ds-red)}
+.ds-cell.small .flood{background:var(--ds-yellow)}
+.ds-cell .ptext{position:relative;z-index:2;opacity:0;transform:translateY(calc(var(--u)*1.4));
+  transition:opacity .8s var(--ease) 1.15s,transform .8s var(--ease) 1.15s}
+.ds-cell.big .ptext{font:800 calc(var(--u)*7.6)/.98 Arial,"Noto Sans SC",sans-serif;color:var(--ds-paper);letter-spacing:-.03em}
+.ds-cell.small .ptext{font:800 calc(var(--u)*3.4)/1 Arial,"Noto Sans SC",sans-serif;color:#111}
+.ds-cell .sub{display:block;font:400 calc(var(--u)*1.1)/1 "Noto Sans SC";letter-spacing:.2em;margin-top:calc(var(--u)*1);opacity:.75}
+.ds .rule{position:absolute;background:#111;z-index:3;transition:transform .62s cubic-bezier(.72,0,.28,1) 1.35s}
+.ds .rule.h{transform:scaleX(0)} .ds .rule.v{transform:scaleY(0)}
+.ds .r-top{top:0;left:0;right:0;height:var(--bd);transform-origin:left}
+.ds .r-meta{top:calc(var(--u)*7.2);left:0;right:0;height:var(--bd);transform-origin:right;transition-delay:1.42s}
+.ds .r-bottom{bottom:0;left:0;right:0;height:var(--bd);transform-origin:right;transition-delay:1.62s}
+.ds .r-left{left:0;top:0;bottom:0;width:var(--bd);transform-origin:top;transition-delay:1.5s}
+.ds .r-right{right:0;top:0;bottom:0;width:var(--bd);transform-origin:bottom;transition-delay:1.56s}
+.ds .r-split{left:52%;top:0;bottom:0;width:var(--bd);transform-origin:top;transition-delay:1.68s}
+.ds.in .rule{transform:scale(1)}
+.ds .fl{position:absolute;left:calc(var(--u)*2.4);right:calc(var(--u)*2.4);bottom:calc(var(--u)*1.4);
+  display:flex;justify-content:space-between;font:700 calc(var(--u)*.92)/1 Arial,sans-serif;letter-spacing:.24em;
+  text-transform:uppercase;opacity:0;transition:opacity .6s ease 1.9s}
+.ds.in .fl{opacity:1}
+.ds .fl span:last-child{animation:hint 2.6s ease-in-out infinite}
+@keyframes hint{0%,100%{opacity:.45}50%{opacity:1}}
+.ds.in .ds-cell .flood{width:100%;height:100%}
+.ds.in .ptext{opacity:1;transform:none}
+.ds .ds-title,.ds .ds-copy,.ds .ds-kicker,.ds .ds-nums{opacity:0;transform:translateY(calc(var(--u)*1.2));
+  transition:opacity .8s var(--ease) .6s,transform .8s var(--ease) .6s}
+.ds.in .ds-title,.ds.in .ds-copy,.ds.in .ds-kicker,.ds.in .ds-nums{opacity:1;transform:none}
+
+/* ============ 02 CASSETTE ============ */
+.crt{background:radial-gradient(120% 90% at 50% 38%,#131914 0%,#080B09 58%,#050706 100%);color:var(--green);
+  font-family:"Consolas","Courier New","Noto Sans SC",monospace;padding:calc(var(--u)*1.5);position:relative}
+.crt::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:5;
+  background:repeating-linear-gradient(180deg,rgba(0,0,0,.34) 0 1px,transparent 1px 3px);opacity:.6}
+.crt::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:6;
+  background:radial-gradient(120% 110% at 50% 46%,transparent 52%,rgba(0,0,0,.62) 100%)}
+.crt .frame{position:relative;z-index:2;height:100%;border:1px solid #2A2F27;background:linear-gradient(180deg,#12160F,#0D110C);
+  display:grid;grid-template-rows:auto 1fr auto}
+.crt .bar{display:flex;justify-content:space-between;padding:calc(var(--u)*.9) calc(var(--u)*1.6);
+  border-bottom:1px solid var(--crt-line);font-size:calc(var(--u)*.92);letter-spacing:.26em;text-transform:uppercase;color:rgba(116,255,154,.55)}
+.led{width:calc(var(--u)*.6);height:calc(var(--u)*.6);border-radius:50%;background:var(--green);
+  box-shadow:0 0 calc(var(--u)*.8) var(--green);display:inline-block;margin-right:.8vmin;animation:blink 2.4s steps(1,end) infinite}
+@keyframes blink{0%,62%{opacity:1}63%,100%{opacity:.16}}
+.crt .bays{display:grid;grid-template-columns:1fr calc(var(--u)*17);gap:calc(var(--u)*1);padding:calc(var(--u)*1);min-height:0}
+.crt .screen{position:relative;background:#070A08;border:1px solid #23281F;padding:calc(var(--u)*4.6) calc(var(--u)*4.2);
+  display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;
+  box-shadow:inset 0 0 calc(var(--u)*6) rgba(116,255,154,.04),0 0 0 calc(var(--u)*.4) #0E120D}
+.crt .scan{position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(180deg,rgba(116,255,154,.04) 0 1px,transparent 1px 4px)}
+.kicker{font-size:calc(var(--u)*1);letter-spacing:.34em;text-transform:uppercase;color:rgba(116,255,154,.5)}
+.scr-title{font-size:calc(var(--u)*6.2);line-height:1.12;color:var(--green);margin-top:calc(var(--u)*2.2);
+  text-shadow:0 0 calc(var(--u)*1.8) rgba(116,255,154,.22);max-width:16em}
+.scr-body{margin-top:calc(var(--u)*2.4);font-size:calc(var(--u)*1.6);line-height:1.95;color:rgba(116,255,154,.7);max-width:30em}
+.logs{margin-top:auto;padding-top:calc(var(--u)*3);font-size:calc(var(--u)*1.15);line-height:2.1;color:rgba(116,255,154,.34)}
+.logs b{color:rgba(116,255,154,.62);font-weight:400}
+.crt .foot{display:flex;justify-content:space-between;padding:calc(var(--u)*.8) calc(var(--u)*1.6);
+  border-top:1px solid var(--crt-line);font-size:calc(var(--u)*.82);letter-spacing:.28em;text-transform:uppercase;color:rgba(116,255,154,.42)}
+.gauges{display:grid;grid-template-rows:repeat(3,1fr);gap:calc(var(--u)*.9)}
+.gauge{border:1px solid #242A21;background:linear-gradient(180deg,#141812,#0F130E);padding:calc(var(--u)*1.2) calc(var(--u)*1.1);
+  display:flex;flex-direction:column;justify-content:space-between}
+.gauge .lbl{font-size:calc(var(--u)*.88);letter-spacing:.28em;text-transform:uppercase;color:rgba(216,205,180,.5)}
+.gauge .val{font-size:calc(var(--u)*3.2);color:var(--amber);text-shadow:0 0 calc(var(--u)*1.4) rgba(255,178,62,.3)}
+.gauge .unit{font-size:calc(var(--u)*.82);letter-spacing:.2em;text-transform:uppercase;color:rgba(216,205,180,.42)}
+.cursor::after{content:"▌";animation:blink 1s steps(1,end) infinite;color:var(--green)}
+
+/* ============ 03 BAUHAUS ============ */
+.bh{background:var(--bh-cream);color:var(--bh-ink);position:relative}
+.bh .head{position:absolute;left:calc(var(--u)*4.6);right:calc(var(--u)*4.6);top:calc(var(--u)*4.2);
+  display:flex;justify-content:space-between;font:700 calc(var(--u)*1.05)/1 Arial,sans-serif;letter-spacing:.24em}
+.bh .bar{position:absolute;left:calc(var(--u)*4.6);right:calc(var(--u)*4.6);top:calc(var(--u)*6.4);height:calc(var(--u)*.35);
+  background:var(--bh-ink);transform:scaleX(0);transform-origin:left;transition:transform .8s var(--ease) .2s}
+.bh.in .bar{transform:scaleX(1)}
+.bh .text{position:absolute;left:calc(var(--u)*4.6);top:calc(var(--u)*16);width:52%}
+.bh h2{font:800 calc(var(--u)*8.6)/1 Arial,"Noto Sans SC",sans-serif;letter-spacing:-.03em;
+  opacity:0;transform:translateY(calc(var(--u)*1.6));transition:opacity .7s var(--ease) .45s,transform .7s var(--ease) .45s}
+.bh p{margin-top:calc(var(--u)*3);font:400 calc(var(--u)*1.7)/1.9 "Noto Sans SC",sans-serif;color:#2A2A2A;max-width:22em;
+  opacity:0;transform:translateY(calc(var(--u)*1.2));transition:opacity .7s var(--ease) .7s,transform .7s var(--ease) .7s}
+.bh.in h2,.bh.in p{opacity:1;transform:none}
+.bh .note{position:absolute;left:calc(var(--u)*4.6);bottom:calc(var(--u)*3.2);font:400 calc(var(--u)*1)/1 Arial,sans-serif;
+  letter-spacing:.22em;color:#6A6963;text-transform:uppercase}
+.shape{position:absolute;opacity:0;transition:opacity .5s var(--ease),transform .6s cubic-bezier(.7,0,.3,1)}
+.bh.in .shape{opacity:1}
+.bh .c1{width:calc(var(--u)*42);height:calc(var(--u)*42);border-radius:50%;background:var(--bh-blue);
+  right:calc(var(--u)*6);top:calc(var(--u)*13);transform:scale(.4);transition-delay:.25s}
+.bh.in .c1{transform:scale(1)}
+.bh .c2{width:calc(var(--u)*8);height:calc(var(--u)*8);border-radius:50%;background:var(--bh-red);right:calc(var(--u)*23);top:calc(var(--u)*30);
+  transform:scale(0);transition-delay:.55s}
+.bh.in .c2{transform:scale(1)}
+.bh .sq1{width:calc(var(--u)*10);height:calc(var(--u)*10);background:var(--bh-yellow);right:calc(var(--u)*3);top:calc(var(--u)*41);
+  transform:rotate(-12deg) scale(0);transition-delay:.7s}
+.bh.in .sq1{transform:rotate(-12deg) scale(1)}
+.bh .tr1{width:calc(var(--u)*26);height:calc(var(--u)*22);background:var(--bh-ink);
+  right:calc(var(--u)*14);top:calc(var(--u)*58);clip-path:polygon(50% 0,100% 100%,0 100%);
+  transform:translateY(calc(var(--u)*4));transition-delay:.85s}
+.bh.in .tr1{transform:none}
+
+@media (max-aspect-ratio: 1/1){
+  .ds-left{width:100%}.ds-right{display:none}.ds .r-split{display:none}
+  .bh .text{width:78%}.bh .c1{opacity:.25}
+}
+</style>
+</head>
+<body>
+
+<div class="hud" id="hud">01 / 03 · 五大道</div>
+<nav class="dots" id="dots"></nav>
+
+<!-- ================= 01 DE STIJL · 五大道 ================= -->
+<section class="page ds" data-label="五大道">
+  <div class="ds-frame">
+    <div class="ds-head"><span>01 / 五大道</span><span>TIANJIN · 1900s—</span></div>
+    <div class="ds-left">
+      <div>
+        <div class="ds-kicker">WUDADAO / 五条马路</div>
+        <h1 class="ds-title">两千座房子，<br>五种腔调</h1>
+      </div>
+      <div>
+        <p class="ds-copy">成都、重庆、常德、大理、睦南——五条路围出 1.3 平方公里，上千幢花园别墅挤在一起，英式、意式、法式挨着站。骑车穿过，二十分钟走完一个世纪。</p>
+        <div class="ds-nums">
+          <div>05<span>条路</span></div>
+          <div>2 000+<span>幢建筑</span></div>
+          <div>1.3<span>平方公里</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="ds-right">
+      <div class="ds-cell big" data-seed="bl">
+        <div class="flood"></div>
+        <div class="ptext">五大道<span class="sub">五条马路 / 一个街区</span></div>
+      </div>
+      <div class="ds-cell small" data-seed="tr">
+        <div class="flood"></div>
+        <div class="ptext">骑车 90 分钟<span class="sub">ROUTE 01 · 推荐动线</span></div>
+      </div>
+    </div>
+    <i class="rule h r-top"></i><i class="rule h r-meta"></i><i class="rule h r-bottom"></i>
+    <i class="rule v r-left"></i><i class="rule v r-right"></i><i class="rule v r-split"></i>
+    <div class="fl"><span>TIANJIN / WUDADAO</span><span>01 — 03 &nbsp;↓</span></div>
+  </div>
+</section>
+
+<!-- ================= 02 CASSETTE · 1911–2027 ================= -->
+<section class="page crt" data-label="1911—2027">
+  <div class="frame">
+    <div class="bar"><span><i class="led"></i>ARCHIVE / TIANJIN 1911—2027</span><span>NODE 02 · CH 02</span></div>
+    <div class="bays">
+      <div class="screen">
+        <div class="scan"></div>
+        <div>
+          <div class="kicker">116 YEARS / ONE LOG</div>
+          <h2 class="scr-title" id="t2"></h2>
+          <p class="scr-body" id="b2"></p>
+        </div>
+        <div class="logs" id="logs"></div>
+      </div>
+      <aside class="gauges">
+        <div class="gauge"><span class="lbl">SPAN</span><span class="val">116</span><span class="unit">years</span></div>
+        <div class="gauge"><span class="lbl">EVENTS</span><span class="val">05</span><span class="unit">logged</span></div>
+        <div class="gauge"><span class="lbl">STATUS</span><span class="val">RUN</span><span class="unit">in progress</span></div>
+      </aside>
+    </div>
+    <div class="foot"><span>从码头到摩天轮</span><span>1911 — 2027</span></div>
+  </div>
+</section>
+
+<!-- ================= 03 BAUHAUS · 天津之眼 ================= -->
+<section class="page bh" data-label="天津之眼">
+  <div class="head"><span>03 / 天津之眼</span><span>THE TIANJIN EYE · 2026</span></div>
+  <div class="bar"></div>
+  <div class="text">
+    <h2>一眼，<br>一百一十米</h2>
+    <p>建在永乐桥上的摩天轮，48 个座舱，转一圈 28 分钟。最高处 120 米，正好看见海河拐弯的地方。</p>
+  </div>
+  <div class="shape c1"></div>
+  <div class="shape c2"></div>
+  <div class="shape sq1"></div>
+  <div class="shape tr1"></div>
+  <div class="note">一日三景 / 五大道 → 海河 → 之眼</div>
+</section>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const pages=$$('.page');
+const dots=$('#dots');
+pages.forEach((p,i)=>{const d=document.createElement('i');d.onclick=()=>p.scrollIntoView({behavior:'smooth'});dots.appendChild(d);});
+const dEls=$$('.dots i');
+let cur=-1;
+
+function setCur(i){
+  if(i===cur) return; cur=i;
+  dEls.forEach((d,k)=>d.classList.toggle('on',k===i));
+  $('#hud').textContent=String(i+1).padStart(2,'0')+' / 03 · '+(pages[i].dataset.label||'');
+  pages[i].classList.add('in');
+  if(i===1) playCrt();
+}
+const io=new IntersectionObserver(es=>{
+  es.forEach(e=>{ if(e.isIntersecting) setCur(pages.indexOf(e.target)); });
+},{threshold:.45});
+pages.forEach(p=>io.observe(p));
+
+/* 打字机 */
+const typed=new WeakSet();
+function type(el,txt,speed){ if(typed.has(el))return; typed.add(el); el.textContent=''; el.classList.add('cursor');
+  let n=0; (function tick(){ el.textContent=txt.slice(0,++n); if(n<txt.length) setTimeout(tick,speed); else el.classList.remove('cursor'); })(); }
+
+let crtDone=false;
+function playCrt(){
+  if(crtDone) return; crtDone=true;
+  type($('#t2'),'一百一十六年，一台城市机器的日志',52);
+  type($('#b2'),'从民国的码头到河上的摩天轮，把时间读成一台机器的日志：每一次升级，都留下一条可查的记录。',18);
+  const lines=['<b>&gt; 1911</b>  共和 / 码头与租界 ............ <b>LOG</b>',
+               '<b>&gt; 1928</b>  特别市 / 北方商埠 ........... <b>LOG</b>',
+               '<b>&gt; 1984</b>  开发区 / 盐碱地上建厂 ........ <b>LOG</b>',
+               '<b>&gt; 2008</b>  京津城际 / 30 分钟 ........... <b>LOG</b>',
+               '<b>&gt; 2027</b>  未写入 ...................... <b>—</b>'];
+  const box=$('#logs'); box.innerHTML='';
+  lines.forEach((l,i)=>setTimeout(()=>{const d=document.createElement('div');d.innerHTML=l;box.appendChild(d);},600+i*260));
+}
+
+/* 键盘 */
+addEventListener('keydown',e=>{
+  if(!['ArrowDown','ArrowRight','PageDown',' ','ArrowUp','ArrowLeft','PageUp'].includes(e.key))return;
+  e.preventDefault();
+  const i=pages.indexOf(pages.find(p=>p.getBoundingClientRect().top> -innerHeight*0.4))||0;
+  const n=['ArrowDown','ArrowRight','PageDown',' '].includes(e.key)?Math.min(cur+1,2):Math.max(cur-1,0);
+  pages[n].scrollIntoView({behavior:'smooth'});
+});
+</script>
+<!-- mobile layer (GitHub Pages copy only) -->
+<link rel="stylesheet" href="assets/mobile.css">
+<script src="assets/mobile.js" defer></script>
+</body>
+</html>

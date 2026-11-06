@@ -1,0 +1,81 @@
+/* mobile layer — only for the GitHub Pages copy; desktop is untouched */
+html.mnav-snap {
+  scroll-snap-type: y proximity;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+html.mnav-snap .page,
+html.mnav-snap .s,
+html.mnav-snap section.stage {
+  scroll-snap-align: start;
+}
+html.mnav-on body {
+  overscroll-behavior-y: contain;
+}
+
+#mnav {
+  position: fixed;
+  right: calc(10px + env(safe-area-inset-right));
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  z-index: 2147483000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* dim but always tappable: a hidden-arrow state would swallow the first tap */
+  opacity: .42;
+  transform: none;
+  transition: opacity .35s ease;
+  pointer-events: auto;
+}
+#mnav.show { opacity: 1; }
+#mnav button {
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  cursor: pointer;
+  color: #fff;
+  background: rgba(18, 18, 18, .34);
+  border: 1px solid rgba(255, 255, 255, .42);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .18);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: transform .12s ease, background .2s ease;
+}
+#mnav button:active {
+  background: rgba(18, 18, 18, .62);
+  transform: scale(.94);
+}
+#mnav svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+#mhint {
+  position: fixed;
+  left: 50%;
+  bottom: calc(22px + env(safe-area-inset-bottom));
+  z-index: 2147483000;
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(18, 18, 18, .72);
+  color: #fff;
+  font: 500 12px/1.5 -apple-system, "PingFang SC", "Noto Sans SC", sans-serif;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity .5s ease;
+  pointer-events: none;
+}
+#mhint.show { opacity: 1; }
+
+@media print {
+  #mnav, #mhint { display: none !important; }
+}
