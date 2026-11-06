@@ -2,8 +2,8 @@
 
 [![](https://img.shields.io/badge/powered_by-dsh-4D6BFE?style=flat-square&logo=deepseek&logoColor=white)](https://github.com/deepseek-ai/deepseek-harness)
 
-实验性单文件 HTML 页面的公开副本。原文件留在本机 `harness work place/deepseek harness产出`，
-这里只为「在 iPhone 等移动设备上直接打开」而发布一份可访问的副本。
+实验性单文件 HTML 页面的公开副本。原文件留在本机，这里只为「在 iPhone 等移动设备上直接打开」
+而发布一份可访问的副本。
 
 **在线入口**：<https://zhumadian634-lab.github.io/aesthetic-experiments/>
 
