@@ -11,6 +11,7 @@
 
 | 文件 | 标题 | 风格 | 规模 |
 |---|---|---|---|
+| `soviet-constructivism-fabric.html` | 七十年，一条斜线 · 织物光影 | 构成主义（材质变体） | 7 页 |
 | `design-languages.html` | 设计语言，如何左右你 | 三风格混搭（瑞士 / 构成主义 / 新粗野主义） | 5 页 |
 | `memes.html` | 表情包简史 | 新粗野主义 | 7 页 |
 | `soviet-constructivism.html` | 七十年，一条斜线 · 苏联意识形态 1917—1991 | 构成主义 | 7 页 |

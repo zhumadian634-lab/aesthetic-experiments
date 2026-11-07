@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>七十年，一条斜线 · 苏联意识形态 1917—1991</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --u:1vmin;
+  --red:#D22B1F; --ink:#111111; --paper:#F1E9D8; --steel:#3A3A38; --gray:#6A6963;
+  --ease:cubic-bezier(.7,0,.3,1);
+  --sx:0px; --sy:0px;              /* 光影位移，由鼠标驱动 */
+  --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+html,body{height:100%}
+body{background:var(--ink);color:var(--ink);
+  font-family:"Arial Narrow","Noto Sans SC",Arial,sans-serif;overflow:hidden}
+::selection{background:var(--red);color:var(--paper)}
+
+/* ---------- 整页翻：只有整数位置 ---------- */
+#deck{
+  position:fixed;inset:0;z-index:3;
+  display:flex;flex-direction:column;flex-wrap:nowrap;
+  transition:transform .95s cubic-bezier(.72,0,.28,1);
+  will-change:transform;
+}
+
+/* ---------- 一页 = 满屏一幅印在织物上的画面 ---------- */
+.s{position:relative;width:100%;height:100svh;flex:0 0 100svh;overflow:hidden;isolation:isolate}
+.s.dark{color:var(--paper)}
+
+/* 织物底：细经纬 + 粗节 + 布面色差 */
+.s::before{
+  content:"";position:absolute;inset:0;z-index:0;
+  background-color:var(--paper);
+  background-image:
+    repeating-linear-gradient(90deg,rgba(17,17,17,.045) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(0deg,rgba(17,17,17,.04) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.17) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.12) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(90deg,rgba(17,17,17,.03) 0 2px,transparent 2px 11px),
+    repeating-linear-gradient(0deg,rgba(17,17,17,.025) 0 2px,transparent 2px 9px),
+    radial-gradient(120% 90% at 32% 18%,rgba(255,255,255,.5),transparent 64%);
+  box-shadow:inset 0 0 22vmin rgba(17,17,17,.18);
+}
+.s.dark::before{
+  background-color:var(--ink);
+  background-image:
+    repeating-linear-gradient(90deg,rgba(241,233,216,.05) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(0deg,rgba(241,233,216,.04) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(90deg,rgba(0,0,0,.5) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(0deg,rgba(0,0,0,.45) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(90deg,rgba(241,233,216,.022) 0 2px,transparent 2px 11px),
+    radial-gradient(120% 90% at 30% 15%,rgba(241,233,216,.09),transparent 66%);
+  box-shadow:inset 0 0 22vmin rgba(0,0,0,.75);
+}
+
+/* 印刷颗粒，压在全幅之上 */
+.s::after{
+  content:"";position:absolute;inset:0;z-index:40;pointer-events:none;
+  background-image:radial-gradient(rgba(17,17,17,.6) .7px,transparent .85px),var(--grain);
+  background-size:3px 3px,180px 180px;
+  opacity:.10;mix-blend-mode:multiply;
+}
+.s.dark::after{mix-blend-mode:soft-light;opacity:.18;}
+
+/* ---------- 色块：整块滑入；本体在 <i> 里，才有资格投下阴影 ---------- */
+.wedge{position:absolute;z-index:1;
+  transform:var(--from,translate(-110%,0));
+  transition:transform .95s cubic-bezier(.72,0,.28,1) var(--d,0s)}
+.s.in .wedge{transform:none}
+.wedge>i{
+  position:absolute;inset:0;display:block;
+  background:var(--red);clip-path:var(--shape);
+}
+.wedge.b>i{background:var(--ink)}
+.dark .wedge.b>i{background:var(--paper)}
+/* 油墨跟着织纹走 */
+.wedge>i::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:
+    repeating-linear-gradient(90deg,rgba(0,0,0,.3) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(0deg,rgba(0,0,0,.26) 0 1px,transparent 1px 3px),
+    radial-gradient(rgba(0,0,0,.45) .8px,transparent .95px);
+  background-size:auto,auto,4px 4px;
+  opacity:.4;mix-blend-mode:multiply;
+}
+.dark .wedge>i::after{mix-blend-mode:overlay;opacity:.45}
+
+/* 只有当前页的色块投影：跟着鼠标甩出去 */
+.s.in .wedge{filter:drop-shadow(var(--sx) var(--sy) 28px rgba(0,0,0,.55)) drop-shadow(calc(var(--sx)*.4) calc(var(--sy)*.4) 6px rgba(0,0,0,.42))}
+.s.in.dark .wedge{filter:drop-shadow(var(--sx) var(--sy) 26px rgba(0,0,0,.9)) drop-shadow(calc(var(--sx)*.4) calc(var(--sy)*.4) 6px rgba(0,0,0,.75))}
+
+/* ---------- 逐字浮现 ---------- */
+.ch{display:inline-block;white-space:pre;opacity:0;transform:translateY(.42em);
+  transition:opacity .55s ease, transform .6s cubic-bezier(.22,.61,.36,1);
+  transition-delay:calc(var(--start,0s) + var(--i,0) * var(--step,.06s))}
+.s.in .ch{opacity:1;transform:none}
+
+.slogan{--step:.07s;--start:1.25s}
+.body{--step:.018s;--start:1.9s}
+.tag{--step:.03s;--start:2.55s}
+.year{--step:.085s;--start:1.4s}
+.meta span{--step:.028s;--start:.25s}
+
+/* ---------- 版位 ---------- */
+.meta{position:absolute;left:calc(var(--u)*4);right:calc(var(--u)*4);top:calc(var(--u)*3.4);z-index:30;
+  display:flex;justify-content:space-between;font-size:calc(var(--u)*1.05);letter-spacing:.3em;
+  text-transform:uppercase;font-weight:700}
+.meta span:nth-child(2){color:var(--steel)}
+
+.year{position:absolute;z-index:20;font-weight:700;line-height:.76;letter-spacing:-.06em;
+  font-size:calc(var(--u)*26);writing-mode:vertical-rl}
+.slogan{position:absolute;z-index:20;font-weight:700;line-height:.94;letter-spacing:-.02em;
+  font-size:calc(var(--u)*9.6)}
+.slogan em{font-style:normal;color:var(--red)}
+.dark .slogan em{color:var(--paper)}
+.body{position:absolute;z-index:20;max-width:24em;font-family:"Noto Sans SC","Microsoft YaHei",sans-serif;
+  font-weight:400;font-size:calc(var(--u)*1.72);line-height:1.95}
+.tag{position:absolute;z-index:20;font-size:calc(var(--u)*1);letter-spacing:.28em;
+  text-transform:uppercase;font-weight:700;color:var(--gray)}
+.dark .tag{color:rgba(241,233,216,.55)}
+
+.hair{position:absolute;z-index:15;background:currentColor;height:1px;transform:scaleX(0);
+  transform-origin:left;transition:transform .9s var(--ease) 1.35s}
+.s.in .hair{transform:scaleX(1)}
+
+/* ---------- 全局光影：一层很轻的扫光，只负责“有光在动” ---------- */
+
+
+
+/* ---------- 导航 ---------- */
+.dots{position:fixed;right:calc(var(--u)*1.8);top:50%;transform:translateY(-50%);z-index:90;
+  display:flex;flex-direction:column;gap:calc(var(--u)*.9);mix-blend-mode:difference}
+.dots i{width:calc(var(--u)*.6);height:calc(var(--u)*.6);background:rgba(255,255,255,.22);cursor:pointer;transition:.3s}
+.dots i.on{background:#fff;transform:scale(1.6)}
+.hud{position:fixed;left:calc(var(--u)*2.2);bottom:calc(var(--u)*1.6);z-index:90;
+  font-size:calc(var(--u)*1.05);letter-spacing:.28em;font-weight:700;color:#fff;
+  mix-blend-mode:difference;pointer-events:none}
+
+/* ============ 01 封面 ============ */
+.s1 .wedge.a{--shape:polygon(0 100%,58% 0,100% 0,100% 100%);left:0;top:0;width:46%;height:100%;
+  --from:translate(-120%,0);--d:.1s}
+.s1 .wedge.b{--shape:polygon(46% 100%,74% 22%,100% 22%,100% 100%);left:0;top:0;width:100%;height:100%;
+  --from:translate(115%,0);--d:.22s}
+.s1 .wedge.b>i{background:var(--paper)}
+.s1 .wedge.b>i::after{display:none}
+.s1 .slogan{left:calc(var(--u)*6);top:calc(var(--u)*24);font-size:calc(var(--u)*13)}
+.s1 .body{left:calc(var(--u)*6.3);top:auto;bottom:calc(var(--u)*13);color:var(--paper);max-width:21em}
+.s1 .hair{left:calc(var(--u)*6.3);top:auto;bottom:calc(var(--u)*37);width:calc(var(--u)*26);color:var(--paper)}
+.s1 .tag{left:calc(var(--u)*6.3);top:auto;bottom:calc(var(--u)*6.5);color:rgba(241,233,216,.65)}
+.s1 .year{display:none}
+
+/* ============ 02 1917 ============ */
+.s2 .wedge.a{--shape:polygon(0 62%,100% 8%,100% 30%,0 88%);left:0;top:0;width:100%;height:100%;
+  --from:translate(-120%,0);--d:.12s}
+.s2 .slogan{left:calc(var(--u)*6);top:calc(var(--u)*9);font-size:calc(var(--u)*9.6)}
+.s2 .year{right:calc(var(--u)*5);bottom:calc(var(--u)*4);font-size:calc(var(--u)*13)}
+.s2 .body{left:calc(var(--u)*6);top:calc(var(--u)*45);max-width:23em}
+.s2 .hair{left:calc(var(--u)*6);top:calc(var(--u)*42);width:calc(var(--u)*22)}
+.s2 .tag{left:calc(var(--u)*6);top:auto;bottom:calc(var(--u)*5)}
+
+/* ============ 03 1925 ============ */
+.s3 .wedge.a{--shape:polygon(56% 0,100% 0,100% 100%,30% 100%);left:0;top:0;width:100%;height:100%;
+  --from:translate(120%,0);--d:.1s}
+.s3 .wedge.b{--shape:polygon(0 86%,26% 86%,26% 94%,0 94%);left:0;top:0;width:100%;height:100%;
+  --from:translate(-120%,0);--d:.35s}
+.s3 .wedge.a>i{background:var(--ink)}
+.s3 .slogan{left:calc(var(--u)*5);top:calc(var(--u)*20);font-size:calc(var(--u)*9.8)}
+.s3 .year{right:calc(var(--u)*4);top:calc(var(--u)*8);font-size:calc(var(--u)*9);color:var(--paper)}
+.s3 .body{left:calc(var(--u)*5);top:calc(var(--u)*56);color:#2A2A2A;max-width:19em}
+.s3 .hair{left:calc(var(--u)*5);top:calc(var(--u)*53);width:calc(var(--u)*22)}
+.s3 .tag{left:calc(var(--u)*5);top:calc(var(--u)*76)}
+
+/* ============ 04 1934 ============ */
+.s4 .wedge.a{--shape:polygon(0 0,100% 0,100% 34%,0 46%);left:0;top:0;width:100%;height:100%;
+  --from:translate(0,-105%);--d:.1s}
+.s4 .wedge.b{--shape:polygon(70% 34%,100% 34%,100% 100%,58% 100%);left:0;top:0;width:100%;height:100%;
+  --from:translate(115%,0);--d:.3s}
+.s4 .wedge.a>i{background:var(--ink)}
+.s4 .slogan{left:calc(var(--u)*4.6);top:calc(var(--u)*54);font-size:calc(var(--u)*9.2)}
+.s4 .year{right:calc(var(--u)*5);top:calc(var(--u)*8);font-size:calc(var(--u)*16);color:var(--paper)}
+.s4 .body{left:calc(var(--u)*4.6);top:calc(var(--u)*72);max-width:26em;font-size:calc(var(--u)*1.55)}
+.s4 .tag{left:calc(var(--u)*4.6);top:calc(var(--u)*84)}
+.s4 .hair{left:calc(var(--u)*4.6);top:calc(var(--u)*70);width:calc(var(--u)*22)}
+
+/* ============ 05 1956 ============ */
+.s5 .wedge.a{--shape:polygon(0 0,100% 0,100% 100%,0 100%);left:0;top:0;width:100%;height:100%;
+  --from:translate(0,-105%);--d:.05s}
+.s5 .wedge.a>i{background:var(--ink)}
+.s5 .crack{position:absolute;z-index:5;left:-10%;top:0;width:120%;height:100%;background:var(--paper);
+  clip-path:polygon(47.4% 0,51.4% 0,48.6% 100%,44.2% 100%);
+  transform:scaleY(0);transform-origin:top;transition:transform 1.15s var(--ease) .55s}
+.s5.in .crack{transform:scaleY(1)}
+.s5 .slogan{left:calc(var(--u)*5);top:calc(var(--u)*24);font-size:calc(var(--u)*9.4);color:var(--paper)}
+.s5 .slogan em{color:var(--red)}
+.s5 .year{right:calc(var(--u)*6);top:calc(var(--u)*7);font-size:calc(var(--u)*9);color:var(--paper)}
+.s5 .body{left:calc(var(--u)*5);top:calc(var(--u)*64);color:var(--paper);max-width:18em}
+.s5 .tag{left:calc(var(--u)*5);top:calc(var(--u)*80);color:rgba(241,233,216,.6)}
+.s5 .hair{left:calc(var(--u)*5);top:calc(var(--u)*61);width:calc(var(--u)*18);color:var(--paper)}
+
+/* ============ 06 1961 ============ */
+.s6 .wedge.a{--shape:polygon(100% 18%,100% 64%,34% 96%,34% 50%);left:0;top:0;width:100%;height:100%;
+  --from:translate(115%,0);--d:.12s}
+.s6 .slogan{left:calc(var(--u)*4.6);top:calc(var(--u)*18);font-size:calc(var(--u)*10.6)}
+.s6 .year{right:auto;left:calc(var(--u)*4.6);top:auto;bottom:calc(var(--u)*9);
+  font-size:calc(var(--u)*12);writing-mode:horizontal-tb;letter-spacing:-.04em}
+.s6 .body{left:calc(var(--u)*4.6);top:calc(var(--u)*52);max-width:22em}
+.s6 .tag{left:calc(var(--u)*4.6);top:calc(var(--u)*68)}
+.s6 .hair{left:calc(var(--u)*4.6);top:calc(var(--u)*49);width:calc(var(--u)*26)}
+
+/* ============ 07 1991 ============ */
+.s7 .wedge.a{--shape:polygon(0 0,100% 0,100% 100%,0 100%);left:0;top:0;width:100%;height:100%;
+  --from:translate(0,-105%);--d:.05s}
+.s7 .wedge.a>i{background:var(--ink)}
+.s7 .frag{position:absolute;z-index:6;background:var(--red);opacity:0;height:calc(var(--u)*1.5);
+  transform:translateY(calc(var(--u)*-6)) rotate(0deg) skewX(-18deg);
+  transition:opacity .3s ease,transform .95s cubic-bezier(.7,0,.3,1)}
+.s7.in .frag{opacity:.95;transform:translateY(0) rotate(var(--r)) skewX(-18deg);box-shadow:var(--sx) var(--sy) 14px rgba(0,0,0,.7)}
+.s7 .f1{width:calc(var(--u)*11);left:18%;top:30%;--r:-26deg;transition-delay:.9s}
+.s7 .f2{width:calc(var(--u)*7);left:44%;top:48%;--r:14deg;transition-delay:1s}
+.s7 .f3{width:calc(var(--u)*4.5);left:66%;top:36%;--r:-8deg;transition-delay:1.1s}
+.s7 .f4{width:calc(var(--u)*3);left:31%;top:66%;--r:22deg;transition-delay:1.2s}
+.s7 .f5{width:calc(var(--u)*2);left:58%;top:72%;--r:-32deg;transition-delay:1.3s}
+.s7 .f6{width:calc(var(--u)*1.6);left:78%;top:58%;--r:40deg;transition-delay:1.38s}
+.s7 .slogan{left:calc(var(--u)*5);top:calc(var(--u)*22);font-size:calc(var(--u)*9);color:var(--paper)}
+.s7 .year{right:calc(var(--u)*5);top:calc(var(--u)*7);font-size:calc(var(--u)*10);color:var(--paper)}
+.s7 .body{left:calc(var(--u)*5);top:calc(var(--u)*56);color:var(--paper);max-width:20em}
+.s7 .tag{left:calc(var(--u)*5);top:calc(var(--u)*76);color:rgba(241,233,216,.6)}
+.s7 .hair{left:calc(var(--u)*5);top:calc(var(--u)*53);width:calc(var(--u)*20);color:var(--paper)}
+
+@media (max-aspect-ratio:1/1){
+  .slogan{font-size:calc(var(--u)*7.4)!important}
+  .year{font-size:calc(var(--u)*12)!important}
+  .body{font-size:calc(var(--u)*2.6)!important;max-width:16em!important}
+}
+</style>
+</head>
+<body>
+
+
+
+<nav class="dots" id="dots"></nav>
+<div class="hud" id="hud">01 / 07 · 1917</div>
+
+<div id="deck">
+
+<!-- 01 -->
+<section class="s s1 dark" data-era="1917">
+  <div class="meta"><span>七十年，一条斜线</span><span class="r">1917 — 1991</span></div>
+  <div class="wedge a"><i></i></div>
+  <div class="wedge b"><i></i></div>
+  <h1 class="slogan">七十年<br>一条斜线</h1>
+  <div class="hair"></div>
+  <p class="body">苏联意识形态的七个切面。每翻一页，斜线的角度都在变——它先是一把刀，后来是一块压下来的碑，最后碎成一地。</p>
+  <div class="tag">构成主义 · 七页 / CONSTRUCTIVISM</div>
+</section>
+
+<!-- 02 -->
+<section class="s s2" data-era="1917">
+  <div class="meta"><span>02 / 革命</span><span class="r">ПЕТРОГРАД 1917</span></div>
+  <div class="wedge a"><i></i></div>
+  <h1 class="slogan">全部政权<br>归<em>苏维埃</em></h1>
+  <div class="hair"></div>
+  <p class="body">十月革命之后，意识形态第一次接管国家：纲领、口号、海报，一起上场。红楔打白军——这是当年最著名的一张海报，也是这一页的构图。</p>
+  <div class="tag">彼得格勒 / 1917.11</div>
+  <div class="year">1917</div>
+</section>
+
+<!-- 03 -->
+<section class="s s3" data-era="1925">
+  <div class="meta"><span>03 / 收缩</span><span class="r">МОСКВА 1925</span></div>
+  <div class="wedge a"><i></i></div>
+  <div class="wedge b"><i></i></div>
+  <h1 class="slogan">一国建成<br><em>社会主义</em></h1>
+  <div class="hair"></div>
+  <p class="body">列宁去世后，斯大林把革命的目标从「世界」收缩到「一国」：先在自己的国家里建成，再谈输出。斜线由此从横扫变成斜压。</p>
+  <div class="tag">莫斯科 / 1924 — 1925</div>
+  <div class="year">1925</div>
+</section>
+
+<!-- 04 -->
+<section class="s s4" data-era="1934">
+  <div class="meta"><span>04 / 定调</span><span class="r">МОСКВА 1934</span></div>
+  <div class="wedge a"><i></i></div>
+  <div class="wedge b"><i></i></div>
+  <h1 class="slogan">社会主义<br>现实主义</h1>
+  <div class="hair"></div>
+  <p class="body">第一次全苏作家代表大会把它定为唯一的创作方法：艺术要有倾向、要能教育，也要能被审查。前卫的斜线被压成一条水平的天花板。</p>
+  <div class="tag">莫斯科 / 1934.08</div>
+  <div class="year">1934</div>
+</section>
+
+<!-- 05 -->
+<section class="s s5 dark" data-era="1956">
+  <div class="meta"><span>05 / 裂缝</span><span class="r">МОСКВА 1956</span></div>
+  <div class="wedge a"><i></i></div>
+  <div class="crack"></div>
+  <h1 class="slogan">秘密报告</h1>
+  <div class="hair"></div>
+  <p class="body">苏共二十大，赫鲁晓夫用四个小时否定斯大林。意识形态第一次当着全党的面裂开——这道缝，后来再没能合上。</p>
+  <div class="tag">莫斯科 / 1956.02</div>
+  <div class="year">1956</div>
+</section>
+
+<!-- 06 -->
+<section class="s s6" data-era="1961">
+  <div class="meta"><span>06 / 承诺</span><span class="r">МОСКВА 1961</span></div>
+  <div class="wedge a"><i></i></div>
+  <h1 class="slogan">1980 年<br>建成<em>共产主义</em></h1>
+  <div class="hair"></div>
+  <p class="body">二十二大把时间表写进党纲：二十年建成共产主义。这根箭头指向一个从未到达的年份，也成了整个体系最沉的负担。</p>
+  <div class="tag">莫斯科 / 1961.10</div>
+  <div class="year">1961</div>
+</section>
+
+<!-- 07 -->
+<section class="s s7 dark" data-era="1991">
+  <div class="meta"><span>07 / 解体</span><span class="r">МОСКВА 1985 — 1991</span></div>
+  <div class="wedge a"><i></i></div>
+  <div class="frag f1"></div><div class="frag f2"></div><div class="frag f3"></div>
+  <div class="frag f4"></div><div class="frag f5"></div><div class="frag f6"></div>
+  <h1 class="slogan">新思维</h1>
+  <div class="hair"></div>
+  <p class="body">戈尔巴乔夫用「公开性」松开螺丝，两年后螺丝掉了一地。1991 年 12 月，苏联解体。斜线不再指向任何地方。</p>
+  <div class="tag">莫斯科 / 1985 — 1991</div>
+  <div class="year">1991</div>
+</section>
+
+</div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+
+/* 逐字切分：保留 <em> / <br> 结构，每字一个 span */
+function splitChars(root){
+  let n=0;
+  const walk=node=>{
+    [...node.childNodes].forEach(child=>{
+      if(child.nodeType===3){
+        const txt=child.textContent;
+        if(!txt) return;
+        const frag=document.createDocumentFragment();
+        for(const ch of txt){
+          const sp=document.createElement('span');
+          sp.className='ch';
+          sp.style.setProperty('--i',n++);
+          sp.textContent=(ch===' ')?'\u00A0':ch;
+          frag.appendChild(sp);
+        }
+        node.replaceChild(frag,child);
+      } else if(child.nodeType===1 && child.tagName!=='BR'){
+        walk(child);
+      }
+    });
+  };
+  walk(root);
+}
+$$('.slogan,.body,.tag,.year,.meta span').forEach(splitChars);
+
+/* ================= 整页翻：只有整数位置 ================= */
+const deck=$('#deck'), secs=$$('.s'), dots=$('#dots'), hud=$('#hud');
+const total=secs.length;
+let idx=0, lock=false, acc=0, wheelTO=null;
+
+secs.forEach((s,i)=>{
+  const d=document.createElement('i');
+  d.onclick=()=>go(i);
+  dots.appendChild(d);
+});
+const dEls=$$('.dots i');
+
+function pageH(){ return secs[0].offsetHeight || innerHeight }
+
+function go(n,opts={}){
+  if(lock && !opts.force) return;
+  n=Math.max(0,Math.min(total-1,n));
+  if(n===idx && !opts.force) return;
+  const prev=idx; idx=n;
+  deck.style.transform=`translate3d(0,${-idx*pageH()}px,0)`;
+
+  if(prev!==idx) secs[prev].classList.remove('in');
+  setTimeout(()=>secs[idx].classList.add('in'), 330);
+
+  dEls.forEach((d,k)=>d.classList.toggle('on',k===idx));
+  hud.textContent=String(idx+1).padStart(2,'0')+' / 07 · '+secs[idx].dataset.era;
+
+  lock=true; setTimeout(()=>lock=false,700);
+}
+
+/* 滚轮：累加 → 过阈值 → 翻一页 → 清零；手停 150ms 也清零 */
+addEventListener('wheel',e=>{
+  const d=Math.abs(e.deltaY)>=Math.abs(e.deltaX)?e.deltaY:e.deltaX;
+  acc+=d;
+  if(Math.abs(acc)>42){ go(idx+(acc>0?1:-1)); acc=0; }
+  clearTimeout(wheelTO);
+  wheelTO=setTimeout(()=>acc=0,150);
+},{passive:true});
+
+/* 触屏 */
+let ty0=0;
+addEventListener('touchstart',e=>{ty0=e.touches[0].clientY},{passive:true});
+addEventListener('touchend',e=>{
+  const dy=e.changedTouches[0].clientY-ty0;
+  if(Math.abs(dy)>50) go(idx+(dy<0?1:-1));
+},{passive:true});
+
+/* 键盘 */
+addEventListener('keydown',e=>{
+  if(['ArrowDown','ArrowRight','PageDown',' ','ArrowUp','ArrowLeft','PageUp','Home','End'].includes(e.key)) e.preventDefault();
+  if(['ArrowDown','ArrowRight','PageDown',' '].includes(e.key)) go(idx+1);
+  else if(['ArrowUp','ArrowLeft','PageUp'].includes(e.key)) go(idx-1);
+  else if(e.key==='Home') go(0);
+  else if(e.key==='End') go(total-1);
+});
+
+/* ================= 光影跟着鼠标 ================= */
+let tx=0,ty=0,cx=0,cy=0,lastX=0,lastY=0;
+
+addEventListener('mousemove',e=>{
+  tx=e.clientX/innerWidth-.5;
+  ty=e.clientY/innerHeight-.5;
+},{passive:true});
+
+function loop(){
+  cx+=(tx-cx)*.07;
+  cy+=(ty-cy)*.07;
+
+  /* 色块的投影：反向甩出去，幅度给足 */
+  const sx=-cx*86, sy=-cy*64;
+  if(Math.abs(sx-lastX)>0.05 || Math.abs(sy-lastY)>0.05){
+    deck.style.setProperty('--sx',sx.toFixed(1)+'px');
+    deck.style.setProperty('--sy',sy.toFixed(1)+'px');
+    lastX=sx; lastY=sy;
+  }
+
+  requestAnimationFrame(loop);
+}
+
+addEventListener('resize',()=>{
+  deck.style.transform=`translate3d(0,${-idx*pageH()}px,0)`;
+  secs[idx].classList.add('in');
+},{passive:true});
+
+go(0,{force:true});
+requestAnimationFrame(loop);
+</script>
+<!-- mobile layer (GitHub Pages copy only) -->
+<link rel="stylesheet" href="assets/mobile.css">
+<script src="assets/mobile.js" defer></script>
+</body>
+</html>
