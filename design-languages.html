@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>设计语言，如何左右你</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --u:1vmin;
+  --paper:#F4F0E8; --ink:#111; --gray:#6A6963; --rule:#C9C2B4;
+  --red:#D22B1F; --black:#0A0A0A; --cream2:#F1E9D8;
+  --nb-cream:#FFF9F0; --nb-yellow:#FFD84D; --nb-pink:#FF90E8; --nb-green:#7BE495;
+  --nb-bd:calc(var(--u)*.55); --nb-sh:calc(var(--u)*1.1); --nb-r:calc(var(--u)*2.2);
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);font-family:"Noto Sans SC","Microsoft YaHei UI",system-ui,sans-serif;
+  color:var(--ink);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+::selection{background:var(--red);color:var(--paper)}
+
+.page{position:relative;width:100%;height:100svh;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.wrap{width:min(100%,calc(var(--u)*118));margin:0 auto;padding:calc(var(--u)*4)}
+
+/* ============ 通用文字动效（半速基线） ============ */
+.tx{opacity:0;transform:translateY(calc(var(--u)*1.2));
+  transition:opacity .75s ease, transform .75s cubic-bezier(.22,.61,.36,1)}
+.page.in .tx{opacity:1;transform:none}
+.page.in .t1{transition-delay:.10s}
+.page.in .t2{transition-delay:.28s}
+.page.in .t3{transition-delay:.46s}
+.page.in .t4{transition-delay:.64s}
+
+.kicker{font-family:Consolas,"Courier New",monospace;font-size:calc(var(--u)*1.3);letter-spacing:.26em;text-transform:uppercase;font-weight:700}
+.tag{display:inline-block;font-size:calc(var(--u)*1.5);padding:calc(var(--u)*.6) calc(var(--u)*1.6);
+  border-radius:999px;font-weight:700;white-space:nowrap}
+
+/* ============ 1 封面（瑞士） ============ */
+#p1{background:var(--paper);color:var(--ink)}
+#p1 .head{position:absolute;left:calc(var(--u)*4);right:calc(var(--u)*4);top:calc(var(--u)*4);
+  display:flex;justify-content:space-between;font-size:calc(var(--u)*1.15);letter-spacing:.24em;font-weight:700}
+#p1 .rule{position:absolute;left:calc(var(--u)*4);right:calc(var(--u)*4);top:calc(var(--u)*7);
+  height:2px;background:var(--ink);transform:scaleX(0);transform-origin:left;transition:transform 1.1s var(--e)}
+.page.in #p1 .rule,#p1.in .rule{transform:scaleX(1)}
+#p1 h1{font-size:calc(var(--u)*11.5);line-height:.96;font-weight:900;letter-spacing:-.035em}
+#p1 p{margin-top:calc(var(--u)*3);font-size:calc(var(--u)*2.1);line-height:1.9;max-width:26em;color:#3A3730}
+#p1 .foot{position:absolute;right:calc(var(--u)*4);bottom:calc(var(--u)*3);font-size:calc(var(--u)*1.2);
+  letter-spacing:.3em;font-weight:700;color:var(--gray)}
+
+/* ============ 2 瑞士（可信） ============ */
+#p2{background:var(--paper);color:var(--ink)}
+#p2 .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:calc(var(--u)*6);align-items:center}
+#p2 h2{font-size:calc(var(--u)*7.4);line-height:1;font-weight:900;letter-spacing:-.03em}
+#p2 h2 em{font-style:normal;color:var(--red)}
+#p2 .lead{margin-top:calc(var(--u)*2.6);font-size:calc(var(--u)*2);line-height:1.95;color:#3A3730;max-width:22em}
+#p2 .doc{border-top:2px solid var(--ink);border-bottom:1px solid var(--rule);padding:calc(var(--u)*2.4) 0}
+#p2 .doc .lbl{font-family:Consolas,monospace;font-size:calc(var(--u)*1.2);letter-spacing:.24em;color:var(--gray)}
+#p2 .doc .stmt{font-size:calc(var(--u)*2.6);font-weight:700;margin:calc(var(--u)*1.8) 0 calc(var(--u)*2.4);line-height:1.5}
+#p2 .doc ol{list-style:none;display:grid;gap:calc(var(--u)*1.3)}
+#p2 .doc li{font-size:calc(var(--u)*1.35);color:#5A564E;line-height:1.7;display:grid;
+  grid-template-columns:calc(var(--u)*4) 1fr;gap:calc(var(--u)*1.2)}
+#p2 .doc li b{font-family:Consolas,monospace;color:var(--ink);font-weight:700}
+#p2 .tags{display:flex;gap:calc(var(--u)*1.2);margin-top:calc(var(--u)*3);flex-wrap:wrap}
+#p2 .tag{border:1.5px solid var(--ink);color:var(--ink)}
+
+/* ============ 3 构成主义（动员） ============ */
+#p3{background:var(--black);color:var(--cream2)}
+#p3 .wedge{position:absolute;z-index:1;background:var(--red);
+  clip-path:polygon(100% 0,100% 100%,46% 100%,78% 0);
+  right:0;top:0;width:46%;height:100%;transform:translateX(102%);
+  transition:transform 1s cubic-bezier(.72,0,.28,1)}
+#p3.in .wedge{transform:none}
+#p3 .wrap{position:relative;z-index:2}
+#p3 h2{font-size:calc(var(--u)*7.2);line-height:1;font-weight:900;letter-spacing:-.03em}
+#p3 h2 em{font-style:normal;color:var(--red)}
+#p3 .big{font-size:calc(var(--u)*24);font-weight:900;line-height:.9;letter-spacing:-.06em;margin:calc(var(--u)*4) 0;color:var(--cream2)}
+#p3 .ch{display:inline-block;opacity:0;transform:translateY(calc(var(--u)*2));transition:opacity .8s ease,transform .8s cubic-bezier(.22,.61,.36,1)}
+#p3.in .ch{opacity:1;transform:none}
+#p3.in .ch:nth-child(1){transition-delay:.55s}
+#p3.in .ch:nth-child(2){transition-delay:.75s}
+#p3 .lead{font-size:calc(var(--u)*1.9);line-height:1.95;max-width:24em;color:rgba(241,233,216,.72)}
+#p3 .tags{display:flex;gap:calc(var(--u)*1.2);margin-top:calc(var(--u)*3);flex-wrap:wrap}
+#p3 .tag{border:1.5px solid rgba(241,233,216,.45);color:var(--cream2)}
+
+/* ============ 4 新粗野主义（亲和） ============ */
+#p4{background:var(--nb-cream);color:var(--ink)}
+#p4 .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:calc(var(--u)*5);align-items:center}
+#p4 h2{font-size:calc(var(--u)*7.4);line-height:1;font-weight:900;letter-spacing:-.03em}
+#p4 h2 em{font-style:normal;background:var(--nb-yellow);padding:0 .12em;border-radius:calc(var(--u)*.5)}
+#p4 .lead{margin-top:calc(var(--u)*2.6);font-size:calc(var(--u)*2);line-height:1.95;max-width:22em;color:#2A2A2A}
+#p4 .tags{display:flex;gap:calc(var(--u)*1.2);margin-top:calc(var(--u)*3);flex-wrap:wrap}
+#p4 .tag{border:var(--nb-bd) solid var(--ink);background:#fff;box-shadow:calc(var(--u)*.45) calc(var(--u)*.45) 0 var(--ink)}
+
+/* 卡片：描边绕行 */
+#p4 .card{position:relative;background:#fff;border:var(--nb-bd) solid transparent;border-radius:var(--nb-r);
+  padding:calc(var(--u)*3.2);box-shadow:none}
+#p4 .card>svg{position:absolute;inset:calc(var(--nb-bd)*-.5);width:calc(100% + var(--nb-bd));height:calc(100% + var(--nb-bd));
+  overflow:visible;pointer-events:none}
+#p4 .card>svg rect{fill:none;stroke:var(--ink);stroke-width:var(--nb-bd);stroke-dasharray:1;stroke-dashoffset:1}
+#p4.in .card>svg rect{animation:tr 1s cubic-bezier(.5,.05,.35,1) .2s forwards}
+#p4.in .card{animation:bd .01s 1.18s forwards, sh .5s 1.18s cubic-bezier(.34,1.56,.64,1) forwards}
+@keyframes tr{to{stroke-dashoffset:0}}
+@keyframes bd{to{border-color:var(--ink)}}
+@keyframes sh{from{box-shadow:0 0 0 var(--ink)}to{box-shadow:var(--nb-sh) var(--nb-sh) 0 var(--ink)}}
+#p4 .card .k{font-family:Consolas,monospace;font-size:calc(var(--u)*1.2);letter-spacing:.2em;color:#6A6963}
+#p4 .card .stmt{font-size:calc(var(--u)*2.9);font-weight:900;margin:calc(var(--u)*1.8) 0 calc(var(--u)*2.6);line-height:1.35}
+#p4 .btn{display:inline-block;border:var(--nb-bd) solid var(--ink);border-radius:999px;background:var(--nb-green);
+  font-size:calc(var(--u)*2.2);font-weight:900;padding:calc(var(--u)*1.3) calc(var(--u)*3.4);cursor:pointer;
+  box-shadow:calc(var(--u)*.8) calc(var(--u)*.8) 0 var(--ink);transition:.16s cubic-bezier(.34,1.56,.64,1)}
+#p4 .btn:active{transform:translate(calc(var(--u)*.4),calc(var(--u)*.4));box-shadow:calc(var(--u)*.3) calc(var(--u)*.3) 0 var(--ink)}
+#p4 .card .fine{font-size:calc(var(--u)*1.15);color:#8A8378;margin-top:calc(var(--u)*1.8);line-height:1.6}
+
+/* 飞入 */
+#p4 .fch{display:inline-block;white-space:pre;opacity:0}
+#p4.in .fch{animation:fly 1.05s cubic-bezier(.2,.85,.3,1.02) var(--fd,0s) forwards}
+@keyframes fly{
+  0%{opacity:0;transform:translate(var(--dx),var(--dy)) rotate(var(--fr)) scale(1.06)}
+  20%{opacity:1}
+  70%{transform:translate(calc(var(--dx)*-.055),calc(var(--dy)*-.055)) rotate(calc(var(--fr)*-.34))}
+  86%{transform:translate(calc(var(--dx)*.022),calc(var(--dy)*.022)) rotate(calc(var(--fr)*.15))}
+  100%{opacity:1;transform:none}
+}
+/* 正文甩毛 */
+#p4 .lead .c{display:inline-block;transform-origin:center}
+#p4 .wob{will-change:transform}
+
+/* ============ 5 结论 ============ */
+#p5{background:var(--black);color:var(--cream2)}
+#p5 h2{font-size:calc(var(--u)*6.4);line-height:1;font-weight:900;letter-spacing:-.03em}
+#p5 .rows{margin-top:calc(var(--u)*5);display:grid;gap:calc(var(--u)*2.6)}
+#p5 .row{display:grid;grid-template-columns:calc(var(--u)*26) 1fr;gap:calc(var(--u)*3);align-items:baseline;
+  border-top:1px solid rgba(241,233,216,.22);padding-top:calc(var(--u)*2)}
+#p5 .row b{font-size:calc(var(--u)*3.4);font-weight:900}
+#p5 .row span{font-size:calc(var(--u)*1.8);line-height:1.8;color:rgba(241,233,216,.66)}
+#p5 .row .dot{display:inline-block;width:calc(var(--u)*1);height:calc(var(--u)*1);border-radius:50%;margin-right:.6em;vertical-align:middle}
+#p5 .judge{margin-top:calc(var(--u)*5);font-size:calc(var(--u)*2.6);line-height:1.75;max-width:26em;font-weight:700}
+#p5 .judge em{font-style:normal;color:var(--red)}
+
+/* 导航 */
+.rail{position:fixed;right:calc(var(--u)*1.6);top:50%;transform:translateY(-50%);z-index:80;
+  display:flex;flex-direction:column;gap:calc(var(--u)*1.1)}
+.rail i{width:calc(var(--u)*.9);height:calc(var(--u)*.9);background:rgba(255,255,255,.28);cursor:pointer;
+  transition:.25s;mix-blend-mode:difference}
+.rail i.on{background:#fff;transform:scale(1.5)}
+.footnum{position:fixed;left:calc(var(--u)*4);bottom:calc(var(--u)*2.4);z-index:80;
+  font-family:Consolas,monospace;font-size:calc(var(--u)*1.2);letter-spacing:.24em;font-weight:700;
+  color:#fff;mix-blend-mode:difference}
+
+@media (max-aspect-ratio:1/1){
+  #p2 .grid,#p4 .grid{grid-template-columns:1fr;gap:calc(var(--u)*3)}
+  #p1 h1{font-size:calc(var(--u)*8.4)}
+  #p3 .big{font-size:calc(var(--u)*16)}
+  #p5 .row{grid-template-columns:1fr;gap:calc(var(--u)*1)}
+}
+</style>
+</head>
+<body>
+
+<nav class="rail" id="rail"></nav>
+<div class="footnum" id="footnum">01 / 05</div>
+
+<!-- 1 命题 -->
+<section class="page" id="p1">
+  <div class="wrap">
+    <div class="tx t1 kicker">设计语言研究 / 5 页</div>
+    <h1 class="tx t2" style="margin-top:calc(var(--u)*3)">设计语言，<br>如何左右你</h1>
+    <p class="tx t3">接下来三页，说的是<b>同一句话</b>。<br>三段排版，三种反应。请留意你自己读到时的身体感觉。</p>
+  </div>
+  <div class="head"><span>DESIGN LANGUAGE / 2026</span><span>05 PAGES</span></div>
+  <i class="rule"></i>
+  <div class="foot">向下翻页 ↓</div>
+</section>
+
+<!-- 2 瑞士 -->
+<section class="page" id="p2">
+  <div class="wrap">
+    <div class="grid">
+      <div>
+        <div class="tx t1 kicker" style="color:var(--gray)">02 / 05 · 语言 A · 瑞士风格</div>
+        <h2 class="tx t2" style="margin-top:calc(var(--u)*2.4)">它让你<em>相信</em></h2>
+        <p class="tx t3 lead">干净的网格、克制的字重、足够的留白。整页没有一句在喊，但你会自动进入"这是正规文件、需要认真读"的姿态。</p>
+        <div class="tx t4 tags">
+          <span class="tag">认真</span><span class="tag">迟疑</span><span class="tag">轻微压迫</span>
+        </div>
+      </div>
+      <div class="tx t3 doc">
+        <div class="lbl">TERMS / v2.4</div>
+        <div class="stmt">请阅读并同意以下条款</div>
+        <ol>
+          <li><b>01</b><span>本协议适用于所有使用本服务的行为，包括浏览与提交。</span></li>
+          <li><b>02</b><span>提交即视为已完整阅读并理解全部条款内容。</span></li>
+          <li><b>03</b><span>条款变更将在页面上公示，不单独通知。</span></li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 构成主义 -->
+<section class="page" id="p3">
+  <div class="wedge"></div>
+  <div class="wrap">
+    <div class="tx t1 kicker" style="color:rgba(241,233,216,.5)">03 / 05 · 语言 B · 构成主义</div>
+    <h2 class="tx t2" style="margin-top:calc(var(--u)*2.2)">它让你<em>服从</em></h2>
+    <div class="big"><span class="ch">同</span><span class="ch">意</span></div>
+    <p class="tx t3 lead" style="margin-top:calc(var(--u)*2)">同一句话，换成红黑斜切和巨字。信息不再是"供你阅读"，而是"向你下达"——情绪先到，理由后补。</p>
+    <div class="tx t4 tags">
+      <span class="tag">情绪先行</span><span class="tag">不容置疑</span><span class="tag">群体感</span>
+    </div>
+  </div>
+</section>
+
+<!-- 4 新粗野主义 -->
+<section class="page" id="p4">
+  <div class="wrap">
+    <div class="grid">
+      <div>
+        <div class="tx t1 kicker" style="color:#6A6963">04 / 05 · 语言 C · 新粗野主义</div>
+        <h2 class="tx t2" style="margin-top:calc(var(--u)*2.4)">它让你<em>随手点</em></h2>
+        <p class="tx t3 lead">粗黑框、实心硬投影、亮色按钮。整页看起来毫无威胁——于是你没读那三条小字，手已经按下去了。</p>
+        <div class="tx t4 tags">
+          <span class="tag">轻松</span><span class="tag">几乎没读</span><span class="tag">转化率高</span>
+        </div>
+      </div>
+      <div class="card" id="nbCard">
+        <svg xmlns="http://www.w3.org/2000/svg"><rect id="nbRect" x="0" y="0" width="100%" height="100%" rx="24" ry="24" pathLength="1"/></svg>
+        <div class="k">TERMS / v2.4</div>
+        <div class="stmt">请阅读并同意以下条款</div>
+        <button class="btn" id="nbBtn">我同意</button>
+        <div class="fine">点击即代表已阅读全部条款</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 结论 -->
+<section class="page" id="p5">
+  <div class="wrap">
+    <div class="tx t1 kicker" style="color:rgba(241,233,216,.5)">05 / 05 · 收束</div>
+    <h2 class="tx t2" style="margin-top:calc(var(--u)*2.4)">同一句话，<br>三种命运</h2>
+    <div class="rows">
+      <div class="row tx t2"><b><span class="dot" style="background:var(--paper)"></span>相信</b>
+        <span>瑞士风格 · 你把它当文件，坐下来认真读</span></div>
+      <div class="row tx t3"><b><span class="dot" style="background:var(--red)"></span>服从</b>
+        <span>构成主义 · 你被它推着走，来不及质疑</span></div>
+      <div class="row tx t4"><b><span class="dot" style="background:var(--nb-yellow)"></span>随手点</b>
+        <span>新粗野主义 · 它太友好了，你根本没读</span></div>
+    </div>
+    <div class="judge tx t4">设计语言不是装饰。它<em>决定了你用哪种姿态</em>面对一条信息——而这件事，通常发生在你意识到之前。</div>
+  </div>
+</section>
+
+<script>
+const $ = (s,r=document)=>r.querySelector(s);
+const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
+const pages = $$('.page');
+const rail = $('#rail');
+pages.forEach((p,i)=>{const d=document.createElement('i');d.onclick=()=>p.scrollIntoView({behavior:'smooth'});rail.appendChild(d);});
+const dots = $$('.rail i');
+let cur = -1;
+
+function setCur(i){
+  if(i===cur) return; cur=i;
+  dots.forEach((d,k)=>d.classList.toggle('on',k===i));
+  pages[i].classList.add('in');
+  $('#footnum').textContent = String(i+1).padStart(2,'0')+' / 05';
+}
+const io = new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting) setCur(pages.indexOf(e.target)); }),{threshold:.45});
+pages.forEach(p=>io.observe(p));
+
+/* ---------- 第 4 页：三个自定义动效 ---------- */
+(function(){
+  const page = $('#p4');
+  const card = $('#nbCard');
+  const rect = $('#nbRect');
+
+  // ② 描边圆角与卡片一致
+  const rad = parseFloat(getComputedStyle(card).borderTopLeftRadius)||24;
+  rect.setAttribute('rx', rad); rect.setAttribute('ry', rad);
+
+  // ① 标题逐字飞入（方向偏置：标题在上半页，禁止从下方来）
+  const h2 = page.querySelector('h2');
+  const frag = document.createDocumentFragment();
+  [...h2.childNodes].forEach(node=>{
+    if(node.nodeType===3){
+      for(const ch of node.textContent){
+        const s=document.createElement('span');
+        s.className='fch'; s.textContent = ch===' '?'\u00A0':ch;
+        frag.appendChild(s);
+      }
+    } else if(node.nodeType===1 && node.tagName!=='BR'){
+      const wrapEl = node.cloneNode(false);
+      for(const ch of node.textContent){
+        const s=document.createElement('span'); s.className='fch'; s.textContent=ch; wrapEl.appendChild(s);
+      }
+      frag.appendChild(wrapEl);
+    } else frag.appendChild(node.cloneNode());
+  });
+  h2.innerHTML=''; h2.appendChild(frag);
+
+  const chars=[...h2.querySelectorAll('.fch')].filter(c=>c.textContent.trim());
+  const pr = page.getBoundingClientRect();
+  const cx = pr.left+pr.width/2, cy = pr.top+pr.height/2;
+  chars.forEach((ch,i)=>{
+    const r=ch.getBoundingClientRect();
+    let vx=(r.left+r.width/2-cx), vy=(r.top+r.height/2-cy);
+    const len=Math.hypot(vx,vy)||1; vx/=len; vy/=len;
+    if(vy>0.2) vy=-Math.abs(vy)-0.35;              // 不从下方来
+    const nl=Math.hypot(vx,vy)||1; vx/=nl; vy/=nl;
+    const d=Math.min(innerWidth,innerHeight)*0.30;
+    ch.style.setProperty('--dx',(vx*d).toFixed(0)+'px');
+    ch.style.setProperty('--dy',(vy*d).toFixed(0)+'px');
+    ch.style.setProperty('--fr',(Math.random()*26-13).toFixed(1)+'deg');
+    ch.style.setProperty('--fd',(0.15+i*0.04).toFixed(3)+'s');
+  });
+
+  // ③ 正文甩毛：只摇正文，标题不摇
+  const lead = page.querySelector('.lead');
+  const leadFrag=document.createDocumentFragment();
+  for(const ch of lead.textContent){
+    const s=document.createElement('span'); s.className='c';
+    s.textContent = ch===' '?'\u00A0':ch; leadFrag.appendChild(s);
+  }
+  lead.textContent=''; lead.appendChild(leadFrag);
+  const pool=[...lead.querySelectorAll('.c')].filter(c=>c.textContent.trim());
+  const WOB=[
+    {transform:'scale(1) rotate(0deg)'},
+    {transform:'scale(1.44) rotate(-5deg)',offset:.18},
+    {transform:'scale(1.12) rotate(3.8deg)',offset:.36},
+    {transform:'scale(1.26) rotate(-2.4deg)',offset:.54},
+    {transform:'scale(1.06) rotate(1.2deg)',offset:.74},
+    {transform:'scale(1) rotate(0deg)'}
+  ];
+  let timer=null, on=false;
+  function tick(){
+    for(let i=0;i<3+Math.floor(Math.random()*4);i++){
+      const el=pool[Math.floor(Math.random()*pool.length)];
+      if(!el||el.dataset.wob) continue;
+      el.dataset.wob='1';
+      try{ el.animate(WOB,{duration:760,easing:'ease-out',delay:i*55}); }catch(e){}
+      setTimeout(()=>{ delete el.dataset.wob; }, 860);
+    }
+    timer=setTimeout(tick, 1100+Math.random()*800);
+  }
+  const wobIO=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting && !on){ on=true; timer=setTimeout(tick,1000); }
+    else if(!e.isIntersecting && on){ on=false; clearTimeout(timer); }
+  }),{threshold:.4});
+  wobIO.observe(page);
+})();
+
+/* 键盘 */
+addEventListener('keydown',e=>{
+  if(!['ArrowDown','ArrowRight','PageDown',' ','ArrowUp','ArrowLeft','PageUp'].includes(e.key)) return;
+  e.preventDefault();
+  const fwd=['ArrowDown','ArrowRight','PageDown',' '].includes(e.key);
+  const n=fwd?Math.min(cur+1,pages.length-1):Math.max(cur-1,0);
+  pages[n].scrollIntoView({behavior:'smooth'});
+});
+</script>
+<!-- mobile layer (GitHub Pages copy only) -->
+<link rel="stylesheet" href="assets/mobile.css">
+<script src="assets/mobile.js" defer></script>
+</body>
+</html>
