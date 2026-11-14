@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AI WORKSTREAM · 控制台三屏</title>
+<meta name="theme-color" content="#EFEDE6">
+<style>
+  :root{--paper:#EFEDE6;--ink:#141414;--red:#C8102E;--grey:#8C887C;--u:clamp(14px,1.15vw,20px)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);font-family:"Helvetica Neue",Helvetica,Arial,"Noto Sans SC","PingFang SC",sans-serif;
+       -webkit-font-smoothing:antialiased;padding:calc(var(--u)*2.2) calc(var(--u)*2.2) calc(var(--u)*2)}
+  .wrap{max-width:1180px;margin:0 auto}
+  h1{font-size:clamp(28px,4.6vw,58px);line-height:.98;letter-spacing:-.02em;font-weight:800}
+  h1 em{font-style:normal;color:var(--red)}
+  .sub{margin-top:.55em;font:600 clamp(10px,1.05vw,12px)/1.5 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.16em;text-transform:uppercase;color:var(--grey)}
+  .rule{height:3px;background:var(--ink);margin:calc(var(--u)*1.1) 0 calc(var(--u)*1.6)}
+  figure{margin:0 0 calc(var(--u)*2)}
+  img{width:100%;height:auto;display:block;border:1px solid rgba(20,20,20,.2)}
+  figcaption{margin-top:.85em;display:flex;gap:1em;align-items:baseline;font:500 clamp(11px,1vw,12.5px)/1.6 ui-monospace,Menlo,Consolas,monospace;color:var(--grey)}
+  figcaption b{color:var(--ink);font-weight:700;font-size:clamp(12px,1.1vw,14px);letter-spacing:.02em}
+  figcaption em{font-style:normal;color:var(--red)}
+  .cv{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+  footer{margin-top:calc(var(--u)*1.6);padding-top:calc(var(--u)*1);border-top:1px solid rgba(20,20,20,.22);
+         display:flex;flex-wrap:wrap;gap:.6em 1.5em;justify-content:space-between;
+         font:500 11px/1.6 ui-monospace,Menlo,Consolas,monospace;color:var(--grey);letter-spacing:.03em}
+  footer a{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>AI WORKSTREAM<br><em>控制台</em>三屏</h1>
+  <div class="sub">Live Pipeline Console — 2560 × 1440 / 3 screens</div>
+  <div class="rule"></div>
+
+  <figure>
+    <img src="ai-workstream/01-pipeline-overview.png" alt="管线总览">
+    <figcaption><b>01 管线总览</b><span>采集 → 检测 → 推理 → 合成 → 渲染 → 推流；吞吐 38.4 fps / 延迟 182 ms</span></figcaption>
+  </figure>
+  <figure>
+    <img src="ai-workstream/02-live-wall.png" alt="视频流监控">
+    <figcaption><b>02 视频流监控</b><span>六路画面墙 · 检测框与置信度 · 时码 · AI 解说 · 通道指标</span></figcaption>
+  </figure>
+  <figure>
+    <img src="ai-workstream/03-job-ledger.png" alt="执行日志">
+    <figcaption><b>03 执行日志</b><span>阶段时间线 · 作业账本（含重试与失败）· 告警规则</span></figcaption>
+  </figure>
+
+  <p style="font:400 clamp(12px,1.05vw,13.5px)/1.75 'Noto Sans SC','PingFang SC',sans-serif;color:#3A3730">
+    这页是静态截图；同一套界面有可交互版本：<a class="cv" href="ai-workstream/console.html">打开 console.html</a>（单文件、离线可用，滚轮/方向键切三屏）。
+  </p>
+
+  <footer>
+    <span>2560 × 1440 PNG · 深色监控台风格</span>
+    <span><a href="./">← 返回列表</a></span>
+  </footer>
+</div>
+</body>
+</html>

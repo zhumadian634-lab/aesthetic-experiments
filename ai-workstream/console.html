@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>AI WORKSTREAM — 控制台</title>
+<style>
+:root{
+  --bg:#07090C; --panel:#0C1015; --panel2:#0F141B; --line:#1A222C; --line2:#243040;
+  --ink:#E8EFF6; --mut:#7C8B9B; --dim:#4B5867;
+  --acc:#38E1C6; --acc2:#6FA8FF; --warn:#F5C36B; --bad:#FF6B6B; --ok:#4ADE80;
+  --mono:"Cascadia Mono","JetBrains Mono",Consolas,monospace;
+  --sans:"Segoe UI","Microsoft YaHei",system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:
+    radial-gradient(1200px 600px at 78% -10%, rgba(56,225,198,.10), transparent 60%),
+    radial-gradient(900px 500px at 10% 110%, rgba(111,168,255,.08), transparent 60%),
+    var(--bg);
+  color:var(--ink);font-family:var(--sans);overflow:hidden;
+  width:2560px;height:1440px;
+}
+/* 网格底纹 */
+body::before{
+  content:"";position:fixed;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);
+  background-size:48px 48px;pointer-events:none;
+}
+.wrap{position:relative;padding:34px 40px 28px;height:100%;display:flex;flex-direction:column;gap:22px}
+
+/* 顶栏 */
+.top{display:flex;align-items:center;gap:26px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+.mark{width:44px;height:44px;border:1px solid var(--acc);display:grid;place-items:center;position:relative}
+.mark i{width:14px;height:14px;background:var(--acc);display:block;box-shadow:0 0 18px rgba(56,225,198,.7)}
+.mark::after{content:"";position:absolute;inset:6px;border:1px solid rgba(56,225,198,.25)}
+.brand{display:flex;flex-direction:column;gap:4px}
+.brand b{font-size:21px;letter-spacing:.18em;font-weight:600}
+.brand span{font-family:var(--mono);font-size:12px;color:var(--mut);letter-spacing:.14em}
+.pills{display:flex;gap:10px;margin-left:auto;align-items:center}
+.pill{font-family:var(--mono);font-size:12px;letter-spacing:.08em;color:var(--mut);
+      border:1px solid var(--line2);padding:8px 14px;display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.015)}
+.pill b{color:var(--ink);font-weight:500}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 10px var(--ok)}
+.dot.a{background:var(--warn);box-shadow:0 0 10px var(--warn)}
+.clock{font-family:var(--mono);font-size:26px;letter-spacing:.06em;color:var(--ink);margin-left:12px;font-variant-numeric:tabular-nums}
+.clock small{color:var(--dim);font-size:12px;margin-left:8px;letter-spacing:.2em}
+
+/* 布局 */
+.body{flex:1;display:grid;grid-template-columns:220px 1fr;gap:22px;min-height:0}
+.rail{display:flex;flex-direction:column;gap:6px;padding-top:4px}
+.rail a{display:flex;align-items:center;gap:12px;padding:13px 14px;color:var(--mut);text-decoration:none;
+        font-size:13.5px;letter-spacing:.05em;border-left:2px solid transparent}
+.rail a.on{color:var(--ink);background:linear-gradient(90deg,rgba(56,225,198,.10),transparent);border-left-color:var(--acc)}
+.rail a i{width:14px;height:14px;border:1px solid currentColor;opacity:.8;display:block}
+.rail .sp{flex:1}
+.rail .foot{font-family:var(--mono);font-size:11px;color:var(--dim);line-height:1.9;letter-spacing:.06em}
+
+.grid{display:grid;gap:18px;min-height:0}
+
+/* 卡片 */
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);position:relative;overflow:hidden;display:flex;flex-direction:column}
+.card::before{content:"";position:absolute;left:0;top:0;width:100%;height:1px;background:linear-gradient(90deg,var(--acc),transparent 55%);opacity:.55}
+.ch{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:11.5px;letter-spacing:.16em;color:var(--mut)}
+.ch b{color:var(--ink);font-weight:500;letter-spacing:.12em}
+.ch .r{margin-left:auto;color:var(--dim)}
+.cb{padding:18px;flex:1;min-height:0}
+
+/* 指标 */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.kpi{padding:16px 18px;border:1px solid var(--line);background:rgba(255,255,255,.012)}
+.kpi .lab{font-family:var(--mono);font-size:11px;color:var(--mut);letter-spacing:.14em}
+.kpi .val{font-size:40px;font-weight:300;letter-spacing:-.01em;margin-top:8px;font-variant-numeric:tabular-nums;line-height:1}
+.kpi .val u{font-size:15px;color:var(--mut);text-decoration:none;margin-left:6px;letter-spacing:.06em}
+.kpi .sub{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:9px;letter-spacing:.06em}
+.kpi.g .val{color:var(--acc)} .kpi.b .val{color:var(--acc2)} .kpi.w .val{color:var(--warn)}
+
+/* 管线 */
+.flow{display:flex;align-items:stretch;gap:0;height:100%;justify-content:center;flex-direction:column;gap:18px}
+.line1,.line2{display:flex;align-items:center;gap:10px}
+.arw{flex:0 0 34px;height:1px;background:linear-gradient(90deg,rgba(56,225,198,.15),rgba(56,225,198,.75));position:relative}
+.arw::after{content:"";position:absolute;right:0;top:-3px;width:6px;height:6px;border-top:1px solid var(--acc);border-right:1px solid var(--acc);transform:rotate(45deg)}
+.node{position:relative;width:196px;padding:14px 16px;background:#0A0E13;border:1px solid var(--line2);z-index:2;flex:0 0 196px}
+.node .t{font-family:var(--mono);font-size:10.5px;color:var(--mut);letter-spacing:.16em}
+.node .n{font-size:14.5px;margin-top:6px;letter-spacing:.04em}
+.node .m{font-family:var(--mono);font-size:11px;color:var(--acc);margin-top:8px;letter-spacing:.06em}
+.node.act{border-color:rgba(56,225,198,.55);box-shadow:0 0 0 1px rgba(56,225,198,.14),0 0 40px rgba(56,225,198,.10)}
+.node .bar{height:2px;background:rgba(255,255,255,.06);margin-top:10px;overflow:hidden}
+.node .bar i{display:block;height:100%;background:var(--acc);width:62%}
+
+/* 日志 */
+.log{font-family:var(--mono);font-size:12.5px;line-height:1.95;color:var(--mut);overflow:hidden}
+.log div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.log .ts{color:var(--dim);margin-right:14px}
+.log .ok{color:var(--ok)} .log .ac{color:var(--acc)} .log .wn{color:var(--warn)} .log .bd{color:var(--bad)}
+
+/* 视频墙 */
+.wall{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:14px;height:100%}
+.tile{position:relative;border:1px solid var(--line2);overflow:hidden;background:
+  linear-gradient(180deg,#101A24 0%,#0B1219 46%,#131C25 46%,#080C11 100%)}
+.tile .scan{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 3px);opacity:.6}
+.tile::after{content:"";position:absolute;inset:0;background:radial-gradient(60% 60% at 50% 42%,rgba(111,168,255,.10),transparent 70%)}
+.tile .face{position:absolute;border:1px solid var(--acc);box-shadow:0 0 22px rgba(56,225,198,.25)}
+.tile .face span{position:absolute;top:-22px;left:-1px;font-family:var(--mono);font-size:10.5px;color:#04110E;background:var(--acc);padding:2px 7px;letter-spacing:.1em}
+.tile .tc{position:absolute;left:12px;bottom:10px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.75);letter-spacing:.1em}
+.tile .ch2{position:absolute;right:12px;top:10px;font-family:var(--mono);font-size:10.5px;color:var(--mut);letter-spacing:.12em}
+.tile .cap{position:absolute;left:0;right:0;bottom:34px;text-align:center;font-size:15px;color:#EAF6FF;
+  text-shadow:0 2px 18px #000;letter-spacing:.06em}
+.tile.live{border-color:rgba(255,107,107,.4)}
+.tile.live .rec{position:absolute;left:12px;top:10px;font-family:var(--mono);font-size:10.5px;color:#FFB4B4;letter-spacing:.14em}
+.tile.live .rec b{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bad);margin-right:6px;animation:blink 1.4s infinite}
+@keyframes blink{50%{opacity:.15}}
+
+/* 表格 */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-family:var(--mono);font-size:11px;color:var(--mut);letter-spacing:.14em;text-align:left;padding:11px 12px;border-bottom:1px solid var(--line2);font-weight:400}
+td{padding:13px 12px;border-bottom:1px solid rgba(255,255,255,.045);color:#CBD6E1}
+td.mono{font-family:var(--mono);font-size:12px;color:var(--mut)}
+.tag{font-family:var(--mono);font-size:10.5px;padding:3px 9px;border:1px solid;letter-spacing:.1em}
+.tag.ok{color:var(--ok);border-color:rgba(74,222,128,.35)}
+.tag.w{color:var(--warn);border-color:rgba(245,195,107,.35)}
+.tag.b{color:var(--acc);border-color:rgba(56,225,198,.35)}
+.tag.r{color:var(--bad);border-color:rgba(255,107,107,.35)}
+
+/* 时间线 */
+.tl{display:flex;flex-direction:column;gap:0}
+.row{display:grid;grid-template-columns:150px 1fr;align-items:center;gap:16px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.row .nm{font-family:var(--mono);font-size:11.5px;color:var(--mut);letter-spacing:.08em}
+.track{position:relative;height:16px;background:rgba(255,255,255,.03)}
+.bar2{position:absolute;top:0;height:100%;background:linear-gradient(90deg,rgba(56,225,198,.85),rgba(56,225,198,.35))}
+.bar2.b{background:linear-gradient(90deg,rgba(111,168,255,.85),rgba(111,168,255,.3))}
+.bar2.w{background:linear-gradient(90deg,rgba(245,195,107,.85),rgba(245,195,107,.3))}
+
+.lab2{font-family:var(--mono);font-size:10.5px;color:var(--mut);letter-spacing:.14em}
+.v2{font-size:22px;margin-top:6px;font-variant-numeric:tabular-nums;letter-spacing:.02em}.scn{position:absolute;inset:0;width:100%;height:100%}
+.quote{font-size:15px;line-height:1.85;color:#D6E2EC;letter-spacing:.02em}
+.meta{font-family:var(--mono);font-size:10.5px;color:var(--dim);letter-spacing:.12em;margin-top:14px;border-top:1px solid var(--line);padding-top:12px}.footline{display:flex;gap:26px;font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.12em;border-top:1px solid var(--line);padding-top:14px}
+.footline b{color:var(--mut);font-weight:400}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="mark"><i></i></div>
+    <div class="brand">
+      <b>AI WORKSTREAM</b>
+      <span>LIVE PIPELINE CONTROL · NODE 07 · BUILD 2026.11.14</span>
+    </div>
+    <div class="pills">
+      <div class="pill"><span class="dot"></span>PIPELINE <b>RUNNING</b></div>
+      <div class="pill"><span class="dot a"></span>GPU <b>78%</b></div>
+      <div class="pill">UP <b>14d 06:22</b></div>
+      <div class="clock" id="clock">21:47:08<small>CST</small></div>
+    </div>
+  </div>
+
+  <div class="body">
+    <nav class="rail">
+      <a href="#" class="on"><i></i>管线总览</a>
+      <a href="#"><i></i>视频流监控</a>
+      <a href="#"><i></i>执行日志</a>
+      <a href="#"><i></i>模型与节点</a>
+      <a href="#"><i></i>推流通道</a>
+      <div class="sp"></div>
+      <div class="foot">
+        SESSION · 0x7F3A<br>
+        REGION · CN-NORTH<br>
+        CODEC · H.265 / 8M
+      </div>
+    </nav>
+
+    <main class="grid" id="main"></main>
+  </div>
+
+  <div class="footline">
+    <span><b>TELEMETRY</b> 1.2 GB/min</span>
+    <span><b>FRAMES</b> 2,418,903</span>
+    <span><b>TOKENS</b> 41.2M</span>
+    <span><b>AVG LATENCY</b> 182 ms</span>
+    <span style="margin-left:auto"><b>© 2026 WORKSTREAM OPS</b> · INTERNAL</span>
+  </div>
+</div>
+
+<script>
+const clock = document.getElementById('clock');
+function tick(){
+  const d = new Date();
+  const p = n => String(n).padStart(2,'0');
+  clock.innerHTML = p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds())+'<small>CST</small>';
+}
+tick(); setInterval(tick, 1000);
+
+const page = (location.hash.replace('#','') || 'overview');
+
+const P1 = `
+<div class="grid" style="grid-template-rows:auto 1fr;height:100%">
+  <div class="kpis">
+    <div class="kpi g"><div class="lab">THROUGHPUT</div><div class="val">38.4<u>fps</u></div><div class="sub">↑ 2.1% vs 1h</div></div>
+    <div class="kpi b"><div class="lab">INFERENCE</div><div class="val">182<u>ms</u></div><div class="sub">p95 · 214 ms</div></div>
+    <div class="kpi"><div class="lab">ACTIVE NODES</div><div class="val">12<u>/12</u></div><div class="sub">ALL HEALTHY</div></div>
+    <div class="kpi w"><div class="lab">QUEUE DEPTH</div><div class="val">7<u>jobs</u></div><div class="sub">BUDGET 24</div></div>
+  </div>
+
+  <div class="grid" style="grid-template-columns:1fr 520px;min-height:0">
+    <div class="grid" style="grid-template-rows:auto 1fr;min-height:0">
+      <div class="card">
+        <div class="ch"><b>PIPELINE TOPOLOGY</b><span>·</span>LIVE<span class="r">12 NODES · 14 EDGES</span></div>
+        <div class="cb">
+          <div class="flow">
+            <div class="line1">
+              <div class="node"><div class="t">NODE 01 · CAPTURE</div><div class="n">多路视频采集</div><div class="m">6 CH · 1080p30</div><div class="bar"><i style="width:74%"></i></div></div>
+              <div class="arw"></div>
+              <div class="node"><div class="t">NODE 02 · DETECT</div><div class="n">目标检测 / 追踪</div><div class="m">YOLO-X · 24 ms</div><div class="bar"><i style="width:88%"></i></div></div>
+              <div class="arw"></div>
+              <div class="node act"><div class="t">NODE 03 · REASON</div><div class="n">多模态推理</div><div class="m">VLM · 96 ms</div><div class="bar"><i style="width:62%"></i></div></div>
+              <div class="arw"></div>
+              <div class="node"><div class="t">NODE 04 · TTS</div><div class="n">语音合成</div><div class="m">48 kHz · 38 ms</div><div class="bar"><i style="width:41%"></i></div></div>
+              <div class="arw"></div>
+              <div class="node"><div class="t">NODE 05 · RENDER</div><div class="n">字幕 / 包装</div><div class="m">1080p30 · GPU</div><div class="bar"><i style="width:55%"></i></div></div>
+              <div class="arw"></div>
+              <div class="node act"><div class="t">NODE 06 · PUSH</div><div class="n">RTMP 推流</div><div class="m">8 Mbps · 0 丢帧</div><div class="bar"><i style="width:93%"></i></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ch"><b>TELEMETRY</b><span>·</span>LAST 60 MIN<span class="r">THROUGHPUT / LATENCY</span></div>
+        <div class="cb" style="padding:10px 14px 8px">
+          <svg viewBox="0 0 1000 260" preserveAspectRatio="none" style="width:100%;height:calc(100% - 34px);display:block">
+            <defs>
+              <linearGradient id="fa" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#38E1C6" stop-opacity=".38"/><stop offset="1" stop-color="#38E1C6" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="fb" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#6FA8FF" stop-opacity=".28"/><stop offset="1" stop-color="#6FA8FF" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            ${[0,1,2,3,4].map(i=>`<line x1="0" y1="${i*52+10}" x2="1000" y2="${i*52+10}" stroke="rgba(255,255,255,.05)" stroke-width="1"/>`).join("")}
+            <path d="M0,150 L60,142 L120,158 L180,132 L240,140 L300,120 L360,128 L420,104 L480,118 L540,96 L600,110 L660,92 L720,104 L780,84 L840,96 L900,78 L960,88 L1000,74 L1000,260 L0,260 Z" fill="url(#fa)"/>
+            <path d="M0,150 L60,142 L120,158 L180,132 L240,140 L300,120 L360,128 L420,104 L480,118 L540,96 L600,110 L660,92 L720,104 L780,84 L840,96 L900,78 L960,88 L1000,74" fill="none" stroke="#38E1C6" stroke-width="2"/>
+            <path d="M0,200 L60,206 L120,196 L180,210 L240,198 L300,214 L360,202 L420,216 L480,204 L540,220 L600,206 L660,224 L720,212 L780,222 L840,208 L900,226 L960,214 L1000,220 L1000,260 L0,260 Z" fill="url(#fb)"/>
+            <path d="M0,200 L60,206 L120,196 L180,210 L240,198 L300,214 L360,202 L420,216 L480,204 L540,220 L600,206 L660,224 L720,212 L780,222 L840,208 L900,226 L960,214 L1000,220" fill="none" stroke="#6FA8FF" stroke-width="1.5" stroke-dasharray="4 4"/>
+          </svg>
+          <div style="display:flex;gap:26px;font-family:var(--mono);font-size:11px;color:var(--mut);letter-spacing:.1em;margin-top:6px">
+            <span style="color:var(--acc)">■ THROUGHPUT 38.4 fps</span>
+            <span style="color:var(--acc2)">▨ LATENCY 182 ms</span>
+            <span style="margin-left:auto;color:var(--dim)">21:00 —— 21:47</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid" style="grid-template-rows:auto 1fr auto;min-height:0">
+      <div class="card">
+        <div class="ch"><b>RESOURCE</b><span class="r">REALTIME</span></div>
+        <div class="cb" style="display:flex;flex-direction:column;gap:15px">
+          <div><div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--mut);letter-spacing:.12em"><span>GPU · 4090</span><span style="color:var(--acc)">78%</span></div>
+            <div style="height:6px;background:rgba(255,255,255,.05);margin-top:8px"><div style="width:78%;height:100%;background:linear-gradient(90deg,#38E1C6,#6FA8FF)"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--mut);letter-spacing:.12em"><span>VRAM · 18.2 / 24 GB</span><span style="color:var(--acc2)">76%</span></div>
+            <div style="height:6px;background:rgba(255,255,255,.05);margin-top:8px"><div style="width:76%;height:100%;background:linear-gradient(90deg,#6FA8FF,#8B7BFF)"></div></div></div>
+          <div><div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--mut);letter-spacing:.12em"><span>UPLINK · 8.0 Mbps</span><span style="color:var(--warn)">64%</span></div>
+            <div style="height:6px;background:rgba(255,255,255,.05);margin-top:8px"><div style="width:64%;height:100%;background:linear-gradient(90deg,#F5C36B,#FF9F6B)"></div></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ch"><b>EVENT STREAM</b><span class="r">TAIL -F</span></div>
+        <div class="cb log">
+          <div><span class="ts">21:47:02</span><span class="ac">capture</span> ch03 keyframe ok · 30.0 fps</div>
+          <div><span class="ts">21:47:03</span><span class="ok">detect</span> 4 targets · conf .94 / .91 / .88</div>
+          <div><span class="ts">21:47:03</span><span class="ac">reason</span> vlm batch#8821 → 96 ms</div>
+          <div><span class="ts">21:47:04</span><span class="wn">tts</span> queue 3 · throttled to 0.9×</div>
+          <div><span class="ts">21:47:05</span><span class="ok">render</span> overlay composed · 12 ms</div>
+          <div><span class="ts">21:47:05</span><span class="ac">push</span> rtmp://edge-cn-03 · 8 Mbps</div>
+          <div><span class="ts">21:47:06</span><span class="ok">push</span> health 200 · rtt 24 ms</div>
+          <div><span class="ts">21:47:07</span><span class="bd">alert</span> ch05 jitter 12 ms → recovered</div>
+          <div><span class="ts">21:47:08</span><span class="ac">reason</span> vlm batch#8822 → 94 ms</div>
+          <div><span class="ts">21:47:09</span><span class="ok">push</span> frame seq ok · +1,204</div>
+          <div><span class="ts">21:47:10</span><span class="ac">detect</span> ch01 2 targets · 11 ms</div>
+          <div><span class="ts">21:47:11</span><span class="ok">tts</span> utterance #4412 cached</div>
+          <div><span class="ts">21:47:12</span><span class="ac">reason</span> vlm batch#8823 → 92 ms</div>
+          <div><span class="ts">21:47:13</span><span class="wn">gpu</span> util 81% · thermal 64℃</div>
+          <div><span class="ts">21:47:14</span><span class="ok">push</span> health 200 · rtt 22 ms</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="ch"><b>SLA</b><span class="r">24H</span></div>
+        <div class="cb" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">
+          <div><div class="lab2">UPTIME</div><div class="v2" style="color:var(--ok)">99.982%</div></div>
+          <div><div class="lab2">DROPPED</div><div class="v2">0.004%</div></div>
+          <div><div class="lab2">P99 LATENCY</div><div class="v2">241 ms</div></div>
+          <div><div class="lab2">INCIDENTS</div><div class="v2" style="color:var(--warn)">1</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>`;
+
+
+const P2 = `
+<div class="grid" style="grid-template-columns:1fr 420px;height:100%">
+  <div class="card">
+    <div class="ch"><b>LIVE WALL</b><span>·</span>6 CHANNELS<span class="r">1080P · H.265 · 8M</span></div>
+    <div class="cb">
+      <div class="wall">
+        ${[1,2,3,4,5,6].map((n,i)=>`
+        <div class="tile ${i===0?'live':''}">
+          <div class="scan"></div><svg class="scn" viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d2f3e"/><stop offset="1" stop-color="#0a1016"/></linearGradient></defs><rect width="320" height="180" fill="url(#sk)"/><circle cx="72" cy="58" r="30" fill="#2c4c64" opacity=".5"/><circle cx="238" cy="38" r="16" fill="#3f6f80" opacity=".3"/><circle cx="262" cy="96" r="8" fill="#8fb6c8" opacity=".22"/><path d="M0 138 Q80 118 160 136 T320 130 V180 H0Z" fill="#0c141a"/><g opacity=".9"><ellipse cx="158" cy="92" rx="17" ry="21" fill="#23323f"/><rect x="144" y="110" width="28" height="42" rx="9" fill="#1a2732"/></g></svg>
+          ${i===0?'<div class="rec"><b></b>LIVE</div>':''}
+          <div class="ch2">CH-0${n}</div>
+          <div class="face" style="left:${26+i*3}%;top:${22+i*2}%;width:96px;height:120px"><span>FACE ${(0.94-i*0.03).toFixed(2)}</span></div>
+          <div class="cap">${['多模态实时解说','场景理解与描述','目标追踪与标注','语音同步合成','字幕渲染输出','推流质量监测'][i]}</div>
+          <div class="tc">00:${12+i*7}:0${i+2}:1${i}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>
+  <div class="grid" style="grid-template-rows:auto auto 1fr">
+    <div class="card">
+      <div class="ch"><b>CHANNEL 01</b><span class="r">ACTIVE</span></div>
+      <div class="cb" style="display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px;color:var(--mut);letter-spacing:.1em"><span>BITRATE</span><span style="color:var(--ink)">8.02 Mbps</span></div>
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px;color:var(--mut);letter-spacing:.1em"><span>FRAME DROP</span><span style="color:var(--ok)">0.00%</span></div>
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px;color:var(--mut);letter-spacing:.1em"><span>GLASS-TO-GLASS</span><span style="color:var(--ink)">0.42 s</span></div>
+        <div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px;color:var(--mut);letter-spacing:.1em"><span>ENCODE</span><span style="color:var(--acc2)">NVENC · 14 ms</span></div>
+      </div>
+    </div>
+<div class="card">
+      <div class="ch"><b>AI CAPTION</b><span class="r">CH-01 · 1.2 s</span></div>
+      <div class="cb">
+        <div class="quote">画面中一名穿白色实验服的人员俯身查看仪器读数板，右侧为蓝色试剂桶与不锈钢操作台；检测框锁定人物上半身，置信度 0.94。</div>
+        <div class="meta">42 字 · 置信度 0.93 · 生成于 21:47:12 · 已同步推流</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><b>SCENE EVENTS</b><span class="r">LAST 60S</span></div>
+      <div class="cb log">
+        <div><span class="ts">21:46:41</span><span class="ac">scene</span> cut → 户外街景</div>
+        <div><span class="ts">21:46:44</span><span class="ok">asr</span> “……今天风有点大”</div>
+        <div><span class="ts">21:46:47</span><span class="ac">vlm</span> caption 已生成 · 62 字</div>
+        <div><span class="ts">21:46:49</span><span class="ok">tts</span> 合成完成 · 2.1 s</div>
+        <div><span class="ts">21:46:52</span><span class="ac">render</span> 字幕轨对齐 · 0 偏移</div>
+        <div><span class="ts">21:46:55</span><span class="ok">push</span> 帧序连续 · 无重传</div>
+        <div><span class="ts">21:47:00</span><span class="wn">alert</span> ch05 抖动 12 ms</div>
+      </div>
+    </div>
+  </div>
+</div>`;
+
+const P3 = `
+<div class="grid" style="grid-template-rows:auto 1fr auto;height:100%">
+  <div class="card">
+    <div class="ch"><b>EXECUTION TIMELINE</b><span>·</span>JOB #8821<span class="r">TOTAL 1.84 s</span></div>
+    <div class="cb">
+      <div class="tl">
+        ${[['CAPTURE','0%','14%',''],['DETECT','13%','9%','b'],['REASON','22%','52%',''],['TTS','74%','9%','w'],['RENDER','83%','8%','b'],['PUSH','91%','9%','']].map(([n,l,w,c])=>`
+        <div class="row"><div class="nm">${n}</div><div class="track"><div class="bar2 ${c}" style="left:${l};width:${w}"></div></div></div>`).join('')}
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><b>JOB LEDGER</b><span class="r">LAST 12 JOBS</span></div>
+    <div class="cb" style="padding:0">
+      <table>
+        <tr><th>JOB</th><th>STAGE</th><th>INPUT</th><th>LATENCY</th><th>TOKENS</th><th>STATUS</th></tr>
+        ${[['#8821','reason','ch01 / 1080p','182 ms','4.2K','ok'],
+           ['#8820','push','ch06 / 1080p','96 ms','—','ok'],
+           ['#8819','tts','text / 62 字','61 ms','—','ok'],
+           ['#8818','detect','ch03 / 1080p','24 ms','—','ok'],
+           ['#8817','render','overlay','12 ms','—','ok'],
+           ['#8816','reason','ch02 / 1080p','244 ms','5.1K','w'],
+           ['#8815','push','ch05 / 720p','—','—','r'],
+           ['#8814','capture','ch04 / 1080p','8 ms','—','ok'],
+           ['#8813','tts','text / 88 字','72 ms','—','ok'],
+           ['#8812','detect','ch01 / 1080p','21 ms','—','ok'],
+           ['#8811','reason','ch05 / 720p','268 ms','5.6K','w'],
+           ['#8810','render','overlay','14 ms','—','ok'],
+           ['#8809','push','ch02 / 1080p','88 ms','—','ok'],
+           ['#8808','capture','ch06 / 1080p','9 ms','—','ok'],].map(([a,b,c,d,e,f])=>`
+        <tr><td class="mono">${a}</td><td>${b}</td><td class="mono">${c}</td><td class="mono">${d}</td><td class="mono">${e}</td>
+        <td><span class="tag ${f}">${f==='ok'?'SUCCESS':f==='w'?'RETRY 1':'FAILED'}</span></td></tr>`).join('')}
+      </table>
+    </div>
+  </div>
+</div>`;
+
+document.getElementById('main').innerHTML = page==='wall'?P2 : page==='log'?P3 : P1;
+if(page==='wall'||page==='log'){ document.querySelectorAll('.rail a').forEach((a,i)=>{ a.classList.toggle('on', (page==='wall'&&i===1)||(page==='log'&&i===2)); }); }
+</script>
+</body>
+</html>
