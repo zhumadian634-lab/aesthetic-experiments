@@ -68,6 +68,20 @@
     display:flex;flex-wrap:wrap;gap:.6em 1.5em;justify-content:space-between;
     font:500 11px/1.6 ui-monospace,Menlo,Consolas,monospace;color:var(--grey);letter-spacing:.03em}
 
+  /* ai workstream shots */
+  .shots{margin-top:calc(var(--u)*2.2);padding-top:calc(var(--u)*1.4);border-top:1px solid rgba(20,20,20,.22)}
+  .shots h2{font-size:clamp(19px,2.3vw,30px);font-weight:800;letter-spacing:-.015em}
+  .shots .lede{margin-top:.5em;font:500 clamp(11px,1vw,12.5px)/1.7 ui-monospace,Menlo,Consolas,monospace;color:var(--grey);letter-spacing:.04em}
+  .shotgrid{margin-top:calc(var(--u)*1.2);display:grid;grid-template-columns:repeat(3,1fr);gap:calc(var(--u)*1);}
+  .shotgrid a{display:block;text-decoration:none;color:inherit}
+  .shotgrid img{width:100%;height:auto;display:block;border:1px solid rgba(20,20,20,.25);transition:transform .18s ease,box-shadow .18s ease}
+  .shotgrid a:hover img{transform:translateY(-3px);box-shadow:0 10px 26px rgba(20,20,20,.18)}
+  .shotgrid b{display:block;margin-top:.7em;font:700 12px/1.4 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em}
+  .shotgrid span{display:block;margin-top:.25em;font:400 clamp(11px,1vw,12.5px)/1.6 "Noto Sans SC","PingFang SC",sans-serif;color:var(--grey)}
+  .shots .more{margin-top:calc(var(--u)*1);font:600 12px/1.6 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em}
+  .shots .more a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+  @media (max-width:640px){ .shotgrid{grid-template-columns:1fr} }
+
   @media (max-width:640px){
     body{padding:calc(var(--u)*1.6) calc(var(--u)*1.2) calc(var(--u)*1.6)}
     header{align-items:flex-start}
@@ -175,6 +189,26 @@
     </a></li>
 
   </ol>
+
+  <section class="shots">
+    <h2>AI WORKSTREAM · 控制台三屏</h2>
+    <p class="lede">实时管线监控界面 · 2560 × 1440 · 点图看原图</p>
+    <div class="shotgrid">
+      <a href="ai-workstream/01-pipeline-overview.png" target="_blank" rel="noopener">
+        <img src="ai-workstream/01-pipeline-overview.png" alt="管线总览" loading="lazy">
+        <b>01 管线总览</b><span>采集 → 检测 → 推理 → 合成 → 渲染 → 推流</span>
+      </a>
+      <a href="ai-workstream/02-live-wall.png" target="_blank" rel="noopener">
+        <img src="ai-workstream/02-live-wall.png" alt="视频流监控" loading="lazy">
+        <b>02 视频流监控</b><span>六路画面墙 · 检测框 · 时码 · AI 解说</span>
+      </a>
+      <a href="ai-workstream/03-job-ledger.png" target="_blank" rel="noopener">
+        <img src="ai-workstream/03-job-ledger.png" alt="执行日志" loading="lazy">
+        <b>03 执行日志</b><span>阶段时间线 · 作业账本 · 告警规则</span>
+      </a>
+    </div>
+    <p class="more"><a href="ai-workstream.html">打开完整说明页 →</a> · <a href="ai-workstream/console.html">可交互版本 →</a></p>
+  </section>
 
   <div class="notes">
     <div class="note">
