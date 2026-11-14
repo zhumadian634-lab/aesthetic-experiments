@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>胡夫金字塔 · 国王室与石棺 — three.js 查看器</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #1e1e22; }
+  body { font-family: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; color: #e8e6e1; }
+  #app { position: fixed; inset: 0; }
+  canvas { display: block; touch-action: none; }
+
+  #ui { position: fixed; top: 14px; left: 14px; display: flex; gap: 8px; z-index: 10; }
+  #ui button {
+    appearance: none; border: 1px solid rgba(255,255,255,.22);
+    background: rgba(24,24,28,.72); color: #e8e6e1;
+    font-family: inherit; font-size: 13px; line-height: 1;
+    padding: 9px 15px; border-radius: 8px; cursor: pointer;
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    transition: background .18s ease, border-color .18s ease, color .18s ease;
+  }
+  #ui button:hover { background: rgba(52,52,60,.88); border-color: rgba(255,255,255,.42); }
+  #ui button.on { background: #c9a227; border-color: #e3bf4a; color: #1a1a1e; font-weight: 600; }
+
+  #hint {
+    position: fixed; left: 0; right: 0; bottom: 14px; z-index: 10;
+    text-align: center; font-size: 12.5px; letter-spacing: .02em;
+    color: rgba(232,230,225,.62); pointer-events: none;
+  }
+
+  #loader {
+    position: fixed; inset: 0; z-index: 20; background: #1e1e22;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    transition: opacity .55s ease;
+  }
+  #loader.hide { opacity: 0; pointer-events: none; }
+  #loader .txt { font-size: 13px; color: rgba(232,230,225,.82); font-variant-numeric: tabular-nums; }
+  #loader .bar { width: min(320px, 62vw); height: 3px; border-radius: 2px; overflow: hidden; background: rgba(255,255,255,.14); }
+  #loader .bar i { display: block; height: 100%; width: 0%; background: #c9a227; transition: width .18s linear; }
+
+  #err {
+    position: fixed; left: 0; right: 0; top: 0; z-index: 30; display: none;
+    background: #7a1f1f; color: #fff; font-size: 12px; padding: 7px 12px; white-space: pre-wrap;
+  }
+</style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <div id="ui">
+    <button id="btnMode" title="切换外景 / 室内">室内</button>
+    <button id="btnSpin">自动旋转</button>
+    <button id="btnFull">全屏</button>
+  </div>
+
+  <div id="hint">左键拖动旋转 · 滚轮缩放 · 右键平移</div>
+
+  <div id="loader">
+    <div class="txt" id="loadTxt">加载模型… 0%</div>
+    <div class="bar"><i id="loadBar"></i></div>
+  </div>
+
+  <div id="err"></div>
+
+  <script>
+  /* 验收用：捕获运行期错误、资源加载失败与 Promise 拒绝 */
+  window.__errors = [];
+  window.addEventListener('error', function (e) {
+    if (e && e.target && e.target !== window && (e.target.src || e.target.href)) {
+      window.__errors.push('resource: ' + (e.target.src || e.target.href));
+    } else {
+      window.__errors.push('error: ' + String((e && e.message) || (e && e.error) || e) + ' @' + ((e && e.filename) || '') + ':' + ((e && e.lineno) || 0));
+    }
+  }, true);
+  window.addEventListener('unhandledrejection', function (e) {
+    window.__errors.push('unhandledrejection: ' + String((e && e.reason && (e.reason.message || e.reason)) || e));
+  });
+  </script>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/build/three.module.js",
+      "three/addons/": "./vendor/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+  import * as THREE from 'three';
+  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+  import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+  import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+  /* ---------- 场景常量 ---------- */
+  // 石棺中心（glTF 世界坐标，来自 chamber.glb 包围盒中心）
+  const SARC = new THREE.Vector3(-2.031, 43.561, 8.448);
+
+  const MODES = {
+    exterior: {
+      key: 'exterior', file: 'pyramid.glb', label: '外景',
+      target: new THREE.Vector3(0, 50, 0),
+      cam:    new THREE.Vector3(420, 240, 420),
+      minD: 5, maxD: 900, near: 0.5, far: 5000
+    },
+    interior: {
+      key: 'interior', file: 'chamber.glb', label: '室内',
+      target: SARC.clone(),
+      cam:    new THREE.Vector3(-2.03, 44.6, 11.2),
+      minD: 0.3, maxD: 8, near: 0.02, far: 200
+    }
+  };
+
+  /* ---------- 错误汇总（供自检读取） ---------- */
+  const errBox = document.getElementById('err');
+  window.__errors = window.__errors || [];
+  function fail(msg) {
+    window.__errors.push(String(msg));
+    errBox.style.display = 'block';
+    errBox.textContent = '错误：' + window.__errors.join(' | ');
+  }
+  window.addEventListener('error', e => fail(e.message || 'unknown error'));
+  window.addEventListener('unhandledrejection', e => fail((e.reason && e.reason.message) || e.reason || 'unhandled rejection'));
+
+  /* ---------- 渲染器 ---------- */
+  const app = document.getElementById('app');
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
+  app.appendChild(renderer.domElement);
+
+  /* ---------- 场景与相机 ---------- */
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x1e1e22);
+
+  const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.05, 5000);
+
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.06;
+  controls.enablePan = true;
+  controls.enableZoom = true;
+  controls.rotateSpeed = 0.85;
+  controls.zoomSpeed = 1.0;
+  controls.autoRotateSpeed = 1.0;
+
+  /* ---------- 灯光（glTF 不带灯，全部自建） ---------- */
+  const hemi = new THREE.HemisphereLight(0xdfe6ee, 0x3a3020, 0.9);
+  scene.add(hemi);
+
+  const sun = new THREE.DirectionalLight(0xfff3e0, 2.2);
+  sun.position.set(60, 120, 36);          // 方向 (1, 2, 0.6)
+  sun.target.position.set(0, 0, 0);
+  scene.add(sun);
+  scene.add(sun.target);
+
+  // 室内两盏暖光：一盏在石棺正上方，一盏在东北侧，专门照亮棺内木乃伊
+  const P1 = new THREE.PointLight(0xffd9b0, 30, 12, 2);
+  P1.position.set(SARC.x, SARC.y + 2.7, SARC.z);
+  const P2 = new THREE.PointLight(0xffd9b0, 30, 12, 2);
+  P2.position.set(SARC.x + 2.4, SARC.y + 1.6, SARC.z + 2.3);
+  const indoorLights = [P1, P2];
+
+  // 注意：KHR_materials_unlit 材质不吃灯光，切换时无需特殊处理（保持原样即可）
+
+  /* ---------- 模型加载 ---------- */
+  const loaderEl = document.getElementById('loader');
+  const loadTxt = document.getElementById('loadTxt');
+  const loadBar = document.getElementById('loadBar');
+
+  function setProgress(pct, text) {
+    const p = Math.max(0, Math.min(100, pct));
+    loadBar.style.width = p + '%';
+    loadTxt.textContent = text || ('加载模型… ' + p.toFixed(0) + '%');
+  }
+  function showLoader() { loaderEl.classList.remove('hide'); }
+  function hideLoader() { loaderEl.classList.add('hide'); }
+
+  const draco = new DRACOLoader();
+  draco.setDecoderPath('./vendor/jsm/libs/draco/gltf/');
+
+  const loader = new GLTFLoader();
+  loader.setDRACOLoader(draco);
+
+  let current = null;    // 当前模型 THREE.Scene
+  let mode = 'exterior';
+  let reqId = 0;
+
+  function disposeCurrent() {
+    if (!current) return;
+    scene.remove(current);
+    current.traverse(o => {
+      if (o.geometry) o.geometry.dispose();
+      const mats = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+      for (const m of mats) {
+        for (const k in m) {
+          const v = m[k];
+          if (v && v.isTexture) v.dispose();
+        }
+        m.dispose();
+      }
+    });
+    current = null;
+  }
+
+  function loadModel(cfg) {
+    const id = ++reqId;
+    showLoader();
+    setProgress(0);
+    loader.load(
+      cfg.file,
+      gltf => {
+        if (id !== reqId) return;              // 已被更新的请求取代
+        current = gltf.scene;
+        current.traverse(o => {
+          if (!o.isMesh) return;
+          o.castShadow = false;
+          o.receiveShadow = false;
+          const mats = Array.isArray(o.material) ? o.material : [o.material];
+          for (const m of mats) {
+            if (m && m.isMeshStandardMaterial) { m.envMap = null; m.needsUpdate = true; }
+          }
+        });
+        scene.add(current);
+        setProgress(100, '完成');
+        hideLoader();
+      },
+      ev => {
+        if (id !== reqId) return;
+        if (ev.lengthComputable && ev.total) setProgress(ev.loaded / ev.total * 100);
+        else if (ev.loaded) setProgress(0, '加载模型… ' + (ev.loaded / 1048576).toFixed(1) + ' MB');
+      },
+      err => {
+        if (id !== reqId) return;
+        hideLoader();
+        fail('模型加载失败 ' + cfg.file + '：' + ((err && err.message) || err));
+      }
+    );
+  }
+
+  /* ---------- 模式切换 ---------- */
+  function setMode(name) {
+    const cfg = MODES[name];
+    if (!cfg) return;
+    mode = name;
+
+    camera.near = cfg.near;
+    camera.far = cfg.far;
+    camera.updateProjectionMatrix();
+    camera.position.copy(cfg.cam);
+
+    controls.minDistance = cfg.minD;
+    controls.maxDistance = cfg.maxD;
+    controls.target.copy(cfg.target);
+    controls.update();
+
+    // 室内补光只在室内模式挂到场景里
+    for (const l of indoorLights) if (l.parent) l.parent.remove(l);
+    if (name === 'interior') for (const l of indoorLights) scene.add(l);
+
+    disposeCurrent();
+    loadModel(cfg);
+
+    // 按钮显示“将要切换到的模式”
+    document.getElementById('btnMode').textContent = (name === 'exterior' ? '室内' : '外景');
+    if (window.__viewer) window.__viewer.mode = name;
+  }
+
+  /* ---------- UI ---------- */
+  document.getElementById('btnMode').addEventListener('click', () => {
+    setMode(mode === 'exterior' ? 'interior' : 'exterior');
+  });
+
+  const btnSpin = document.getElementById('btnSpin');
+  btnSpin.addEventListener('click', () => {
+    controls.autoRotate = !controls.autoRotate;
+    btnSpin.classList.toggle('on', controls.autoRotate);
+  });
+
+  const btnFull = document.getElementById('btnFull');
+  btnFull.addEventListener('click', () => {
+    if (!document.fullscreenElement) {
+      const p = document.documentElement.requestFullscreen();
+      if (p && p.catch) p.catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  });
+  document.addEventListener('fullscreenchange', () => {
+    btnFull.classList.toggle('on', !!document.fullscreenElement);
+  });
+
+  /* ---------- 自适应 ---------- */
+  window.addEventListener('resize', () => {
+    const w = window.innerWidth, h = window.innerHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(w, h);
+  });
+
+  /* ---------- 渲染循环 ---------- */
+  function tick() {
+    requestAnimationFrame(tick);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+
+  /* ---------- 调试 / 验收接口 ---------- */
+  window.__viewer = {
+    THREE, scene, camera, controls, renderer, hemi, sun, indoorLights, SARC, MODES,
+    mode: 'exterior',
+    get distance() { return camera.position.distanceTo(controls.target); },
+    setMode,
+    setDistance(d) {
+      const dir = camera.position.clone().sub(controls.target).normalize();
+      camera.position.copy(controls.target).add(dir.multiplyScalar(d));
+      controls.update();
+      return camera.position.distanceTo(controls.target);
+    },
+    // 棺内特写机位：从石棺头部一侧略高处俯看棺内木乃伊
+    closeup() {
+      camera.position.copy(controls.target).add(new THREE.Vector3(0.35, 1.15, 1.45));
+      controls.update();
+      return camera.position.distanceTo(controls.target);
+    }
+  };
+
+  /* ---------- 启动 ---------- */
+  setMode('exterior');
+  tick();
+  </script>
+</body>
+</html>

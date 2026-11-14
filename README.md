@@ -32,3 +32,10 @@
 ## 部署
 
 GitHub Pages，`main` 分支根目录，`.nojekyll` 关闭 Jekyll 处理。
+
+## 3D 页面（WebGL）
+
+| 入口 | 标题 | 说明 |
+|---|---|---|
+| [pyramid/](pyramid/) | 胡夫金字塔 · 外观 / 室内 | three.js + glTF，vendor 本地化，离线可开 |
+| [pyramid/sarcophagus.html](pyramid/sarcophagus.html) | 石棺 · 单文件版 | 单文件自包含，可直接双击打开 |
