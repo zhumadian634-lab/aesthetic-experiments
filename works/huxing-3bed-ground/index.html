@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>独栋住宅 · 一层 9.0×11.0m · 装修设计器</title>
+<meta name="theme-color" content="#EFEDE6">
+<meta name="description" content="9.0 × 11.0 m 独栋住宅一层：鸟瞰、3D、全景三视角，原平面图对照，离线包可下载，可进 3D 交互设计器。">
+<style>
+  :root{
+    --paper:#EFEDE6; --ink:#141414; --red:#C8102E; --grey:#8C887C;
+    --u:clamp(14px,1.15vw,20px);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:"Helvetica Neue",Helvetica,Arial,"Noto Sans SC","PingFang SC",sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding:calc(var(--u)*2.2) calc(var(--u)*2.2) calc(var(--u)*2);
+    min-height:100vh;
+  }
+  .wrap{max-width:1180px;margin:0 auto}
+  img{max-width:100%;height:auto;display:block}
+  a{color:inherit}
+
+  /* 返回作品集 */
+  .back{
+    display:inline-block;margin-bottom:calc(var(--u)*1.6);
+    font:600 clamp(10px,1.05vw,12px)/1 ui-monospace,Menlo,Consolas,monospace;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--grey);
+    text-decoration:none;transition:color .16s ease;
+  }
+  .back:hover,.back:focus-visible{color:var(--red)}
+
+  /* 页头 */
+  header{padding-bottom:calc(var(--u)*1.2)}
+  h1{font-size:clamp(26px,4.2vw,54px);line-height:1;letter-spacing:-.02em;font-weight:800}
+  h1 em{font-style:normal;color:var(--red)}
+  .sub{
+    margin-top:.8em;
+    font:600 clamp(10px,1.05vw,12px)/1.6 ui-monospace,Menlo,Consolas,monospace;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--grey);
+  }
+  .rule{height:3px;background:var(--ink);margin:calc(var(--u)*1.1) 0 0}
+
+  /* 标签 */
+  .tags{display:flex;flex-wrap:wrap;gap:calc(var(--u)*.55);margin-top:calc(var(--u)*1.3)}
+  .tag{
+    font:600 10.5px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.08em;
+    border:1px solid rgba(20,20,20,.35);border-radius:999px;padding:.55em .85em;color:var(--ink);
+  }
+  .tag.hot{border-color:var(--red);color:var(--red)}
+
+  /* 唯一的 3D 入口 */
+  .enter{
+    display:inline-block;margin-top:calc(var(--u)*1.4);
+    background:var(--ink);color:var(--paper);border:1px solid var(--ink);
+    padding:calc(var(--u)*.8) calc(var(--u)*1.5);
+    font-size:clamp(14px,1.4vw,17px);font-weight:700;letter-spacing:-.01em;text-decoration:none;
+    transition:background .16s ease,border-color .16s ease,transform .16s ease;
+  }
+  .enter:hover,.enter:focus-visible{background:var(--red);border-color:var(--red);transform:translateY(-2px)}
+
+  /* 主图 */
+  .hero{margin-top:calc(var(--u)*1.8)}
+  .hero a{display:block;border:1px solid rgba(20,20,20,.22);background:#fff}
+  figcaption,.cap{
+    margin-top:calc(var(--u)*.55);
+    font:600 10.5px/1.6 ui-monospace,Menlo,Consolas,monospace;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--grey);
+  }
+
+  /* 分节 */
+  .sec{margin-top:calc(var(--u)*2.6)}
+  h2{
+    font:800 clamp(15px,1.6vw,19px)/1.2 inherit;letter-spacing:-.01em;
+    padding-bottom:calc(var(--u)*.5);border-bottom:3px solid var(--ink);
+  }
+  .sec > .cap{margin-top:calc(var(--u)*.8)}
+
+  /* 原平面图对照 */
+  .split{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:calc(var(--u)*1.4);margin-top:calc(var(--u)*1.3);align-items:start}
+  .split .shot{border:1px solid rgba(20,20,20,.22);background:#fff}
+  .note p{font-size:clamp(13px,1.2vw,15px);line-height:1.75;color:#2a2a2a}
+  .note p + p{margin-top:.8em}
+  .txtlink{
+    display:inline-block;margin-top:.9em;
+    font:600 12px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.06em;
+    text-decoration:none;border-bottom:1px solid var(--red);color:var(--red);padding-bottom:.35em;
+  }
+  .txtlink:hover{color:var(--ink);border-bottom-color:var(--ink)}
+
+  /* 更多视角 */
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:calc(var(--u)*1.4);margin-top:calc(var(--u)*1.3)}
+  .grid2 a{display:block;border:1px solid rgba(20,20,20,.22);background:#fff}
+
+  /* 下载区块 */
+  .dl{
+    margin-top:calc(var(--u)*2.6);
+    border:1px solid var(--ink);background:rgba(20,20,20,.035);
+    padding:calc(var(--u)*1.3) calc(var(--u)*1.5);
+    display:flex;flex-wrap:wrap;gap:calc(var(--u)*1.1);align-items:center;justify-content:space-between;
+  }
+  .dl h3{font-size:clamp(16px,1.7vw,21px);font-weight:800;letter-spacing:-.01em}
+  .dl .meta{
+    margin-top:.55em;font-size:clamp(12.5px,1.15vw,14px);line-height:1.7;color:#333;
+  }
+  .dl .size{
+    display:block;margin-top:.6em;
+    font:600 10.5px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.1em;color:var(--grey);
+  }
+  a.zip{
+    display:inline-block;flex:0 0 auto;
+    background:var(--red);color:#fff;text-decoration:none;
+    padding:calc(var(--u)*.85) calc(var(--u)*1.5);
+    font-size:clamp(13.5px,1.3vw,16px);font-weight:700;letter-spacing:-.01em;
+    transition:background .16s ease,transform .16s ease;
+  }
+  a.zip:hover,a.zip:focus-visible{background:var(--ink);transform:translateY(-2px)}
+
+  /* 页脚 */
+  footer{
+    margin-top:calc(var(--u)*2.4);padding-top:calc(var(--u)*.9);
+    border-top:1px solid rgba(20,20,20,.22);
+    font:600 10.5px/1.8 ui-monospace,Menlo,Consolas,monospace;
+    letter-spacing:.04em;color:var(--grey);
+  }
+
+  @media (max-width:640px){
+    body{padding:calc(var(--u)*1.6) calc(var(--u)*1.2) calc(var(--u)*1.6)}
+    .enter{display:block;text-align:center}
+    .dl{padding:calc(var(--u)*1.1)}
+    a.zip{display:block;text-align:center;width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="back" href="../../">← 返回作品集</a>
+
+  <header>
+    <h1>独栋住宅 · <em>装修设计器</em></h1>
+    <p class="sub">9.0 × 11.0 m / 独栋住宅一层 / 可交互平面与 3D</p>
+    <div class="rule"></div>
+    <div class="tags">
+      <span class="tag hot">三维 · 户型</span>
+      <span class="tag">平面 2D</span>
+      <span class="tag">3D 漫游</span>
+      <span class="tag">WebGL</span>
+    </div>
+    <a class="enter" href="designer.html">进入 3D 交互 →</a>
+  </header>
+
+  <div class="hero">
+    <a href="view-birdseye.png" target="_blank" rel="noopener">
+      <img src="view-birdseye.png" width="1920" height="1080"
+           alt="独栋住宅一层 3D 鸟瞰渲染">
+    </a>
+    <p class="cap">3D 鸟瞰 · 实时渲染 · 点击看原图</p>
+  </div>
+
+  <section class="sec">
+    <h2>原平面设计图</h2>
+    <div class="split">
+      <div class="note">
+        <p>这张就是设计器还原的原图。3D 里的每一面墙、每一扇门、每一处开间尺寸，都是从这张图上量出来再建的模。</p>
+        <p>页面里所有房间名称、面积与家具位置，也以这张图为基准，没有另外编造。</p>
+        <a class="txtlink" href="plan.jpg" target="_blank" rel="noopener">查看原图（57 KB）</a>
+      </div>
+      <a class="shot" href="plan.jpg" target="_blank" rel="noopener">
+        <img src="plan.jpg" width="640" height="935" loading="lazy"
+             alt="原始户型平面图，对应 9.0 × 11.0 米开间与各房间布局">
+      </a>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>更多视角</h2>
+    <div class="grid2">
+      <figure>
+        <a href="view-3d.png" target="_blank" rel="noopener">
+          <img src="view-3d.png" width="748" height="720" loading="lazy"
+               alt="设计器内的 3D 视图界面">
+        </a>
+        <figcaption>设计器内 3D 视图</figcaption>
+      </figure>
+      <figure>
+        <a href="view-panorama.jpg" target="_blank" rel="noopener">
+          <img src="view-panorama.jpg" width="4096" height="2048" loading="lazy"
+               alt="室内 720 度全景展开图">
+        </a>
+        <figcaption>室内 720 全景 · 4096 × 2048</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <div class="dl">
+    <div>
+      <h3>离线包</h3>
+      <p class="meta">含设计器 HTML 与原始户型图。<b>解压后双击 HTML 即可离线打开</b>，不需要联网，也不用起本地服务。</p>
+      <span class="size">ZIP · 2 个文件 · 838 KB（858,151 字节）</span>
+    </div>
+    <a class="zip" href="huxing-3bed-ground.zip" download>下载离线包 ↩</a>
+  </div>
+
+  <footer>
+    建议用桌面浏览器打开；3D 视图需要 WebGL 支持，手机端可能较卡。
+  </footer>
+
+</div>
+</body>
+</html>
