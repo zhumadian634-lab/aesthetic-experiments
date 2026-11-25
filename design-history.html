@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="description" content="形塑时代：从工业革命到数字生活，一场关于形式、技术与社会的离线交互设计史展览。">
+<title>形塑时代 — 一部可交互的设计简史</title>
+<style>:root{--bg:#eff0e8;--fg:#1b211d;--accent:#374b28;--line:color-mix(in srgb,var(--fg) 24%,transparent);--pad:clamp(24px,4.5vw,86px);--header:84px;--footer:88px;--ease:cubic-bezier(.22,1,.36,1);font-family:Arial,'Microsoft YaHei','PingFang SC',sans-serif;font-synthesis:none;color:var(--fg);background:var(--bg)}
+*{box-sizing:border-box}body{margin:0;overflow:hidden;background:var(--bg);transition:background .6s,color .6s}button,a{-webkit-tap-highlight-color:transparent}button{font:inherit;cursor:pointer;color:inherit;border:0;background:none}button:disabled{opacity:.3;cursor:default}button:focus-visible,a:focus-visible{outline:2px solid currentColor;outline-offset:5px}button:not(:disabled):hover{opacity:.7}button{transition:opacity .18s,background .18s,transform .18s}a{color:inherit;text-underline-offset:4px}button:active:not(:disabled){transform:translateY(2px)}
+.masthead{height:var(--header);position:fixed;z-index:20;top:0;left:var(--pad);right:var(--pad);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:24px}.brand{display:flex;align-items:center;gap:13px;padding:0;font-size:15px;text-align:left;font-weight:700;letter-spacing:.08em}.brand-mark{font:bold 38px Georgia,serif;letter-spacing:-4px;padding-right:5px;line-height:1}.brand-sub{display:block;font:10px Arial,sans-serif;letter-spacing:.18em;margin-top:6px}.header-note{font-size:13px;letter-spacing:.22em;opacity:.7}.tools{display:flex;gap:25px;align-items:center}.tools button{font-size:13px;padding:12px 0}.menu-lines{margin-left:8px;font-size:14px}
+#exhibit{position:fixed;inset:var(--header) 0 var(--footer);isolation:isolate}.slide{position:absolute;inset:0;background:var(--bg);color:var(--fg);overflow:hidden;visibility:hidden;opacity:0;pointer-events:none;padding:clamp(28px,4vh,58px) var(--pad);z-index:0;--bg:#eff0e8;--fg:#1b211d;--accent:#374b28}.slide.active{visibility:visible;opacity:1;pointer-events:auto;z-index:2}.slide.leaving{visibility:visible;opacity:1;pointer-events:none;z-index:1}.slide.entering{animation:page-enter .75s var(--ease) both}.slide.leaving{animation:page-exit .75s var(--ease) both}@keyframes page-enter{from{clip-path:inset(0 0 0 100%);transform:translateX(3%)}to{clip-path:inset(0);transform:none}}@keyframes page-exit{to{transform:translateX(-5%);filter:brightness(.84)}}body.reverse .slide.entering{animation-name:page-enter-back}body.reverse .slide.leaving{animation-name:page-exit-back}@keyframes page-enter-back{from{clip-path:inset(0 100% 0 0);transform:translateX(-3%)}to{clip-path:inset(0);transform:none}}@keyframes page-exit-back{to{transform:translateX(5%);filter:brightness(.84)}}
+.eyebrow,.hero-kicker{font:12px Consolas,'Courier New',monospace;letter-spacing:.12em;display:flex;align-items:center;justify-content:space-between;gap:20px}.hero-kicker{position:absolute;top:5%;left:var(--pad);right:var(--pad)}.hero-copy{position:absolute;top:15%;left:var(--pad);z-index:2}.hero h1{font-size:clamp(68px,8.2vw,150px);font-weight:800;letter-spacing:-.09em;line-height:1.1;margin:0;white-space:nowrap}.outline-word{color:transparent;-webkit-text-stroke:1.5px var(--fg)}.title-stop{color:#ef5737;letter-spacing:-.15em}.hero-en{font:900 clamp(48px,5.8vw,110px)/.87 Arial,sans-serif;letter-spacing:-.075em;margin:30px 0 0}.hero-en em{font-family:Georgia,serif;font-weight:400;letter-spacing:-.07em}.hero-sculpture{width:min(54vw,740px);height:83%;position:absolute;right:1.2%;top:10%;perspective:1000px;pointer-events:none}.sculpture-core{position:absolute;inset:7% 8% 16%;transform-style:preserve-3d;transform:rotate(-22deg) rotateY(-15deg)}.orbit{position:absolute;left:4%;top:4%;width:92%;height:92%;border:1px solid #263f22;border-radius:50%;transform:rotateY(calc(var(--i)*18deg));background:transparent;animation:orbit-turn 22s linear infinite;animation-delay:calc(var(--i)*-.8s)}.o1{--i:0}.o2{--i:1}.o3{--i:2}.o4{--i:3}.o5{--i:4}.o6{--i:5}.o7{--i:6}.o8{--i:7}.o9{--i:8}.o10{--i:9}.sculpture-disc{position:absolute;inset:4%;border-radius:50%;background:#cee568;transform:rotateY(65deg);border:1px solid #263f22;animation:disc-turn 22s linear infinite}.sculpture-label{position:absolute;top:44%;left:23%;font:700 clamp(14px,2vw,30px)/1 Arial;letter-spacing:-.05em;transform:translateZ(130px) rotate(22deg);background:#eff0e8;padding:12px}.sculpture-caption{position:absolute;bottom:8%;right:15%;font-size:12px;letter-spacing:.12em}.art-cross{position:absolute;font:24px Consolas}.cross1{top:5%;left:10%}.cross2{bottom:7%;right:9%}@keyframes orbit-turn{to{transform:rotateY(calc(var(--i)*18deg + 360deg))}}@keyframes disc-turn{to{transform:rotateY(425deg)}}.hero-bottom{position:absolute;bottom:6%;left:var(--pad);right:var(--pad);display:flex;align-items:end;justify-content:space-between;gap:30px;z-index:3}.hero-bottom p{font-size:20px;line-height:1.8;margin:0}.hero-bottom p span{font-size:14px;opacity:.73}.enter-btn{background:var(--fg);color:var(--bg);padding:19px 25px;min-width:178px;display:flex;justify-content:space-between;align-items:center;font-size:15px}.button-mark{font-size:24px;margin-left:35px}.hero.active h1,.hero.active .hero-en{animation:title-rise 1.2s var(--ease) both}.hero.active .hero-en{animation-delay:.14s}.hero.active .hero-bottom{animation:soft-in 1s .5s both}
+.chapter-top{display:flex;justify-content:space-between;position:relative;z-index:3;gap:20px}.chapter-top .chapter-name{font-size:14px;font-weight:700;letter-spacing:.06em}.chapter-date{font:14px Consolas,monospace;letter-spacing:.02em}.chapter-main{position:absolute;left:var(--pad);right:var(--pad);top:15%;bottom:24%;display:grid;grid-template-columns:1fr 1fr;gap:5vw;align-items:center}.copy{z-index:3;position:relative;align-self:center}.chapter-en{font:12px Consolas,monospace;letter-spacing:.13em;margin:0 0 20px;opacity:.75}.chapter h2{font-size:clamp(46px,5.05vw,92px);line-height:1.16;letter-spacing:-.065em;margin:0 0 25px;font-weight:800}.chapter h2 .ch{display:inline-block}.thesis{font-size:clamp(17px,1.35vw,23px);line-height:1.75;max-width:29em;margin:0;letter-spacing:.01em}.year-mark{position:absolute;font:900 clamp(70px,10vw,180px)/1 Arial;letter-spacing:-.06em;color:var(--fg);opacity:.055;left:-.04em;bottom:-.54em;pointer-events:none;z-index:-1}.art{height:100%;min-height:0;position:relative;display:flex;justify-content:center;align-items:center}.art-svg{display:block;width:100%;height:100%;max-height:100%;overflow:visible}.art-caption{position:absolute;bottom:-22px;left:0;width:100%;text-align:center;font-size:11px;letter-spacing:.06em;opacity:.65}.chapter-foot{position:absolute;left:var(--pad);right:var(--pad);bottom:5%;height:15%;min-height:99px;display:grid;grid-template-columns:1fr 1fr;column-gap:5vw;border-top:1px solid var(--line);padding-top:16px}.thread{display:grid;grid-template-columns:70px 1fr;gap:15px;align-content:start}.thread-label{font-size:12px;letter-spacing:.08em;padding-top:3px;opacity:.68}.thread p{font-size:clamp(13px,1vw,16px);line-height:1.75;margin:0;max-width:36em}.example{font-size:12px!important;opacity:.65;margin-top:9px!important}.bridge{grid-column:1/-1;font-size:11px;margin-top:13px;letter-spacing:.01em;opacity:.65;white-space:normal}.chapter .copy>*{animation-play-state:paused}.chapter.active .chapter-en{animation:soft-in .8s .25s both}.chapter.active h2 .ch{animation:char-rise .8s var(--ease) both;animation-delay:calc(.3s + var(--i)*.04s)}.chapter.active .thesis{animation:soft-in 1s .6s both}.chapter.active .thread{animation:soft-in .9s .7s both}.chapter.active .bridge{animation:soft-in .9s .9s both}.chapter.active .year-mark{animation:soft-in 1s .4s both}@keyframes char-rise{from{opacity:0;transform:translateY(35px) rotate(2deg)}to{opacity:1;transform:none}}@keyframes title-rise{from{opacity:0;transform:translateY(45px)}to{opacity:1;transform:none}}@keyframes soft-in{from{opacity:0}to{opacity:1}}
+.chapter[data-key=crafts] h2,.chapter[data-key=nouveau] h2{font-family:'Songti SC','SimSun',serif;font-weight:400;letter-spacing:-.04em}.chapter[data-key=deco] h2{font-family:'Songti SC','SimSun',serif;font-weight:400;letter-spacing:.08em}.chapter[data-key=construct] h2{font-weight:900;transform:rotate(-5deg);transform-origin:left bottom}.chapter[data-key=construct].active h2 .ch{animation-delay:calc(1.25s + var(--i)*.07s)}.chapter[data-key=construct].active .thesis{animation-delay:1.8s}.chapter[data-key=stijl] h2{letter-spacing:-.08em}.chapter[data-key=swiss] h2{letter-spacing:-.07em}.chapter[data-key=swiss] .chapter-foot{border:0}.chapter[data-key=swiss] .chapter-foot:before{content:'';position:absolute;left:0;right:0;top:0;height:1px;background:var(--line);transform-origin:left}.chapter[data-key=swiss].active .chapter-foot:before{animation:grow-line .6s .15s both}.chapter[data-key=swiss].active .thesis,.chapter[data-key=swiss].active .thread{animation-delay:1.23s}.chapter[data-key=swiss].active h2 .ch{animation-delay:calc(1.23s + var(--i)*.04s)}@keyframes grow-line{from{transform:scaleX(0)}to{transform:scaleX(1)}}.chapter[data-key=computer]{font-family:Consolas,'Microsoft YaHei',monospace}.chapter[data-key=computer] h2{font-weight:700;color:#8cf1a3}.chapter[data-key=computer] .chapter-en:after{content:'_';animation:blink 1.2s steps(1) infinite}@keyframes blink{50%{opacity:0}}.chapter[data-key=plural] h2 .ch{animation:none}.chapter[data-key=plural] .thesis .ch{display:inline-block}
+.finale{padding-top:5%}.finale h2{font-size:clamp(46px,6.3vw,115px);letter-spacing:-.07em;line-height:1.2;margin:7vh 0 5vh}.finale.active h2{animation:title-rise 1s var(--ease) both}.end-links{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;width:78%}.end-links div{border-top:1px solid var(--line);padding-top:18px}.end-links span{font-size:13px;opacity:.7}.end-links p{font-size:20px;margin:13px 0}.end-bottom{position:absolute;bottom:7%;left:var(--pad);right:var(--pad);display:flex;align-items:end;justify-content:space-between;gap:30px}.end-bottom p{font-size:14px;line-height:1.8;margin:0}.end-bottom button{border-bottom:1px solid;padding:10px 0;margin-left:25px;font-size:14px}
+.controls{position:fixed;z-index:20;bottom:0;left:var(--pad);right:var(--pad);height:var(--footer);border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:25px;padding-top:5px}.position{display:flex;align-items:baseline;gap:7px;font:12px Consolas,monospace;min-width:30%}.position strong{font:30px Arial,sans-serif;letter-spacing:-.08em}.position>span:first-of-type{opacity:.45}#currentEra{font-family:Arial,'Microsoft YaHei',sans-serif;font-size:12px;margin-left:15px}.transport{display:flex;align-items:center;gap:20px}.transport button{font-size:13px;padding:14px 8px;white-space:nowrap}#playBtn{display:flex;align-items:center;gap:8px}.play-icon{font-size:19px;line-height:1}.footer-right{display:flex;align-items:center;justify-content:end;gap:20px;min-width:20%;font-size:12px}.footer-right button{padding:12px 0;font-size:12px}.key-hint{opacity:.5}.timeline{position:absolute;left:0;right:0;top:-8px;display:grid;grid-auto-columns:1fr;grid-auto-flow:column;gap:5px}.timeline button{position:relative;height:15px;padding:0}.timeline button:before{content:'';position:absolute;left:0;right:0;top:6px;height:3px;background:var(--fg);opacity:.1;transition:opacity .2s,height .2s}.timeline button.past:before{opacity:.3}.timeline button[aria-current=true]:before{opacity:1;height:4px}.timeline button:hover:before{opacity:.6;height:6px}.timeline button:after{content:attr(data-tooltip);pointer-events:none;position:absolute;bottom:22px;left:50%;transform:translateX(-50%);font:11px Consolas,monospace;white-space:nowrap;background:var(--fg);color:var(--bg);padding:5px 7px;opacity:0}.timeline button:hover:after,.timeline button:focus-visible:after{opacity:1}.timeline button:first-child:after{left:0;transform:none}.timeline button:last-child:after{left:auto;right:0;transform:none}.auto-progress{position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--accent);transform:scaleX(0);transform-origin:left}
+dialog{border:0;padding:0;color:#202720;background:#f0f1e9;box-shadow:0 24px 100px #0006}dialog::backdrop{background:#1119;backdrop-filter:blur(8px)}.archive{width:min(1100px,92vw);max-height:86dvh;padding:35px 45px;overflow:auto}.dialog-top{display:flex;justify-content:space-between;align-items:start;gap:25px}.dialog-top h2{font-size:38px;letter-spacing:-.05em;line-height:1.2;margin:13px 0}.dialog-top .close{font-size:13px;padding:10px 0}.dialog-lead{font-size:14px;line-height:1.8;opacity:.75;margin:12px 0 28px;max-width:60em}.index-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0 28px}.index-item{border-top:1px solid #bbc1b6;display:grid;grid-template-columns:35px 1fr;text-align:left;padding:17px 0;gap:6px}.index-item .idx{font:12px Consolas;opacity:.5}.index-item .name{font-size:16px}.index-item .date{grid-column:2;font:11px Consolas;opacity:.6;margin-top:4px}.index-item[aria-current=true] .name{font-weight:800;text-decoration:underline;text-underline-offset:4px}.archive-note{font-size:12px;line-height:1.9;opacity:.6;margin-top:28px;border-top:1px solid #bbc1b6;padding-top:18px}.curator{border-top:1px solid #bbc1b6;padding:10px 0 20px}.curator h3{font-size:16px}.curator p{font-size:14px;line-height:1.9;max-width:66em}.source-list{display:grid;grid-template-columns:1fr 1fr;gap:0 30px}.source-item{border-top:1px solid #bbc1b6;padding:15px 0;font-size:13px;line-height:1.7}.source-item small{display:block;font-size:11px;opacity:.65}.source-item a{font-size:14px;font-weight:700}.source-item.highlight{background:#dfea97;padding-left:12px}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}#toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);font-size:13px;z-index:100;background:var(--fg);color:var(--bg);padding:12px 20px;opacity:0;pointer-events:none;transition:opacity .3s}#toast.show{opacity:1}.no-script{position:fixed;inset:30%;z-index:100;background:#eff0e8;color:#111;padding:30px}
+.slide:not(.active) *{animation-play-state:paused!important}body.motion-off *,body.motion-off *:before,body.motion-off *:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}body.motion-off .slide.active{clip-path:none;transform:none}body.motion-off .ch{opacity:1!important;transform:none!important}
+@media(min-width:1700px){.chapter-main{top:17%;bottom:27%}.chapter-foot{bottom:6%;height:16%}.hero-copy{top:18%}}
+@media(max-height:760px) and (min-width:801px){:root{--header:65px;--footer:70px}.chapter-main{top:13%;bottom:29%}.chapter h2{font-size:clamp(40px,4.5vw,70px);margin-bottom:17px}.chapter-en{margin-bottom:14px}.thesis{font-size:16px}.chapter-foot{height:20%;bottom:5%;padding-top:12px}.thread p{font-size:13px}.bridge{margin-top:8px}.hero h1{font-size:7.5vw}.hero-en{font-size:5vw;margin-top:18px}.hero-bottom p{font-size:17px}.hero-bottom p span{font-size:13px}.hero-bottom{bottom:5%}.finale h2{margin:5vh 0 4vh}.end-links p{font-size:17px}}
+@media(max-width:1050px){.header-note{display:none}.chapter-main{gap:3vw;grid-template-columns:1.05fr 1fr}.chapter h2{font-size:5.6vw}.chapter-foot{column-gap:3vw}.thread{grid-template-columns:55px 1fr;gap:10px}.thread-label{font-size:11px}.footer-right{min-width:10%}.key-hint{display:none}.position{min-width:26%}.transport{gap:8px}.hero-sculpture{right:-2%;width:58vw}.hero-copy{top:18%}.hero h1{font-size:8vw}.hero-en{font-size:6.3vw}.hero-bottom p span{max-width:30em;display:inline-block}.index-grid{grid-template-columns:1fr 1fr}.end-bottom button{margin-left:18px}}
+@media(max-width:800px){:root{--header:70px;--footer:76px;--pad:24px}.brand{font-size:13px}.brand-sub{font-size:8px}.brand-mark{font-size:32px}.tools{gap:17px}.tools button{font-size:12px}.slide{overflow-y:auto;overscroll-behavior:contain;padding:24px var(--pad) 30px}.hero{overflow:hidden}.hero-kicker{top:4%;font-size:9px;letter-spacing:.05em}.hero-copy{top:12%}.hero h1{font-size:clamp(58px,12vw,90px)}.hero-en{font-size:clamp(46px,10vw,75px);margin-top:22px}.hero-sculpture{width:65vw;height:60%;top:34%;right:-12%}.sculpture-label{font-size:16px;padding:7px}.sculpture-caption,.art-cross{display:none}.hero-bottom{bottom:5%;gap:16px;align-items:start;flex-direction:column}.hero-bottom p{font-size:16px;line-height:1.7;max-width:24em}.hero-bottom p span{font-size:12px;max-width:24em}.enter-btn{min-width:155px;padding:13px 20px;font-size:13px}.button-mark{font-size:20px}.chapter-top{align-items:center}.chapter-top .chapter-name{font-size:13px}.chapter-date{font-size:12px}.chapter-main{position:relative;left:auto;right:auto;top:auto;bottom:auto;display:flex;flex-direction:column;gap:8px;margin-top:30px;align-items:stretch}.chapter h2{font-size:clamp(36px,8.4vw,60px);margin-bottom:17px}.chapter h2 br{display:none}.chapter-en{font-size:10px;margin-bottom:13px}.copy{width:100%;align-self:auto}.thesis{font-size:15px;line-height:1.8;max-width:34em}.year-mark{font-size:100px;left:auto;right:0;bottom:-.32em}.art{height:clamp(240px,40vh,380px);margin-top:10px;width:100%}.art-svg{max-width:440px}.art-caption{bottom:-6px;font-size:10px}.chapter-foot{position:relative;left:auto;right:auto;bottom:auto;height:auto;display:flex;flex-direction:column;gap:18px;margin-top:26px;padding-top:19px;min-height:0}.thread{grid-template-columns:57px 1fr;gap:13px}.thread p{font-size:14px;max-width:none}.thread-label{font-size:11px}.example{font-size:11px!important}.bridge{font-size:11px;line-height:1.8;margin:0;padding-top:5px}.controls{gap:10px;padding-top:6px}.position{gap:5px;min-width:0}.position strong{font-size:25px}#currentEra{display:none}.transport{gap:3px}.transport button{font-size:12px;padding:14px 8px}.play-text{display:none}#playBtn{padding:12px}.play-icon{font-size:21px}.footer-right{min-width:0}.timeline{gap:3px}.timeline button:after{display:none}.footer-right button{font-size:12px}.finale{padding-top:35px;overflow:auto}.finale h2{font-size:clamp(34px,7.7vw,58px);margin:8vh 0 5vh}.finale .eyebrow{font-size:10px}.end-links{width:100%;gap:18px}.end-links span{font-size:12px}.end-links p{font-size:14px}.end-bottom{position:static;display:block;margin-top:7vh}.end-bottom p{font-size:13px}.end-bottom div{margin-top:20px;display:flex;gap:24px}.end-bottom button{margin:0;font-size:12px}.archive{padding:25px;width:94vw}.dialog-top h2{font-size:28px}.index-grid{gap:0 20px}.index-item .name{font-size:14px}.index-item{grid-template-columns:23px 1fr;padding:15px 0}.source-list{grid-template-columns:1fr}.dialog-lead{font-size:13px}}
+@media(max-width:380px){:root{--pad:18px}.tools{gap:12px}.brand-sub{display:none}.hero-en{font-size:44px}.hero h1{font-size:56px}.index-grid{grid-template-columns:1fr}.hero-bottom p span{max-width:21em}}
+@media(max-height:500px){.slide{overflow-y:auto}.hero{min-height:420px}.chapter-main{position:relative;top:auto;bottom:auto;left:auto;right:auto;height:380px;margin-top:20px}.chapter-foot{position:relative;left:auto;right:auto;bottom:auto;height:auto;margin-top:30px;padding-bottom:20px}.finale{min-height:500px}#exhibit{overflow:auto}.end-bottom{position:static;margin-top:40px}.finale h2{font-size:44px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+.chapter.active .year-mark{animation:none;opacity:.055}
+@media(max-width:1050px){.sculpture-caption{display:none}}
+@media print{body{overflow:visible}header,footer,dialog,#toast{display:none!important}#exhibit{position:static}.slide{position:relative;inset:auto;visibility:visible!important;opacity:1!important;display:block!important;min-height:180mm;height:180mm;page-break-after:always;overflow:hidden;print-color-adjust:exact;-webkit-print-color-adjust:exact}.slide *{animation:none!important}.slide .chapter-main{position:absolute;top:18%;bottom:27%;left:var(--pad);right:var(--pad);display:grid;grid-template-columns:1fr 1fr}.slide .art{height:100%}.slide .chapter-foot{position:absolute;left:var(--pad);right:var(--pad);bottom:4%;height:19%;display:grid;grid-template-columns:1fr 1fr}.slide h2{font-size:44px}.slide h2 br{display:block}.chapter h2 .ch{opacity:1!important;transform:none!important}}
+
+.art .art-svg{width:100%;height:100%;display:block;overflow:visible}
+.art .a-draw{stroke-dasharray:2000;stroke-dashoffset:0}
+.slide.active .art .a-draw{animation:artDraw 2s cubic-bezier(.2,.6,.3,1) both}
+.slide.active .art .a-erect{animation:artErect 1.5s cubic-bezier(.19,1,.22,1) both;transform-origin:center bottom}
+.slide.active .art .a-spin{animation:artTurn 22s linear infinite}
+.slide.active .art .a-craft-grow{animation:artGrow 2.1s cubic-bezier(.2,.6,.3,1) both;transform-origin:300px 300px}
+.slide.active .art .a-build{animation:artAssemble 1.3s cubic-bezier(.19,1,.22,1) both}
+.slide.active .art .a-con-left{animation:artConLeft .95s .1s cubic-bezier(.72,0,.28,1) both}
+.slide.active .art .a-con-right{animation:artConRight .95s .25s cubic-bezier(.72,0,.28,1) both}
+.slide.active .art .a-con-rule{animation:artLine .9s 1.35s both;transform-origin:48px 415px}
+.slide.active .art .a-con-word{animation:artWord .55s 1.25s both}.slide.active .art .a-con-word.a-delay{animation-delay:1.45s}
+.slide.active .art .a-stijl-red{animation:artStijlRed 1.4s cubic-bezier(.72,0,.28,1) both}
+.slide.active .art .a-stijl-blue{animation:artStijlBlue 1.4s .1s cubic-bezier(.72,0,.28,1) both}
+.slide.active .art .a-stijl-yellow{animation:artStijlYellow 1.4s .2s cubic-bezier(.72,0,.28,1) both}
+.slide.active .art .a-stijl-h{animation:artLine .62s var(--ad) cubic-bezier(.72,0,.28,1) both;transform-origin:34px 34px}
+.slide.active .art .a-stijl-v{animation:artLineV .62s var(--ad) cubic-bezier(.72,0,.28,1) both;transform-origin:34px 34px}
+.slide.active .art .a-stijl-type{animation:artWord .8s 1.15s both}
+.slide.active .art .a-chair-back{animation:artChairBack 1.7s cubic-bezier(.19,1,.22,1) both}
+.slide.active .art .a-chair-seat{animation:artChairSeat 1.7s .15s cubic-bezier(.19,1,.22,1) both}
+.slide.active .art .a-deco-rays{animation:artFan 1.8s both;transform-origin:300px 516px}
+.slide.active .art .a-deco-rise{animation:artErect 1.5s var(--ad,0s) cubic-bezier(.19,1,.22,1) both;transform-origin:300px 557px}
+.slide.active .art .a-swiss-rules{animation:artLine .8s .1s both;transform-origin:63px 52px}
+.slide.active .art .a-swiss-copy{animation:artWord .7s 1.23s both}
+.slide.active .art .a-swiss-disc{animation:artGrow .9s .5s cubic-bezier(.2,.6,.3,1) both}
+.slide.active .art .a-radio-knob{animation:artRadio 1.4s .5s cubic-bezier(.19,1,.22,1) both}
+.slide.active .art .a-space-power{animation:artPower .8s .2s steps(1,end) both}
+.slide.active .art .a-orbit{animation:artTurn 18s linear infinite}
+.slide.active .art .a-memphis-base{animation:artWord .6s both}
+.slide.active .art .a-memphis-level{animation:artMemphis 1s var(--ad) cubic-bezier(.34,1.3,.4,1) both;transform-origin:300px 468px}
+.slide.active .art .a-terminal-boot{animation:artBoot 1.2s steps(1,end) both;transform-origin:260px 250px}
+.slide.active .art .a-cursor{animation:artCursor 1.2s steps(1,end) infinite}
+.slide.active .art .a-web-lines{animation:artWire 16s linear infinite}
+.slide.active .art .a-web-window{animation:artWindow .9s var(--ad) cubic-bezier(.19,1,.22,1) both}
+.slide.active .art .a-web-pointer{animation:artPointer 1.7s .6s cubic-bezier(.4,0,.2,1) both}
+.slide.active .art .a-mobile-ui{animation:artWord 1s .3s both}
+.slide.active .art .a-mobile-hand{animation:artHand 1.7s .3s cubic-bezier(.19,1,.22,1) both}
+.slide.active .art .a-touch-ring{animation:artTouch 3s 2s ease-out infinite;transform-origin:330px 300px}
+.slide.active .art .a-neu-shadow{animation:artHardShadow .5s 1.2s cubic-bezier(.34,1.3,.4,1) both}
+.slide.active .art .a-neu-outline{animation:artOutline 1s var(--ad,.1s) linear both}
+.slide.active .art .a-neu-copy{animation:artWord .4s .6s both}
+.slide.active .art .a-neu-pointer{animation:artNeuPointer 1.2s .7s cubic-bezier(.34,1.3,.4,1) both;transform-origin:406px 243px}
+@keyframes artDraw{from{stroke-dashoffset:2000}to{stroke-dashoffset:0}}
+@keyframes artErect{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes artTurn{to{transform:rotate(360deg)}}
+@keyframes artGrow{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:scale(1)}}
+@keyframes artAssemble{from{opacity:0;transform:translateY(35px)}to{opacity:1;transform:translateY(0)}}
+@keyframes artConLeft{from{transform:translate(-650px,320px)}to{transform:translate(0,0)}}
+@keyframes artConRight{from{transform:translate(650px,-320px)}to{transform:translate(0,0)}}
+@keyframes artLine{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes artLineV{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes artWord{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
+@keyframes artStijlRed{0%,15%{width:9px;height:9px}52%{width:344px;height:9px}100%{width:344px;height:342px}}
+@keyframes artStijlBlue{0%,15%{width:9px;height:9px}52%{width:188px;height:9px}100%{width:188px;height:190px}}
+@keyframes artStijlYellow{0%,15%{width:9px;height:9px}52%{width:91px;height:9px}100%{width:91px;height:97px}}
+@keyframes artChairBack{from{opacity:0;transform:translateY(-90px)}to{opacity:1;transform:translateY(0)}}
+@keyframes artChairSeat{from{opacity:0;transform:translateX(90px)}to{opacity:1;transform:translateX(0)}}
+@keyframes artFan{from{opacity:0;transform:scaleX(.1)}to{opacity:1;transform:scaleX(1)}}
+@keyframes artRadio{from{transform:rotate(-90deg)}to{transform:rotate(28deg)}}
+@keyframes artPower{0%,25%,45%{opacity:0}15%,35%,60%,100%{opacity:1}}
+@keyframes artMemphis{from{transform:translateY(-45px) rotate(-4deg);opacity:0}to{transform:translateY(0) rotate(0);opacity:1}}
+@keyframes artBoot{0%,20%{transform:scaleY(.008);opacity:.5}35%{transform:scaleY(.3);opacity:1}45%{transform:scaleY(1);opacity:.2}60%,100%{transform:scaleY(1);opacity:1}}
+@keyframes artCursor{0%,55%{opacity:1}56%,100%{opacity:0}}
+@keyframes artWire{to{stroke-dashoffset:-240}}
+@keyframes artWindow{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+@keyframes artPointer{from{transform:translate(230px,160px)}to{transform:translate(0,0)}}
+@keyframes artHand{from{transform:translate(25px,120px);opacity:0}to{transform:translate(0,0);opacity:1}}
+@keyframes artTouch{0%,15%{transform:scale(.4);opacity:0}20%{opacity:.7}70%,100%{transform:scale(1.7);opacity:0}}
+@keyframes artHardShadow{from{transform:translate(-10px,-10px)}to{transform:translate(0,0)}}
+@keyframes artOutline{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes artNeuPointer{from{transform:translate(70px,-100px) rotate(20deg);opacity:0}to{transform:translate(0,0) rotate(0);opacity:1}}
+@media(prefers-reduced-motion:reduce){.slide.active .art *{animation:none!important;transition:none!important;stroke-dashoffset:0!important}.art .a-touch-ring{opacity:0}}
+</style>
+</head>
+<body>
+<header class="masthead">
+ <button class="brand" id="home" aria-label="返回展览首页"><span class="brand-mark" aria-hidden="true">f.</span><span>形塑时代<span class="brand-sub">A HISTORY OF DESIGN</span></span></button>
+ <div class="header-note">形式 · 技术 · 社会</div>
+ <nav class="tools" aria-label="展览工具">
+  <button id="indexBtn" title="章节目录 · M">目录 <span class="menu-lines" aria-hidden="true">☰</span></button>
+  <button id="motionBtn" aria-pressed="true" title="切换动态效果">动效开</button>
+  <button id="fullBtn" title="全屏展示 · F">全屏</button>
+ </nav>
+</header>
+<main id="exhibit" aria-label="设计史展览">
+ <section class="slide hero active" data-key="intro" data-title="序 · 形塑时代" data-bg="#eff0e8" data-fg="#1b211d" data-accent="#374b28" aria-label="序：形塑时代">
+  <div class="hero-kicker">AN EXHIBITION THROUGH TIME <span>1760s — NOW</span></div>
+  <div class="hero-copy"><h1>形塑<span class="outline-word">时代</span><span class="title-stop">.</span></h1><p class="hero-en">FORM<br>FOLLOWS<br><em>TIME.</em></p></div>
+  <div class="hero-sculpture" aria-hidden="true"><div class="sculpture-core"><div class="orbit o1"></div><div class="orbit o2"></div><div class="orbit o3"></div><div class="orbit o4"></div><div class="orbit o5"></div><div class="orbit o6"></div><div class="orbit o7"></div><div class="orbit o8"></div><div class="orbit o9"></div><div class="orbit o10"></div><div class="sculpture-disc"></div><div class="sculpture-label">EVERY FORM<br>HAS A CONTEXT.</div></div><div class="art-cross cross1">+</div><div class="art-cross cross2">+</div><span class="sculpture-caption">形式的背后，是时代的选择。</span></div>
+  <div class="hero-bottom"><p>一部设计简史。<br><span>从机器、工坊到屏幕，追踪形式与社会的相互塑造。</span></p><button class="enter-btn" data-goto="1">进入展览 <span class="button-mark" aria-hidden="true">＋</span></button></div>
+ </section>
+ <!--__CHAPTERS__-->
+ <section class="slide finale" data-key="end" data-title="终 · 设计仍在发生" data-bg="#dcea66" data-fg="#182019" data-accent="#304223" aria-label="结语：设计仍在发生" aria-hidden="true" inert>
+  <div class="eyebrow">AN OPEN ENDING <span>此刻 / 下一步</span></div>
+  <h2>我们塑造物。<br>物也塑造<span class="outline-word">我们。</span></h2>
+  <div class="end-links"><div><span>技术</span><p>什么变得可能？</p></div><div><span>文化</span><p>什么值得表达？</p></div><div><span>社会</span><p>谁从中受益？</p></div></div>
+  <div class="end-bottom"><p>设计史没有单一路线。<br>形式会重叠、迁移，也会在新的条件下重新出现。</p><div><button data-goto="1">重新观看</button><button id="endSourceBtn">查看史料与策展说明</button></div></div>
+ </section>
+</main>
+<footer class="controls">
+ <div class="position"><strong id="currentNumber">00</strong><span>/ <span id="totalNumber">18</span></span><span id="currentEra">序 · 形塑时代</span></div>
+ <div class="transport"><button id="prevBtn" title="上一页 · ←" aria-label="上一页">上一页</button><button id="playBtn" title="自动播放，每页 18 秒" aria-pressed="false"><span class="play-icon" aria-hidden="true">▷</span><span class="play-text">自动播放</span></button><button id="nextBtn" title="下一页 · → / 空格" aria-label="下一页">下一页</button></div>
+ <div class="footer-right"><button id="sourceBtn">史料</button><span class="key-hint">← → 翻页</span></div>
+ <div class="timeline" id="timeline" aria-label="按章节跳转"></div><div class="auto-progress" id="autoProgress"></div>
+</footer>
+<dialog id="indexDialog" class="archive"><div class="dialog-top"><div><span class="eyebrow">CHAPTER INDEX</span><h2>时间里的分岔</h2></div><button class="close" aria-label="关闭目录">关闭 ×</button></div><p class="dialog-lead">按主要兴起时间排列。年代相互重叠，流派也彼此交流。</p><div id="indexGrid" class="index-grid"></div><p class="archive-note">本展聚焦影响现代工业、平面与交互设计的欧美主线，并指出跨文化交流；并非全球设计史全景。</p></dialog>
+<dialog id="sourceDialog" class="archive sources"><div class="dialog-top"><div><span class="eyebrow">CONTEXT & REFERENCES</span><h2>在形式之外，读历史</h2></div><button class="close" aria-label="关闭史料">关闭 ×</button></div><p class="dialog-lead">图形为原创教学示意，不是历史原作或设备的精确复刻。参考链接仅供延伸阅读，展览播放无需联网。</p><div class="curator"><h3>观看这条时间线的方式</h3><p>起始年代表示主要兴起时期，不是风格的精确边界。工业化、手工复兴与现代主义长期并存，设计经由贸易、移民、殖民关系和媒介跨文化流动。</p><p>NASA 朋克和卡带未来主义是当代复古未来主义标签；本展用其视觉语言回望航天硬件与早期计算机。新粗野主义界面也不等同于 1950 年代的建筑粗野主义。</p></div><div id="sourceList" class="source-list"></div><p class="archive-note">视觉使用系统字体与内联矢量绘制。不同设备的字体外形可能略有差异。键盘：方向键 / 空格翻页，M 目录，F 全屏，Home / End 首尾，Esc 关闭弹层。</p></dialog>
+<div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
+<div id="toast" role="status"></div>
+<noscript><div class="no-script">请启用 JavaScript 以翻页观看展览。</div></noscript>
+<script>window.CHAPTERS = [
+  {
+    "key": "industrial",
+    "date": "1760s—1850s",
+    "year": "1851",
+    "name": "工业化",
+    "en": "THE AGE OF THE MACHINE",
+    "title": "当制造<br>离开双手",
+    "thesis": "机器扩大了生产，也推动设计与制造进一步分工。",
+    "form": "蒸汽动力、标准零件与铁玻璃结构，让重复生产成为尺度。",
+    "world": "工厂与城市扩张；廉价商品进入日常，劳动分工也重塑人的生活。",
+    "example": "1851 · 伦敦万国博览会 / 水晶宫",
+    "bridge": "产量上升之后，质量与劳动的代价成为问题。",
+    "bg": "#e9e7df",
+    "fg": "#252821",
+    "accent": "#a84226",
+    "source": [
+      0
+    ]
+  },
+  {
+    "key": "crafts",
+    "date": "1860s—1900s",
+    "year": "1861",
+    "name": "工艺美术",
+    "en": "ARTS & CRAFTS",
+    "title": "把劳动<br>还给物品",
+    "thesis": "材料、工艺与劳动尊严，被重新放回设计的中心。",
+    "form": "诚实的结构、植物纹样与手工制作，反对廉价仿饰。",
+    "world": "回应工业劳动的异化；改善生活的理想，又受制于手工制品的高价。",
+    "example": "1861 · 莫里斯等人成立装饰艺术公司",
+    "bridge": "保留自然的语言，同时寻找属于现代生活的形式。",
+    "bg": "#193c32",
+    "fg": "#f1ead8",
+    "accent": "#e7be76",
+    "source": [
+      1
+    ]
+  },
+  {
+    "key": "nouveau",
+    "date": "1890s—1910s",
+    "year": "1900",
+    "name": "新艺术",
+    "en": "ART NOUVEAU",
+    "title": "让曲线<br>走上街头",
+    "thesis": "从书页到地铁入口，艺术试图进入城市的每个尺度。",
+    "form": "鞭状曲线与植物形态，借助彩色石版印刷、铁艺和玻璃传播。",
+    "world": "百货、广告与都市消费兴起；日本版画影响欧洲的线条与构图。",
+    "example": "约 1900 · 吉马德设计巴黎地铁入口",
+    "bridge": "装饰的革新，逐渐转向产品与生产方式的革新。",
+    "bg": "#eee7c8",
+    "fg": "#283e34",
+    "accent": "#96483f",
+    "source": [
+      2
+    ]
+  },
+  {
+    "key": "werkbund",
+    "date": "1907—1910s",
+    "year": "1907",
+    "name": "德意志制造联盟",
+    "en": "DESIGN MEETS INDUSTRY",
+    "title": "把好设计<br>做成标准",
+    "thesis": "设计开始协调工艺、工业与商业的共同语言。",
+    "form": "标准化产品与统一企业形象，把设计推进批量生产。",
+    "world": "德国工业竞争推动品质改革；个性创作与标准类型之间出现争论。",
+    "example": "1907 · 制造联盟成立 / 贝伦斯为 AEG 工作",
+    "bridge": "标准带来秩序；战争与革命又赋予秩序新的政治含义。",
+    "bg": "#deded7",
+    "fg": "#222a2b",
+    "accent": "#a13b27",
+    "source": [
+      3
+    ]
+  },
+  {
+    "key": "construct",
+    "date": "1910s—1930s",
+    "year": "1917",
+    "name": "构成主义",
+    "en": "ART INTO PRODUCTION",
+    "title": "让视觉<br>参与社会",
+    "thesis": "艺术家走向印刷、生产与公共传播，重构社会的视觉语言。",
+    "form": "斜向构图、字块与摄影蒙太奇，适应海报和大众印刷。",
+    "world": "俄国革命后，设计服务社会动员与政治宣传；先锋实验也受到权力约束。",
+    "example": "1920s · 罗德琴科的广告与出版设计",
+    "bridge": "同一时期，另一种先锋实验尝试用抽象建立普遍秩序。",
+    "bg": "#f1e9d8",
+    "fg": "#171716",
+    "accent": "#cf3024",
+    "source": [
+      4
+    ]
+  },
+  {
+    "key": "stijl",
+    "date": "1917—1930s",
+    "year": "1917",
+    "name": "风格派",
+    "en": "DE STIJL",
+    "title": "用有限<br>构成无限",
+    "thesis": "以横竖、原色与不对称平衡，探索超越个体的秩序。",
+    "form": "绘画的平面关系延伸到家具与空间；里特维尔德将构成变为生活。",
+    "world": "第一次世界大战的破坏，让普遍和谐成为一种理想。",
+    "example": "1917 · 《风格》杂志创刊于荷兰",
+    "bridge": "抽象的形式实验，进入设计学校的教学与工坊。",
+    "bg": "#f4f1e8",
+    "fg": "#111111",
+    "accent": "#b82d27",
+    "source": [
+      5
+    ]
+  },
+  {
+    "key": "bauhaus",
+    "date": "1919—1933",
+    "year": "1919",
+    "name": "包豪斯",
+    "en": "ART + TECHNOLOGY",
+    "title": "在工坊里<br>重建日常",
+    "thesis": "一所学校把材料实验、艺术教育与工业生产连接起来。",
+    "form": "基础课程与工坊训练并行；钢管家具和实验排版面向现代生活。",
+    "world": "战后重建催生新生活理想；1923 年转向艺术与技术结合，1933 年在纳粹压力下关闭。",
+    "example": "1925 · 布劳耶 B3 钢管椅（后称 Wassily）",
+    "bridge": "现代生活还有另一张面孔：都市消费、速度与奢华。",
+    "bg": "#f1ece1",
+    "fg": "#181818",
+    "accent": "#cc3529",
+    "source": [
+      6
+    ]
+  },
+  {
+    "key": "deco",
+    "date": "1920s—1930s",
+    "year": "1925",
+    "name": "装饰艺术",
+    "en": "ART DECO",
+    "title": "把现代<br>变成欲望",
+    "thesis": "几何装饰与机器时代的速度感，共同塑造都市消费。",
+    "form": "阶梯、放射与流线，连接手工奢侈品和批量消费品。",
+    "world": "战间期的影院、摩天楼与大众广告，让现代性成为可购买的形象。",
+    "example": "1925 · 巴黎国际现代装饰与工业艺术博览会",
+    "bridge": "现代主义继续传播；战后更重视清晰、效率与系统。",
+    "bg": "#172b3a",
+    "fg": "#f1dcb0",
+    "accent": "#e8c481",
+    "source": [
+      7
+    ]
+  },
+  {
+    "key": "swiss",
+    "date": "1950s—1960s",
+    "year": "1950s",
+    "name": "瑞士国际主义",
+    "en": "INTERNATIONAL TYPOGRAPHIC STYLE",
+    "title": "让信息<br>建立秩序",
+    "thesis": "用网格、无衬线字体和不对称排版，组织复杂信息。",
+    "form": "字体、摄影与模块网格协作，形成可跨媒介复制的视觉系统。",
+    "world": "战后国际贸易需要跨语言传播；统一的视觉识别也塑造公众对企业与机构的认知。",
+    "example": "1957 · Univers 字族发布",
+    "bridge": "同一时期，系统思想也进入产品、服务与组织。",
+    "bg": "#f4f4ef",
+    "fg": "#111111",
+    "accent": "#d72e25",
+    "source": [
+      8
+    ]
+  },
+  {
+    "key": "ulm",
+    "date": "1953—1968",
+    "year": "1953",
+    "name": "乌尔姆与系统设计",
+    "en": "DESIGN AS A SYSTEM",
+    "title": "从一件物<br>到一套系统",
+    "thesis": "设计方法引入科学、人体工学与系统思维。",
+    "form": "从单件造型转向产品家族、操作逻辑与企业识别。",
+    "world": "战后重建与技术产业扩张，使设计成为组织生产和使用的专业方法。",
+    "example": "1956 · Braun SK 4 / 古格洛特与拉姆斯",
+    "bridge": "系统化支撑大型技术项目，也进入家庭和大众消费。",
+    "bg": "#e8ebe5",
+    "fg": "#26362f",
+    "accent": "#b44b26",
+    "source": [
+      9
+    ]
+  },
+  {
+    "key": "space",
+    "date": "1960s—1970s",
+    "year": "1969",
+    "name": "太空时代与消费文化",
+    "en": "THE FUTURE BECOMES TANGIBLE",
+    "title": "把未来<br>带回客厅",
+    "thesis": "航天技术与消费工业，把“未来”变成可见的产品语言。",
+    "form": "工程面板强调可靠识别；塑料成型催生流线家具与新生活方式。",
+    "world": "冷战太空竞赛和战后消费增长并行；科技乐观也伴随资源与生态疑问。",
+    "example": "1969 · 阿波罗 11 号 / 1976 · NASA 视觉规范手册",
+    "bridge": "本页以 NASA 朋克回望硬件美学；它是当代命名，并非当年的运动。",
+    "bg": "#e7e3d9",
+    "fg": "#272a28",
+    "accent": "#a8432f",
+    "source": [
+      10,
+      11
+    ]
+  },
+  {
+    "key": "postmodern",
+    "date": "1970s—1980s",
+    "year": "1981",
+    "name": "后现代与孟菲斯",
+    "en": "LESS IS A BORE?",
+    "title": "让规则<br>接受质疑",
+    "thesis": "设计重新容纳装饰、隐喻和多种文化语言。",
+    "form": "拼贴、历史引用与廉价层压板，挑战功能主义的统一审美。",
+    "world": "大众媒介和消费社会放大身份表达；现代主义的普遍答案受到质疑。",
+    "example": "1981 · 孟菲斯首次展览 / 索特萨斯 Carlton",
+    "bridge": "形式可以多元；个人电脑随后改变了谁能参与制作。",
+    "bg": "#efd9e4",
+    "fg": "#2a2240",
+    "accent": "#663ab1",
+    "source": [
+      12
+    ]
+  },
+  {
+    "key": "computer",
+    "date": "1980s—1990s",
+    "year": "1984",
+    "name": "个人电脑与桌面出版",
+    "en": "DESIGN GOES DIGITAL",
+    "title": "把工作室<br>装进屏幕",
+    "thesis": "排字、图像和版式进入个人电脑，制作流程开始重组。",
+    "form": "图形界面、数字字体与激光打印，缩短从编辑到输出的距离。",
+    "world": "个人电脑普及，更多小型工作室能够独立完成出版设计。",
+    "example": "1984 · Macintosh / 1985 · PageMaker",
+    "bridge": "CRT 视觉借用卡带未来主义的回望；并非 Macintosh 界面复刻。",
+    "bg": "#0b110e",
+    "fg": "#d8e9da",
+    "accent": "#8cf1a3",
+    "source": [
+      13
+    ]
+  },
+  {
+    "key": "web",
+    "date": "1990s—2000s",
+    "year": "1991",
+    "name": "万维网",
+    "en": "FROM PAGES TO PATHS",
+    "title": "页面开始<br>彼此连接",
+    "thesis": "设计的对象，从固定版面转向可以导航和更新的信息。",
+    "form": "超链接、HTML 与 CSS，让信息结构、状态和交互成为设计材料。",
+    "world": "网络连接全球出版与商业；访问方式、连接速度和可用性影响表达。",
+    "example": "1991 · Web 向公众介绍 / 1996 · CSS1 推荐标准",
+    "bridge": "当网络离开桌面，设计必须适应手指、位置和随时在线。",
+    "bg": "#253fd0",
+    "fg": "#f2f2eb",
+    "accent": "#e8fa7a",
+    "source": [
+      14,
+      15
+    ]
+  },
+  {
+    "key": "mobile",
+    "date": "2007—2010s",
+    "year": "2007",
+    "name": "移动与平台设计",
+    "en": "DESIGN IN EVERY HAND",
+    "title": "界面进入<br>每个动作",
+    "thesis": "设计从一张屏幕，扩展到持续发生的使用体验。",
+    "form": "多点触控、响应式布局与设计系统，统一跨设备的组件和行为。",
+    "world": "智能手机把服务嵌入日常；界面组织人的行动，也影响注意力和个人数据的流向。",
+    "example": "2007 · iPhone 发布 / 2014 · Material Design",
+    "bridge": "一致性提升效率，也推动设计师重新寻找差异与责任。",
+    "bg": "#e9edf1",
+    "fg": "#1d2b40",
+    "accent": "#3657bd",
+    "source": [
+      16,
+      17
+    ]
+  },
+  {
+    "key": "plural",
+    "date": "2020s—至今",
+    "year": "NOW",
+    "name": "当代的多种答案",
+    "en": "MANY FUTURES, ONE PLANET",
+    "title": "多种形式<br>共同发生",
+    "thesis": "统一模板之外，设计重新讨论个性、参与和代价。",
+    "form": "新粗野主义强化界面个性；生成工具改变制作，可访问性与循环设计持续发展。",
+    "world": "平台同质化、气候压力与自动化并行，迫使设计回应谁被服务、资源如何使用。",
+    "example": "新粗野主义 · 生成工具 · 循环设计",
+    "bridge": "这些是并行议题，不是一种必然接替上一种的新风格。",
+    "bg": "#fff6e8",
+    "fg": "#171717",
+    "accent": "#8d2d71",
+    "source": [
+      18,
+      19
+    ]
+  }
+];
+
+window.SOURCES = [{"id": "great-exhibition", "title": "V&A · The Great Exhibition of 1851", "url": "https://www.vam.ac.uk/articles/the-great-exhibition-of-1851"}, {"id": "arts-crafts", "title": "V&A · Arts and Crafts: an introduction", "url": "https://www.vam.ac.uk/articles/arts-and-crafts-an-introduction"}, {"id": "morris", "title": "V&A · William Morris textiles", "url": "https://www.vam.ac.uk/articles/willam-morris-textiles"}, {"id": "art-nouveau", "title": "V&A · Art Nouveau", "url": "https://www.vam.ac.uk/collections/art-nouveau"}, {"id": "guimard", "title": "MoMA · Entrance Gate to Paris Subway Station, c. 1900", "url": "https://www.moma.org/collection/works/2393"}, {"id": "werkbund", "title": "Deutscher Werkbund · Chronik 1907 bis 1932", "url": "https://www.deutscher-werkbund.de/wir-im-dwb/werkbund-geschichte/chronik-des-deutschen-werkbundes-1907-bis-1932/"}, {"id": "constructivism", "title": "MoMA · Rodchenko Chronology", "url": "https://www.moma.org/interactives/exhibitions/1998/rodchenko/table.html"}, {"id": "rodchenko", "title": "MoMA · Book about Books, 1924", "url": "https://www.moma.org/collection/works/14181"}, {"id": "de-stijl", "title": "MoMA · De Stijl", "url": "https://www.moma.org/collection/terms/de-stijl"}, {"id": "bauhaus", "title": "Bauhaus-Archiv · 14 Jahre Bauhaus", "url": "https://www.bauhaus.de/entdecken/artikel/14-jahre-bauhaus-eine-chronologie-von-der-grundung-1919-bis-zur-schliessung-1933/"}, {"id": "art-deco", "title": "V&A · An introduction to Art Deco", "url": "https://www.vam.ac.uk/articles/an-introduction-to-art-deco/"}, {"id": "streamline", "title": "The Met · American Modern, 1925–1940", "url": "https://www.metmuseum.org/exhibitions/listings/2000/american-modern"}, {"id": "swiss", "title": "Swiss National Library · The International style 1950–1970", "url": "https://www.nb.admin.ch/en/the-international-style-1950-1970"}, {"id": "ulm", "title": "HfG-Archiv Ulm · History", "url": "https://hfg-archiv.museumulm.de/en/the-hfg-archive/history/"}, {"id": "ulm-objects", "title": "Museum Ulm · HfG-Archiv", "url": "https://museumulm.de/sammlungen/hfg-ulm/"}, {"id": "space-age", "title": "V&A · Space-Age chairs", "url": "https://www.vam.ac.uk/articles/space-age-chairs"}, {"id": "panton", "title": "Verner Panton Official · Panton Chair", "url": "https://www.verner-panton.com/en/collection/prod-panton-chair/"}, {"id": "nasa", "title": "NASA · Graphics Standards Manual, January 1976", "url": "https://www.nasa.gov/wp-content/uploads/2015/01/nasa_graphics_manual_nhb_1430-2_jan_1976.pdf"}, {"id": "postmodernism", "title": "V&A · Postmodernism", "url": "https://www.vam.ac.uk/collections/postmodernism"}, {"id": "desktop-publishing", "title": "Computer History Museum · Desktop Publishing", "url": "https://www.computerhistory.org/revolution/personal-computers/17/306"}, {"id": "web", "title": "CERN · The birth of the Web", "url": "https://home.cern/science/computing/the-birth-of-the-web"}, {"id": "iphone", "title": "Apple · Apple Reinvents the Phone with iPhone, 2007", "url": "https://www.apple.com/newsroom/2007/01/09Apple-Reinvents-the-Phone-with-iPhone/"}, {"id": "material", "title": "Google · This is material design, 2014", "url": "https://developers.googleblog.com/en/this-is-material-design/"}, {"id": "circular", "title": "Ellen MacArthur Foundation · Circular design guidelines", "url": "https://www.ellenmacarthurfoundation.org/articles/how-circular-design-guidelines-unlock-organisations-potential-for-change"}, {"id": "breuer-moma", "title": "MoMA · Club chair (model B3 / Wassily)", "url": "https://www.moma.org/collection/works/2851", "supports": "藏品此版本1927–1928，正文明确更早版本1925设计于包豪斯。不要误读藏品制造年为首次设计年。"}, {"id": "breuer-designmuseum", "title": "Design Museum · Marcel Breuer", "url": "https://designmuseum.org/designers/marcel-breuer", "supports": "B3 (Wassily) Chair designed 1925。"}, {"id": "aeg-smb", "title": "Staatliche Museen zu Berlin · Allgemeine Elektricitäts-Gesellschaft AEG", "url": "https://search.smb.museum/object/obj-931917", "supports": "1907 AEG任命Behrens为艺术顾问；从logo、广告、包装到产品和建筑。"}, {"id": "univers-linotype", "title": "Linotype / MyFonts · Univers", "url": "https://www.myfonts.com/de/collections/univers-font-linotype", "supports": "About family正文明确1957年由Deberny & Peignot发行。"}, {"id": "nasa-punk-xbox", "title": "Xbox Wire · Exclusive Signed Starfield Art Giveaway (2022)", "url": "https://news.xbox.com/en-us/2022/02/17/exclusive-signed-starfield-art-giveaway/", "supports": "Starfield首席美术Istvan Pely直接表示团队用NASA-Punk描述可信、以现实航天技术为基础的科幻宇宙；不能追溯成1960年代历史流派。"}, {"id": "css1-w3c", "title": "W3C · Cascading Style Sheets Recommendation, 17 Dec 1996", "url": "https://www.w3.org/press-releases/1996/css1-rec/", "supports": "CSS1 Recommendation原始发布公告。"}, {"id": "web-public-w3c", "title": "W3C · 25 years ago the world changed forever", "url": "https://www.w3.org/blog/2016/25-years-ago-the-world-changed-forever/", "supports": "1991-08-06 alt.hypertext公告向更广泛公众介绍Web；第一浏览器等1990开发。"}, {"id": "morris-vam", "title": "V&A · Introducing William Morris", "url": "https://www.vam.ac.uk/articles/introducing-william-morris", "supports": "1861年与友人成立室内装饰公司。"}, {"id": "carlton-moma", "title": "MoMA · Ettore Sottsass, Carlton Room Divider, 1981", "url": "https://www.moma.org/collection/works/292736", "supports": "Carlton作品设计年1981。"}, {"id": "nouveau-met", "title": "The Met · Art Nouveau", "url": "https://www.metmuseum.org/essays/art-nouveau", "supports": "Japonisme、植物曲线、Beardsley的日本式平面构图及跨媒介整体艺术。"}];
+window.SOURCE_MAP = {"industrial": ["great-exhibition"], "crafts": ["arts-crafts", "morris", "morris-vam"], "nouveau": ["art-nouveau", "guimard", "nouveau-met"], "werkbund": ["werkbund", "aeg-smb"], "construct": ["constructivism", "rodchenko"], "stijl": ["de-stijl"], "bauhaus": ["bauhaus", "breuer-moma", "breuer-designmuseum"], "deco": ["art-deco", "streamline"], "swiss": ["swiss", "univers-linotype"], "ulm": ["ulm", "ulm-objects"], "space": ["space-age", "panton", "nasa", "nasa-punk-xbox"], "postmodern": ["postmodernism", "carlton-moma"], "computer": ["desktop-publishing"], "web": ["web", "css1-w3c", "web-public-w3c"], "mobile": ["iphone", "material"], "plural": ["circular"]};
+/* Original diagrammatic illustrations. No artwork reproduction or remote assets. */
+window.ARTS = (() => {
+  const svg = (name, label, body) => `<svg class="art-svg art-${name}" viewBox="0 0 600 600" role="img" aria-label="${label}" xmlns="http://www.w3.org/2000/svg">${body}</svg>`;
+  const repeat = (n, fn) => Array.from({length:n},(_,i)=>fn(i)).join('');
+  const screw = (x,y) => `<g stroke="#777568" stroke-width="1.3"><circle cx="${x}" cy="${y}" r="4" fill="#d5d1c6"/><path d="M${x-2} ${y+2}l4-4"/></g>`;
+  const A = {};
+
+  A.industrial = svg('industrial','铁与玻璃形成可复制的建筑单元：工业展馆结构示意',`
+    <defs><pattern id="i-glass" width="30" height="34" patternUnits="userSpaceOnUse"><path d="M0 0h30v34H0Z" fill="#e3e5df" stroke="#929791" stroke-width=".7"/><path d="M2 31L28 3" stroke="#f8f7f0" stroke-width="2"/></pattern></defs>
+    <g fill="none" stroke="#191d1b"><path class="a-draw" d="M35 484H565M63 460V251H222V180H378V251H537V460M222 251V181a78 78 0 0 1 156 0M300 103V460" stroke-width="2"/>
+    <g class="a-erect"><path d="M64 259H222V451H64Z M378 259H536V451H378Z M230 187H370V451H230Z" fill="url(#i-glass)" stroke-width="2"/><path d="M230 181a70 70 0 0 1 140 0Z" fill="url(#i-glass)" stroke-width="2"/>
+    ${repeat(6,i=>`<path d="M${74+i*28} 252v211M${382+i*28} 252v211" stroke-width="2"/>`)}
+    ${repeat(5,i=>`<path d="M${240+i*30} ${154-Math.sin(i*Math.PI/4)*30}V462" stroke-width="2"/>`)}
+    <path d="M63 316H537M63 381H537M63 449H537M223 252H377M300 104V451" stroke-width="3"/><path d="M30 463H570v10H30Z" fill="#191d1b"/>
+    <path d="M282 451v-42a18 18 0 0 1 36 0v42" stroke-width="3"/><path d="M300 103V70m-1 0h30l-13 10 13 10h-29" stroke-width="2"/>
+    </g><g stroke="#5e625e" stroke-width="1"><path d="M64 507H536M64 502v10m472-10v10M552 251v209m-5-209h10m-10 209h10"/></g></g>
+    <g fill="#242825" font-family="Consolas,monospace" font-size="12" letter-spacing="2"><text x="64" y="541">IRON / GLASS / REPETITION</text><text x="300" y="31" text-anchor="middle">THE AGE OF THE MACHINE</text></g>
+    <g class="a-spin" style="transform-origin:96px 112px" fill="none" stroke="#323830"><circle cx="96" cy="112" r="38" stroke-width="4"/><circle cx="96" cy="112" r="8" stroke-width="3"/>${repeat(8,i=>`<path d="M96 75v29" transform="rotate(${i*45} 96 112)" stroke-width="3"/>`)}</g>`);
+
+  A.crafts = svg('crafts','由卷曲枝叶、花和果实组成的手工纹样，表现工艺美术运动的自然观',`
+    <defs><g id="c-sprig"><path d="M0 180C80 107-76 50 0-40C77-132-46-175 0-252" fill="none" stroke="#bfc894" stroke-width="3"/><path d="M2 122C-48 121-52 83-41 57C-12 65 10 89 2 122ZM-5 45C45 48 64 12 52-18C20-11-1 11-5 45ZM-10-36C-56-36-61-68-50-98C-21-90-5-68-10-36ZM8-115C49-115 62-150 51-174C22-164 8-143 8-115Z" fill="#72947c" stroke="#c1c79c" stroke-width="1.4"/><path d="M3 116L-39 63M-3 40L49-12M-13-41L-47-93M10-120L48-168" stroke="#b8c195" stroke-width="1.4"/><g fill="#cd9b77" transform="translate(0 -37)"><path d="M0 0C-28-5-28-35-9-40C-16-59 11-67 17-47C40-54 50-25 30-17C39 0 11 15 0 0Z"/><circle cx="13" cy="-26" r="9" fill="#d6c995"/></g></g><clipPath id="c-clip"><rect x="58" y="48" width="484" height="502"/></clipPath></defs>
+    <rect x="58" y="48" width="484" height="502" fill="#1a3c30"/>
+    <g clip-path="url(#c-clip)" class="a-craft-grow">${repeat(4,x=>repeat(3,y=>`<use href="#c-sprig" x="${77+x*149}" y="${67+y*260}" transform="rotate(${x%2?180:0} ${77+x*149} ${67+y*260})"/>`))}</g>
+    <rect x="48" y="38" width="504" height="522" fill="none" stroke="#bfc894" stroke-width="1.2"/><path d="M48 18v20H28M552 18v20h20M48 580v-20H28M552 580v-20h20" fill="none" stroke="#bfc894"/>
+    <rect x="176" y="250" width="248" height="100" fill="#e5dfbe"/><text x="300" y="290" text-anchor="middle" font-family="Georgia,serif" font-size="23" letter-spacing="3" fill="#173a2b">TRUTH TO</text><text x="300" y="325" text-anchor="middle" font-family="Georgia,serif" font-size="23" letter-spacing="3" fill="#173a2b">MATERIALS</text>`);
+
+  A.nouveau = svg('nouveau','植物般的曲线围绕女性侧影展开，呈现新艺术的流动轮廓',`
+    <defs><clipPath id="n-clip"><rect x="76" y="32" width="448" height="536" rx="224"/></clipPath></defs>
+    <rect x="76" y="32" width="448" height="536" rx="224" fill="#ded29e" stroke="#626846" stroke-width="2"/>
+    <g clip-path="url(#n-clip)"><circle cx="305" cy="239" r="156" fill="#bec390"/>
+    <g fill="none" stroke="#677449" stroke-width="2.2" class="a-draw">${repeat(9,i=>`<path d="M${70+i*17} 593C${10+i*9} 440 ${230-i*2} 364 ${171+i*7} 256S${237+i*5} 36 ${304+i*7} 69S${511-i*8} 220 ${445-i*7} 326S${491-i*7} 520 ${553-i*5} 594"/>`)}</g>
+    <path d="M359 514C348 437 326 413 306 401C281 376 305 344 310 327C339 330 353 316 355 299L379 288 359 268C361 244 354 226 344 218C340 168 303 146 265 165C211 187 215 260 238 293C247 309 256 319 250 349C233 395 179 447 166 514Z" fill="#f1e5bd" stroke="#655b40" stroke-width="2"/>
+    <path d="M342 216C315 219 296 198 287 186C280 235 244 242 234 281C213 259 201 215 220 185C253 127 320 139 344 180C353 194 352 207 342 216Z" fill="#7d543a"/>
+    <path d="M346 259l-16-4m17 14l-10 1m10 33l-11 2" fill="none" stroke="#655b40" stroke-width="2"/>
+    <path d="M286 400C271 444 295 478 333 516H166C189 476 213 435 247 410Z" fill="#68764e"/>
+    <g stroke="#ad8653" fill="none" stroke-width="1">${repeat(15,i=>`<circle cx="306" cy="236" r="${166+i*5}"/>`)}</g>
+    </g><g fill="#5a593a" font-family="Georgia,serif" text-anchor="middle"><text x="300" y="548" font-size="31" letter-spacing="7">NOUVEAU</text><text x="300" y="587" font-size="12" letter-spacing="3">THE LINE BECOMES LIFE</text></g>`);
+
+  A.werkbund = svg('werkbund','同一套零件组合成三种电水壶，呈现设计与工业标准化的连接',`
+    <g fill="none" stroke="#172d35" stroke-width="1"><path class="a-draw" d="M45 472H555M70 101H530M300 96v10M90 96v10M510 96v10M300 111V454" stroke-dasharray="3 5"/></g>
+    <g class="a-build" fill="#b8bdba" stroke="#293c40" stroke-width="3"><path d="M179 427l27-183h187l28 183q0 17-18 17H197q-18 0-18-17Z"/><path d="M204 244q8-17 32-17h127q22 0 29 17" fill="#d2d6d1"/><path d="M238 223q0-12 13-12h98q13 0 13 12" fill="none"/><path d="M278 211v-16h43v16" fill="#293c40"/><path d="M394 273l48-38 38-63 18 12-28 78-62 49" fill="#c4c9c3"/><path d="M207 279C89 237 85 382 188 381" fill="none" stroke-width="18"/><path d="M207 279C89 237 85 382 188 381" fill="none" stroke="#4c5d5d" stroke-width="10"/>
+    <path d="M233 274l-13 135M267 274l-6 135M300 274v135M333 274l6 135M366 274l13 135" stroke="#788987" stroke-width="1.5"/><path d="M194 427h213" stroke-width="6"/></g>
+    <g fill="#293c40" font-family="Consolas,monospace" font-size="12"><text x="46" y="64" letter-spacing="2">ONE SYSTEM. MANY FORMS.</text><text x="47" y="511">MATERIAL</text><text x="259" y="511">MODULE</text><text x="466" y="511">SERIES</text></g>
+    <g fill="none" stroke="#293c40" stroke-width="2"><rect x="47" y="527" width="88" height="22"/><path d="M259 549v-22h88v22ZM282 527v22m21-22v22m22-22v22"/><path d="M467 549l9-22h14l9 22m5 0 9-22h14l9 22"/></g>`);
+
+  A.construct = svg('construct','红黑色面沿对角线推动大字排版，示意构成主义的公共传播语言',`
+    <defs><pattern id="r-halftone" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#161616"/></pattern></defs>
+    <rect x="36" y="25" width="528" height="550" fill="#f1e9d8"/>
+    <g class="a-con-panel a-con-left"><path d="M36 386L564 124V575H36Z" fill="#171717"/></g>
+    <g class="a-con-panel a-con-right"><path d="M36 25H564V127L36 389Z" fill="#ce3125"/></g>
+    <circle cx="447" cy="425" r="105" fill="#f1e9d8"/><circle cx="447" cy="425" r="81" fill="url(#r-halftone)"/>
+    <path class="a-con-rule" d="M48 415L554 163" fill="none" stroke="#f1e9d8" stroke-width="3"/>
+    <g transform="rotate(-27 300 310)" font-family="Impact,Arial Narrow,Arial,sans-serif" font-weight="900" fill="#f1e9d8"><text class="a-con-word" x="75" y="278" font-size="82" letter-spacing="-3">BUILD</text><text class="a-con-word a-delay" x="75" y="351" font-size="82" letter-spacing="-3">THE NEW</text></g>
+    <g class="a-con-word" font-family="Consolas,monospace" font-size="12" letter-spacing="2" fill="#f1e9d8"><text x="66" y="535">TYPE / PRINT / PUBLIC</text></g>`);
+
+  A.stijl = svg('stijl','以正交黑线与原色块建立不对称平衡的风格派构图',`
+    <rect x="34" y="34" width="532" height="532" fill="#f6f2e9"/>
+    <rect class="a-stijl-red" x="222" y="34" width="344" height="342" fill="#d3332d"/>
+    <rect class="a-stijl-blue" x="34" y="376" width="188" height="190" fill="#183d8d"/>
+    <rect class="a-stijl-yellow" x="475" y="469" width="91" height="97" fill="#e9bf26"/>
+    <g stroke="#151515" stroke-width="12" fill="none"><path class="a-stijl-h" style="--ad:1.35s" d="M34 34H566"/><path class="a-stijl-v" style="--ad:1.42s" d="M34 34V566"/><path class="a-stijl-h" style="--ad:1.49s" d="M34 566H566"/><path class="a-stijl-v" style="--ad:1.56s" d="M566 34V566"/><path class="a-stijl-v" style="--ad:1.63s" d="M222 34V566"/><path class="a-stijl-h" style="--ad:1.70s" d="M34 376H566"/><path class="a-stijl-h" style="--ad:1.77s" d="M34 210H222"/><path class="a-stijl-v" style="--ad:1.84s" d="M475 376V566"/><path class="a-stijl-h" style="--ad:1.91s" d="M475 469H566"/></g>
+    <g class="a-stijl-type" fill="#f6f2e9" font-family="Arial,sans-serif" font-weight="700"><text x="248" y="124" font-size="55">DE</text><text x="248" y="184" font-size="55">STIJL</text></g>`);
+
+  A.bauhaus = svg('bauhaus','钢管与织物被拆解再组装成椅子，表现包豪斯从工坊走向工业',`
+    <g stroke="#a29d92" stroke-width="1" fill="none"><path d="M65 493H543M82 84H523M82 79v10m441-10v10"/><path d="M92 491V143M524 491V143" stroke-dasharray="3 6"/></g>
+    <g class="a-chair-back" stroke="#171717" stroke-linejoin="round"><path d="M194 154L377 118L435 229L252 270Z" fill="#a92b22" stroke-width="3"/><path d="M189 153L173 294M376 117L388 267" fill="none" stroke-width="9"/><path d="M194 163L377 128M200 174L383 139" fill="none" stroke="#e4dbcc" stroke-width="1"/></g>
+    <g class="a-chair-seat"><path d="M171 300L377 255L466 313L255 366Z" fill="#22211e" stroke="#111" stroke-width="3"/><path d="M163 303L255 374L473 321" fill="none" stroke="#171717" stroke-width="8" stroke-linejoin="round"/></g>
+    <g class="a-draw" fill="none" stroke="#171717" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"><path d="M192 219L113 239L113 396Q113 415 134 424L253 477Q267 483 286 479L487 425Q506 421 506 401V272L412 231"/><path d="M113 239L245 297L506 272M245 297V477M163 262V378Q163 391 176 397L287 446Q299 452 316 447L452 412V288"/></g>
+    <g fill="#171717" font-family="Arial,sans-serif"><text x="66" y="549" font-size="21" font-weight="700">material → workshop → industry</text><text x="66" y="57" font-size="13" letter-spacing="2">TUBULAR STEEL / WOVEN SURFACE</text></g>
+    <rect x="66" y="570" width="115" height="7" fill="#b53025"/>`);
+
+  A.deco = svg('deco','放射的金色线条和层叠的都市天际线，呈现装饰艺术的机器时代奢华',`
+    <defs><clipPath id="d-clip"><path d="M49 43H551V557H49Z"/></clipPath></defs>
+    <g clip-path="url(#d-clip)"><g class="a-deco-rays" stroke="#ae965f" stroke-width="1">${repeat(23,i=>`<path d="M300 516L${300+Math.cos(Math.PI+i*Math.PI/22)*800} ${516+Math.sin(Math.PI+i*Math.PI/22)*800}"/>`)}</g>
+    <g fill="#131f29" stroke="#cdb57f" stroke-width="2"><path class="a-deco-rise" d="M87 557V388h44V348h43V557M426 557V348h43v40h44v169"/><path class="a-deco-rise" style="--ad:.2s" d="M161 557V289h38v-40h43v308M358 557V249h43v40h38v268"/><path class="a-deco-rise" style="--ad:.4s" d="M228 557V231h26v-43h25v-39h21l21 0v39h25v43h26v326Z"/>
+    <path class="a-draw" d="M300 90V557M282 199V557M318 199V557M264 243V557M336 243V557M244 265V557M356 265V557M181 313V557M419 313V557M107 411V557M493 411V557"/>
+    <path d="M279 149l21-59 21 59M254 188l46-43 46 43M228 231l72-43 72 43" fill="none"/>
+    </g></g><g fill="none" stroke="#cdb57f"><path d="M49 43H551V557H49ZM59 53H541V547H59Z"/><path d="M270 43l30 27 30-27M270 557l30-27 30 27"/></g>
+    <text x="300" y="591" text-anchor="middle" fill="#d6bd83" font-family="Georgia,serif" font-size="12" letter-spacing="4">THE MACHINE, MADE DESIRABLE</text>`);
+
+  A.swiss = svg('swiss','网格中的客观排字与红色圆形，呈现瑞士国际主义平面设计',`
+    <rect x="40" y="32" width="520" height="536" fill="#f8f7f2"/>
+    <g class="a-swiss-rules" stroke="#aaa99f" stroke-width="1"><path d="M63 52H537M63 549H537M63 218H537M63 437H537"/></g>
+    <g class="a-swiss-copy" fill="#171717" font-family="Arial,Helvetica,sans-serif"><text x="62" y="97" font-size="44" font-weight="700" letter-spacing="-2">Form</text><text x="62" y="143" font-size="44" font-weight="700" letter-spacing="-2">follows</text><text x="62" y="189" font-size="44" font-weight="700" letter-spacing="-2">information.</text>
+    <text x="347" y="83" font-size="12">INTERNATIONAL</text><text x="347" y="100" font-size="12">TYPOGRAPHIC STYLE</text><text x="347" y="184" font-size="12">GRID / TYPE / ORDER</text></g>
+    <g class="a-swiss-disc" style="transform-origin:300px 325px"><circle cx="302" cy="326" r="88" fill="#d7372a"/><path d="M215 326H389" stroke="#f8f7f2" stroke-width="15"/><path d="M302 239V413" stroke="#f8f7f2" stroke-width="15"/></g>
+    <g class="a-swiss-copy" fill="#171717" font-family="Arial,Helvetica,sans-serif" font-size="13"><text x="63" y="466">Visual communication</text><text x="63" y="485">without excess.</text><text x="347" y="466">A common language</text><text x="347" y="485">across borders.</text></g>`);
+
+  A.ulm = svg('ulm','直角面板、扬声孔和清晰旋钮组成的收音机，呈现系统设计的产品秩序',`
+    <g class="a-build"><rect x="52" y="154" width="496" height="292" rx="5" fill="#ecece5" stroke="#3c4541" stroke-width="2"/><rect x="62" y="164" width="476" height="272" rx="2" fill="none" stroke="#c4c7bf"/>
+    <g fill="#58615b">${repeat(17,x=>repeat(15,y=>`<circle cx="${88+x*11}" cy="${209+y*11}" r="2"/>`))}</g>
+    <path d="M297 177V424" stroke="#bec3b8"/>
+    <g fill="none" stroke="#46544b" stroke-width="1.3"><circle cx="408" cy="263" r="49"/><circle cx="408" cy="263" r="30"/><circle cx="408" cy="263" r="4"/>${repeat(25,i=>`<path d="M408 206v7" transform="rotate(${i*12} 408 263)"/>`)}</g>
+    <g class="a-radio-knob" style="transform-origin:408px 263px"><circle cx="408" cy="263" r="24" fill="#d2d7ce" stroke="#46544b"/><path d="M408 244v13" stroke="#152d20" stroke-width="3"/></g>
+    <g fill="#1b2e22" font-family="Arial,sans-serif" font-size="12"><text x="345" y="187">FREQUENCY</text><text x="345" y="396">VOLUME</text><text x="457" y="396">POWER</text></g>
+    <circle cx="368" cy="354" r="18" fill="#d2d7ce" stroke="#46544b"/><path d="M368 339v13" stroke="#46544b" stroke-width="2"/><rect x="465" y="342" width="28" height="26" fill="#d2d7ce" stroke="#46544b"/><circle cx="479" cy="355" r="4" fill="#ce5e37"/>
+    ${screw(74,177)}${screw(526,177)}${screw(74,423)}${screw(526,423)}</g>
+    <g fill="none" stroke="#89938a" stroke-width="1"><path class="a-draw" d="M52 124H548M52 119v10m496-10v10M52 477H548M52 472v10m496-10v10"/></g>
+    <text x="52" y="528" fill="#24382a" font-family="Consolas,monospace" font-size="13" letter-spacing="2">A PRODUCT IS PART OF A SYSTEM.</text>`);
+
+  A.space = svg('space','白色航天设备面板与轨道示意，探索功能标签、标准化和任务系统的视觉语言',`
+    <rect x="32" y="35" width="536" height="530" fill="#f1eee4" stroke="#a7a394" stroke-width="2"/>
+    <path d="M32 115H568M32 444H568M424 115V444M424 337H568" stroke="#a7a394" stroke-width="2"/>
+    ${screw(45,48)}${screw(555,48)}${screw(45,552)}${screw(555,552)}
+    <g font-family="Consolas,monospace" fill="#282c28"><text x="57" y="72" font-size="13" letter-spacing="2">ORBITAL STUDY</text><text x="57" y="96" font-size="11">CONCEPT DISPLAY / NOT FLIGHT DATA</text></g>
+    <g class="a-space-power" fill="none" stroke="#444f49"><circle cx="227" cy="280" r="112"/><circle cx="227" cy="280" r="75" stroke-dasharray="2 7"/><path d="M91 280H363M227 144V416" stroke="#aaa99d"/><ellipse cx="227" cy="280" rx="144" ry="55" transform="rotate(-35 227 280)" stroke-width="2"/><circle cx="227" cy="280" r="35" fill="#d4d5c8"/><path d="M197 263h60M194 280h66M197 297h60" stroke="#a6aea0"/></g>
+    <g class="a-orbit" style="transform-origin:227px 280px"><circle cx="318" cy="202" r="8" fill="#d63a2c"/><path d="M318 190v-9m0 33v9m-12-21h-9m33 0h9" stroke="#d63a2c"/></g>
+    <g class="a-space-power" fill="#2a312c" font-family="Consolas,monospace" font-size="11"><text x="442" y="151">CHECKLIST</text><text x="442" y="185">[✓] FORM</text><text x="442" y="215">[✓] LABEL</text><text x="442" y="245">[✓] SYSTEM</text><text x="442" y="284">HUMAN</text><text x="442" y="301">FACTORS</text><text x="442" y="369">SCALE</text><text x="442" y="389">SCHEMATIC</text></g>
+    <g fill="#4c5a68"><rect x="57" y="475" width="98" height="16"/></g><rect x="155" y="475" width="98" height="16" fill="#7a7f4e"/><rect x="253" y="475" width="98" height="16" fill="#d2a85e"/><rect x="351" y="475" width="98" height="16" fill="#a8432f"/>
+    <g font-family="Consolas,monospace" fill="#373e35"><text x="57" y="527" font-size="12" letter-spacing="2">ENGINEERING THE FUTURE</text></g>`);
+
+  A.postmodern = svg('postmodern','鲜艳的斜向隔板和装饰底座构成孟菲斯式书架，表现后现代对纯功能主义的回应',`
+    <defs><pattern id="p-dots" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M4 3l5 5m7 5-4 5" stroke="#242525" stroke-width="2"/></pattern></defs>
+    <g class="a-memphis-base"><rect x="153" y="468" width="294" height="72" fill="#f0df99" stroke="#202523" stroke-width="3"/><rect x="153" y="468" width="294" height="72" fill="url(#p-dots)"/></g>
+    <g class="a-memphis-level" style="--ad:.15s"><path d="M286 172h28v296h-28Z" fill="#202523"/><path d="M136 338H464V365H136Z" fill="#e44e3e" stroke="#202523" stroke-width="3"/><path d="M219 350l-74 116 24 15 74-116ZM357 350l74 116 24-15-74-116Z" fill="#4b87b2" stroke="#202523" stroke-width="3"/></g>
+    <g class="a-memphis-level" style="--ad:.3s"><path d="M166 225H434V252H166Z" fill="#e4a833" stroke="#202523" stroke-width="3"/><path d="M228 228l-84-105-21 17 84 105ZM372 228l84-105 21 17-84 105Z" fill="#6e9690" stroke="#202523" stroke-width="3"/><path d="M226 252v86h-25v-86m173 0v86h25v-86" fill="#cf749b" stroke="#202523" stroke-width="3"/></g>
+    <g class="a-memphis-level" style="--ad:.45s"><path d="M246 81H354V174H246Z" fill="#d56478" stroke="#202523" stroke-width="3"/><path d="M246 81H354V174H246Z" fill="url(#p-dots)"/><path d="M238 174H362V195H238Z" fill="#2c5550" stroke="#202523" stroke-width="3"/></g>
+    <text x="300" y="581" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="700" letter-spacing="3" fill="#252525">MORE THAN A FUNCTION</text>`);
+
+  A.computer = svg('computer','厚重的控制台、绿磷光屏和实体按键，表现早期个人计算的硬件尺度',`
+    <defs><pattern id="t-scan" width="6" height="5" patternUnits="userSpaceOnUse"><path d="M0 0H6" stroke="#b2f7a3" stroke-opacity=".10"/></pattern></defs>
+    <rect x="52" y="80" width="496" height="366" fill="#252a22" stroke="#646b57" stroke-width="2"/><rect x="73" y="102" width="375" height="300" fill="#11170e" stroke="#4b5542" stroke-width="8"/>
+    <g class="a-terminal-boot"><rect x="85" y="114" width="351" height="276" fill="#070d07"/>
+    <g fill="#86e48b" font-family="Consolas,monospace"><text x="103" y="145" font-size="12">DESIGN EXHIBIT / CONCEPT TERMINAL</text><path d="M104 160H416" stroke="#86e48b" stroke-width="1"/>
+    <text x="104" y="198" font-size="18">TYPE. EDIT. REPEAT.</text><text x="104" y="232" font-size="13">TEXT IS NOW RECONFIGURABLE.</text><text x="104" y="257" font-size="13">THE SCREEN BECOMES A WORKSPACE.</text><text x="104" y="358" font-size="13">READY</text><rect class="a-cursor" x="155" y="347" width="9" height="14"/>
+    <g fill="none" stroke="#86e48b" stroke-width="2"><path d="M105 313v-32h22v32m-22-15h22m16 15v-32h22v16h-22m38-16v32h23m16-32v32m0-32h24m-24 16h18"/></g></g><rect x="85" y="114" width="351" height="276" fill="url(#t-scan)"/></g>
+    <g fill="#11170e" stroke="#6c735c">${repeat(8,i=>`<rect x="470" y="${118+i*11}" width="48" height="4"/>`)}</g>
+    <circle cx="493" cy="254" r="19" fill="#3e4836" stroke="#6f7a60" stroke-width="2"/><path d="M493 237v13" stroke="#d8cdb4" stroke-width="3"/><rect x="474" y="300" width="38" height="48" fill="#b3b298"/><path d="M485 304v39m6-39v39m6-39v39m6-39v39" stroke="#727760"/>
+    <g fill="#b4b89f" font-family="Consolas,monospace" font-size="11"><text x="466" y="287">DISPLAY</text><text x="466" y="374">POWER</text></g>
+    <path d="M52 460H548L574 531H26Z" fill="#414a3b" stroke="#747d63" stroke-width="2"/>
+    <g fill="#222c20" stroke="#7a8269" stroke-width="1">${repeat(3,y=>repeat(14,x=>`<rect x="${61+x*34-y*4}" y="${470+y*17}" width="26" height="11"/>`))}</g>
+    ${screw(62,91)}${screw(537,91)}${screw(62,434)}${screw(537,434)}
+    <text x="52" y="572" fill="#a2bb91" font-family="Consolas,monospace" font-size="12" letter-spacing="2">FROM PHYSICAL TYPE TO DIGITAL CODE</text>`);
+
+  A.web = svg('web','互相连接的浏览器窗口和超链接，表现互联网使设计成为导航与参与的接口',`
+    <g class="a-web-lines" fill="none" stroke="#b0c3ff" stroke-width="2" stroke-dasharray="4 8"><path d="M166 170L434 180L349 454L166 170ZM349 454L112 385L434 180"/></g>
+    <g class="a-web-window" style="--ad:0s"><rect x="42" y="71" width="340" height="254" fill="#ecedeb" stroke="#101b59" stroke-width="3"/><rect x="49" y="78" width="326" height="25" fill="#172b84"/><text x="58" y="95" fill="#fff" font-family="Consolas,monospace" font-size="12">WORLD WIDE WEB</text><rect x="55" y="112" width="314" height="22" fill="#fff" stroke="#7d859e"/><text x="64" y="128" fill="#424b69" font-family="Consolas,monospace" font-size="10">address: /ideas/connect</text><text x="64" y="172" fill="#192a64" font-family="Georgia,serif" font-size="25">A linked world.</text><path d="M64 185H352" stroke="#adb3bd"/><g fill="#243fbc" font-family="Georgia,serif" font-size="14" text-decoration="underline"><text x="64" y="213">People, ideas, information</text><text x="64" y="242">Follow the hyperlink</text><text x="64" y="271">Create a new connection</text></g></g>
+    <g class="a-web-window" style="--ad:.22s"><rect x="270" y="258" width="282" height="237" fill="#ecedeb" stroke="#101b59" stroke-width="3"/><rect x="277" y="265" width="268" height="25" fill="#172b84"/><text x="287" y="282" fill="#fff" font-family="Consolas,monospace" font-size="12">HYPERTEXT</text><g fill="none" stroke="#243fbc" stroke-width="2"><circle cx="411" cy="385" r="70"/><ellipse cx="411" cy="385" rx="32" ry="70"/><path d="M341 385H481M350 350H472M350 420H472"/></g></g>
+    <g class="a-web-pointer"><path d="M225 223l48 38-26 4-14 24Z" fill="#fff" stroke="#121b44" stroke-width="3"/></g>
+    <text x="44" y="560" fill="#d7dfff" font-family="Consolas,monospace" font-size="14" letter-spacing="2">THE PAGE BECOMES A PLACE.</text>`);
+
+  A.mobile = svg('mobile','手指触碰屏幕形成涟漪，表现移动界面围绕手势和连续服务组织',`
+    <defs><clipPath id="m-screen"><rect x="184" y="68" width="232" height="463" rx="23"/></clipPath></defs>
+    <path class="a-draw" d="M135 301H72M465 301H528M300 22V0M300 578V600" stroke="#9ba5a8" stroke-width="1"/>
+    <rect x="172" y="43" width="256" height="514" rx="38" fill="#151a1c"/>
+    <g clip-path="url(#m-screen)"><rect x="184" y="68" width="232" height="463" fill="#e8ecea"/><rect x="184" y="68" width="232" height="127" fill="#314d52"/><g fill="#fff" font-family="Arial,sans-serif"><text x="205" y="108" font-size="12">EVERYDAY, CONNECTED</text><text x="205" y="151" font-size="29" font-weight="700">Within reach.</text></g>
+    <g class="a-mobile-ui"><rect x="204" y="215" width="192" height="134" rx="12" fill="#fff"/><path d="M223 301C248 244 281 334 303 269S348 307 376 237" fill="none" stroke="#6b9794" stroke-width="3"/><path d="M223 321H377" stroke="#d6dedb"/>
+    ${repeat(3,i=>`<rect x="204" y="${369+i*45}" width="192" height="34" rx="6" fill="#fff"/><circle cx="222" cy="${386+i*45}" r="8" fill="${['#b9c9a7','#a9beca','#d8bda1'][i]}"/><path d="M241 ${382+i*45}h106m-106 8h70" stroke="#a5b2b3" stroke-width="3"/>`)}
+    </g><circle class="a-touch-ring" cx="330" cy="300" r="31" fill="none" stroke="#668c87" stroke-width="2"/></g>
+    <rect x="273" y="76" width="54" height="6" rx="3" fill="#152626"/>
+    <path class="a-mobile-hand" d="M334 418v-104c0-19 25-19 25 0v58c3-14 23-16 27-2 8-17 24-11 27 2 7-11 25-5 25 9v80c0 37-24 69-24 89h-65c0-36-45-65-53-91l-14-38c-6-21 17-30 27-11l25 38" fill="#ceb79d" stroke="#6a655b" stroke-width="2"/>
+    <text x="300" y="591" text-anchor="middle" fill="#344a4e" font-family="Consolas,monospace" font-size="12" letter-spacing="2">THE INTERFACE FOLLOWS THE BODY</text>`);
+
+  A.plural = svg('plural','两张有粗黑描边和硬投影的彩色界面卡片，体现当代数字设计的多种选择',`
+    <g class="a-neu-shadow" fill="#171717"><rect x="52" y="69" width="369" height="253" rx="16"/><rect x="212" y="350" width="348" height="198" rx="16"/></g>
+    <g><rect x="42" y="59" width="369" height="253" rx="16" fill="#ffd84d"/><rect class="a-neu-outline" x="42" y="59" width="369" height="253" rx="16" fill="none" stroke="#171717" stroke-width="4" pathLength="1" stroke-dasharray="1"/>
+    <g class="a-neu-copy" fill="#171717" font-family="Arial,sans-serif" font-weight="900"><text x="68" y="126" font-size="44" letter-spacing="-2">MAKE</text><text x="68" y="171" font-size="44" letter-spacing="-2">A CHOICE.</text></g><g class="a-neu-copy"><rect x="68" y="224" width="187" height="51" rx="25" fill="#fff9f0" stroke="#171717" stroke-width="3"/><text x="93" y="256" fill="#171717" font-family="Arial,sans-serif" font-size="18" font-weight="700">HUMAN FIRST</text></g></g>
+    <g><rect x="202" y="340" width="348" height="198" rx="16" fill="#ff90e8"/><rect class="a-neu-outline" style="--ad:.2s" x="202" y="340" width="348" height="198" rx="16" fill="none" stroke="#171717" stroke-width="4" pathLength="1" stroke-dasharray="1"/>
+    <g class="a-neu-copy" fill="#171717" font-family="Arial,sans-serif" font-weight="900"><text x="229" y="399" font-size="33">LESS WASTE.</text><text x="229" y="439" font-size="33">MORE ACCESS.</text></g><path class="a-neu-copy" d="M231 478H516M231 490H450" fill="none" stroke="#171717" stroke-width="4"/></g>
+    <path class="a-neu-pointer" d="M406 243l62 49-35 5-17 32Z" fill="#fff9f0" stroke="#171717" stroke-width="4"/>`);
+  return A;
+})();
+
+(() => {
+ 'use strict';
+ const $ = id => document.getElementById(id);
+ const escape = str => String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const splitTitle = str => {let n=0;return str.split('<br>').map(line => [...line].map(c => `<span class="ch" style="--i:${n++}">${escape(c)}</span>`).join('')).join('<br>');};
+ const finale = document.querySelector('.finale');
+ CHAPTERS.forEach((c,i) => {
+  const section=document.createElement('section');section.className='slide chapter';
+  Object.assign(section.dataset,{key:c.key,title:c.name,bg:c.bg,fg:c.fg,accent:c.accent});
+  section.style.cssText=`--bg:${c.bg};--fg:${c.fg};--accent:${c.accent};--line:color-mix(in srgb,${c.fg} 24%,transparent)`;
+  section.setAttribute('aria-label',`${i+1}：${c.name}`);section.setAttribute('aria-hidden','true');section.inert=true;
+  section.innerHTML=`<div class="chapter-top"><span class="chapter-name">${escape(c.name)}</span><span class="chapter-date">${escape(c.date)}</span></div><div class="chapter-main"><div class="copy"><p class="chapter-en">${escape(c.en)}</p><h2 aria-label="${escape(c.title.replace('<br>',''))}">${splitTitle(c.title)}</h2><p class="thesis">${escape(c.thesis)}</p><span class="year-mark" aria-hidden="true">${escape(c.year)}</span></div><div class="art">${ARTS[c.key]||''}<span class="art-caption">原创图解 / ${escape(c.name)}</span></div></div><div class="chapter-foot"><div class="thread"><span class="thread-label">形式 / 技术</span><div><p>${escape(c.form)}</p><p class="example">${escape(c.example)}</p></div></div><div class="thread"><span class="thread-label">文化 / 社会</span><p>${escape(c.world)}</p></div><div class="bridge">${escape(c.bridge)}</div></div>`;
+  section.querySelectorAll('h2 .ch').forEach(x=>x.setAttribute('aria-hidden','true'));
+  finale.before(section);
+ });
+ const slides=[...document.querySelectorAll('.slide')];let current=0,locked=false,playing=false,timer=null,progressAnim=null,wobbleTimer=null,activeAnimations=[];
+ const reduceQuery=matchMedia('(prefers-reduced-motion: reduce)');let reduced=reduceQuery.matches;
+ const dialogs=[$('indexDialog'),$('sourceDialog')];const isDialogOpen=()=>dialogs.some(x=>x.open);
+ slides.forEach(s=>{s.style.setProperty('--bg',s.dataset.bg);s.style.setProperty('--fg',s.dataset.fg);s.style.setProperty('--accent',s.dataset.accent);});
+ $('totalNumber').textContent=String(slides.length-1).padStart(2,'0');
+ slides.forEach((s,i)=>{
+  const b=document.createElement('button');b.type='button';b.dataset.goto=i;b.dataset.tooltip=i===0?'序':i===slides.length-1?'终':CHAPTERS[i-1].date;b.setAttribute('aria-label',`${i} ${s.dataset.title}`);$('timeline').append(b);
+  const m=document.createElement('button');m.className='index-item';m.dataset.goto=i;m.innerHTML=`<span class="idx">${String(i).padStart(2,'0')}</span><span class="name">${escape(s.dataset.title)}</span><span class="date">${i===0?'INTRODUCTION':i===slides.length-1?'AN OPEN ENDING':escape(CHAPTERS[i-1].date)}</span>`;$('indexGrid').append(m);
+ });
+ SOURCES.forEach((s,i)=>{const div=document.createElement('div');div.className='source-item';div.dataset.source=i;div.innerHTML=`<a href="${escape(s.url)}" target="_blank" rel="noopener noreferrer">${escape(s.title)}</a><small>${escape(s.note||s.id)} · 需联网阅读原文</small>`;$('sourceList').append(div);});
+ function setTheme(slide){['bg','fg','accent'].forEach(k=>document.documentElement.style.setProperty('--'+k,slide.dataset[k]));}
+ function updateControls(){
+  $('currentNumber').textContent=String(current).padStart(2,'0');$('currentEra').textContent=slides[current].dataset.title;
+  $('prevBtn').disabled=current===0;$('nextBtn').disabled=current===slides.length-1;
+  document.querySelectorAll('#timeline button,#indexGrid button').forEach(b=>{const i=+b.dataset.goto;b.setAttribute('aria-current',String(i===current));b.classList.toggle('past',i<current);});
+  $('announcement').textContent=`第 ${current+1} 页，共 ${slides.length} 页。${slides[current].dataset.title}`;
+ }
+ function cancelEffects(){clearInterval(wobbleTimer);activeAnimations.forEach(a=>a.cancel());activeAnimations=[];}
+ const plural=document.querySelector('[data-key="plural"]');
+ const pluralBody=plural.querySelector('.thesis');pluralBody.setAttribute('aria-label',pluralBody.textContent);pluralBody.innerHTML=[...pluralBody.textContent].map(c=>`<span class="ch" aria-hidden="true">${escape(c)}</span>`).join('');
+ function sceneEffects(){
+  cancelEffects();if(reduced)return;
+  if(slides[current].dataset.key==='plural'){
+   const chars=plural.querySelectorAll('h2 .ch');chars.forEach((c,i)=>{
+    const dx=(i%2?-1:1)*Math.min(innerWidth*.18,innerHeight*.33),dy=-(70+i*15),rot=i%2?-12:12;
+    activeAnimations.push(c.animate([{opacity:0,transform:`translate(${dx}px,${dy}px) rotate(${rot}deg)`},{opacity:1,transform:`translate(${-dx*.055}px,${-dy*.055}px) rotate(${-rot*.2}deg)`,offset:.72},{transform:`translate(${dx*.022}px,${dy*.022}px) rotate(${rot*.1}deg)`,offset:.88},{transform:'none'}],{duration:1050,delay:i*55,easing:'cubic-bezier(.22,.8,.3,1)',fill:'backwards'}));
+   });
+   const bodyChars=[...pluralBody.querySelectorAll('.ch')];let wave=0;
+   wobbleTimer=setInterval(()=>{if(reduced||isDialogOpen()||document.hidden)return;for(let k=0;k<4;k++){const c=bodyChars[(wave*7+k*3)%bodyChars.length];const a=c.animate([{transform:'scale(1) rotate(0)'},{transform:'scale(1.44) rotate(5deg)',offset:.3},{transform:'scale(1.12) rotate(-5deg)',offset:.5},{transform:'scale(1.26) rotate(3deg)',offset:.65},{transform:'scale(1.06) rotate(-2deg)',offset:.82},{transform:'scale(1) rotate(0)'}],{duration:760});a.finished.catch(()=>{});}wave++;},1600);
+  }
+ }
+ function stopClock(){clearTimeout(timer);timer=null;if(progressAnim)progressAnim.cancel();progressAnim=null;}
+ function startClock(){stopClock();if(!playing||isDialogOpen()||document.hidden)return;if(current===slides.length-1){setPlaying(false);return;}if(!reduced)progressAnim=$('autoProgress').animate([{transform:'scaleX(0)'},{transform:'scaleX(1)'}],{duration:18000,fill:'forwards'});timer=setTimeout(()=>go(current+1),18000);}
+ function setPlaying(value){playing=value;$('playBtn').setAttribute('aria-pressed',String(value));$('playBtn').querySelector('.play-icon').textContent=value?'Ⅱ':'▷';$('playBtn').querySelector('.play-text').textContent=value?'暂停播放':'自动播放';$('playBtn').title=value?'暂停自动播放':'自动播放，每页 18 秒';startClock();}
+ function go(index,options={}){
+  const next=Math.max(0,Math.min(slides.length-1,index));if(locked&&!options.force)return;
+  if(next===current){if(options.close)dialogs.forEach(d=>d.close());return;}
+  if(options.close)dialogs.forEach(d=>d.close());
+  const old=slides[current];document.body.classList.toggle('reverse',next<current);current=next;locked=!reduced;
+  slides.forEach(s=>s.classList.remove('entering','leaving'));old.classList.remove('active');old.classList.add('leaving');old.inert=true;old.setAttribute('aria-hidden','true');
+  const active=slides[current];active.scrollTop=0;active.inert=false;active.setAttribute('aria-hidden','false');active.classList.add('active','entering');setTheme(active);updateControls();
+  try{history.replaceState(null,'',`#${current}`);}catch(e){}
+  sceneEffects();startClock();
+  setTimeout(()=>{old.classList.remove('leaving');active.classList.remove('entering');locked=false;},reduced?0:780);
+ }
+ function openDialog(dialog){stopClock();dialog.showModal();if(dialog===$('sourceDialog')){
+   const ids=current>0&&current<slides.length-1?(SOURCE_MAP[CHAPTERS[current-1].key]||[]):[];
+   document.querySelectorAll('.source-item').forEach(x=>x.classList.toggle('highlight',ids.includes(SOURCES[+x.dataset.source].id)));
+   dialog.scrollTop=0;
+  }}
+ document.addEventListener('click',e=>{const b=e.target.closest('[data-goto]');if(b){go(+b.dataset.goto,{force:true,close:true});}});
+ $('home').onclick=()=>go(0);$('prevBtn').onclick=()=>go(current-1);$('nextBtn').onclick=()=>go(current+1);$('playBtn').onclick=()=>setPlaying(!playing);
+ $('indexBtn').onclick=()=>openDialog($('indexDialog'));$('sourceBtn').onclick=$('endSourceBtn').onclick=()=>openDialog($('sourceDialog'));
+ dialogs.forEach(d=>{d.querySelector('.close').onclick=()=>d.close();d.addEventListener('close',startClock);d.addEventListener('click',e=>{if(e.target!==d)return;const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close();});});
+ function applyMotion(){document.body.classList.toggle('motion-off',reduced);$('motionBtn').textContent=reduced?'动效关':'动效开';$('motionBtn').setAttribute('aria-pressed',String(!reduced));if(reduced)cancelEffects();else sceneEffects();startClock();}
+ $('motionBtn').onclick=()=>{if(reduceQuery.matches){toast('系统已启用减少动态效果');return;}reduced=!reduced;applyMotion();};reduceQuery.addEventListener('change',e=>{reduced=e.matches;applyMotion();});
+ async function full(){try{if(document.fullscreenElement)await document.exitFullscreen();else if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();else toast('此浏览器暂不支持全屏，可使用浏览器全屏模式');}catch(e){toast('请使用浏览器的全屏模式（通常为 F11）');}}
+ $('fullBtn').onclick=full;document.addEventListener('fullscreenchange',()=>{$('fullBtn').textContent=document.fullscreenElement?'退出全屏':'全屏';});
+ function toast(s){$('toast').textContent=s;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),3500);}
+ document.addEventListener('keydown',e=>{if(isDialogOpen())return;if(e.ctrlKey||e.altKey||e.metaKey)return;if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;
+  if(['ArrowRight','PageDown'].includes(e.key)){e.preventDefault();go(current+1);}else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(current-1);}
+  else if(e.code==='Space'&&!['BUTTON','A'].includes(e.target.tagName)){e.preventDefault();go(current+1);}else if(e.key==='Home'){e.preventDefault();go(0);}else if(e.key==='End'){e.preventDefault();go(slides.length-1);}else if(e.key.toLowerCase()==='m')openDialog($('indexDialog'));else if(e.key.toLowerCase()==='f')full();
+ });
+ let wheelAmount=0,wheelTime=0,wheelCooldown=0;
+ $('exhibit').addEventListener('wheel',e=>{
+  if(isDialogOpen()||innerWidth<=800||locked)return;const s=slides[current];if(s.scrollHeight>s.clientHeight+3)return;
+  e.preventDefault();const now=performance.now();if(now-wheelCooldown<1100)return;if(now-wheelTime>180)wheelAmount=0;wheelTime=now;wheelAmount+=e.deltaY;
+  if(Math.abs(wheelAmount)>70){const direction=wheelAmount>0?1:-1;go(current+direction);wheelAmount=0;wheelCooldown=now;}
+ },{passive:false});
+ let touch=null;$('exhibit').addEventListener('touchstart',e=>{if(e.touches.length===1)touch={x:e.touches[0].clientX,y:e.touches[0].clientY};},{passive:true});
+ $('exhibit').addEventListener('touchend',e=>{if(!touch||isDialogOpen())return;const t=e.changedTouches[0],dx=t.clientX-touch.x,dy=t.clientY-touch.y;if(Math.abs(dx)>65&&Math.abs(dx)>Math.abs(dy)*1.6)go(current+(dx<0?1:-1));touch=null;},{passive:true});
+ document.addEventListener('visibilitychange',()=>{if(document.hidden)stopClock();else startClock();});
+ const initial=/^#\d+$/.test(location.hash)?Number(location.hash.slice(1)):0;
+ setTheme(slides[0]);updateControls();applyMotion();if(initial>0)go(initial,{force:true});
+})();
+</script>
+</body>
+</html>

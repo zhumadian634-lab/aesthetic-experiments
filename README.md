@@ -19,6 +19,10 @@
 | `tianjin.html` | 天津 · 三页实验 | 风格派 | 3 页 |
 | `ai-70-years.html` | 机器学会说话 · AI 七十年 | 多风格实验 | 多幕 |
 | `coffee-charts.html` | 一杯咖啡，清醒多久？ | Lieflat Charts | 3 页 16:9 |
+| `design-history.html` | [形塑时代 · 一部可交互的设计简史](https://zhumadian634-lab.github.io/aesthetic-experiments/design-history.html) | 设计史 · 多风格 | 18 页 |
+
+《形塑时代》按时间顺序梳理从工业革命到数字生活的设计演变，同时说明技术、文化与社会条件的影响。
+样式、翻页脚本与 SVG 插画均内嵌，单个 HTML 文件可离线打开；支持目录选页、方向键、左右滑动、自动播放与低动态模式。
 
 ## 移动端适配（只作用于本副本）
 
